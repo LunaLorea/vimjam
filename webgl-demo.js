@@ -2,13 +2,23 @@ import { initBuffers } from "./modules/init-buffers.js";
 import { drawScene } from "./modules/draw-scene.js";
 
 
-main();
+window.addEventListener('resize', resizeCanvas, false);
 
+function resizeCanvas() {
+  const canvas = document.querySelector("#gl-canvas");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  // Redraw everything after resizing the window
+  main(); 
+}
+resizeCanvas()
 //
 // start here
 //
 function main() {
   const canvas = document.querySelector("#gl-canvas");
+
   // Initialize the GL context
   const gl = canvas.getContext("webgl");
 
