@@ -1,6 +1,9 @@
 import { initBuffers } from "./modules/init-buffers.js";
 import { drawScene } from "./modules/draw-scene.js";
 
+let squareRotation = 0.0;
+let deltaTime = 0;
+
 
 window.addEventListener('resize', resizeCanvas, false);
 
@@ -83,8 +86,21 @@ function main() {
 // objects we'll be drawing.
   const buffers = initBuffers(gl);
 
-  // Draw the scene
-  drawScene(gl, programInfo, buffers, canvas);
+  
+  let then = 0;
+
+  function renderer(now) {
+    now *= 0.001; // Convert time to seconds
+    deltaTime = then - now;
+    then = now;
+
+    drawScene(gl, programInfo, buffers, canvas, squareRotation); //Draw the current scene.
+    squareRotation += deltaTime;
+    squareRotation = squareRotation % (2*Math.PI);
+
+    requestAnimationFrame(renderer);
+  }  
+  requestAnimationFrame(renderer);
 
 }
 
