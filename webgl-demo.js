@@ -1,7 +1,7 @@
 import { initBuffers } from "./modules/init-buffers.js";
 import { drawScene } from "./modules/draw-scene.js";
 
-let squareRotation = 0.0;
+let cubeRotation = 0.0;
 let deltaTime = 0;
 
 
@@ -91,12 +91,17 @@ function main() {
 
   function renderer(now) {
     now *= 0.001; // Convert time to seconds
-    deltaTime = then - now;
+    deltaTime = now - then;
     then = now;
 
-    drawScene(gl, programInfo, buffers, canvas, squareRotation); //Draw the current scene.
-    squareRotation += deltaTime;
-    squareRotation = squareRotation % (2*Math.PI);
+    drawScene(gl, programInfo, buffers, canvas, cubeRotation); //Draw the current scene.
+    cubeRotation += deltaTime;
+    cubeRotation = cubeRotation % (20*Math.PI);
+
+    var fps = (Math.round(1 / deltaTime))
+    document.getElementById("fps-counter").innerHTML = fps;
+    
+
 
     requestAnimationFrame(renderer);
   }  

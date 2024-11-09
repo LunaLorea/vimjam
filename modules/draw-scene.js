@@ -1,4 +1,4 @@
-function drawScene(gl, programInfo, buffers, canvas, squareRotation) {
+function drawScene(gl, programInfo, buffers, canvas, cubeRotation) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
   gl.clearDepth(1.0); // Clear everything
   gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -40,15 +40,28 @@ function drawScene(gl, programInfo, buffers, canvas, squareRotation) {
   mat4.rotate(
     modelViewMatrix,
     modelViewMatrix,
-    squareRotation,
+    cubeRotation,
     [0, 0, 1],
   );
-
+  mat4.rotate(
+    modelViewMatrix,
+    modelViewMatrix,
+    cubeRotation* 0.7,
+    [0, 1, 0],
+  );
+  mat4.rotate(
+    modelViewMatrix,
+    modelViewMatrix,
+    cubeRotation * 0.3,
+    [1, 0, 0],
+  );
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute.
   setPositionAttribute(gl, buffers, programInfo);
 
   setColorAttribute(gl, buffers, programInfo);
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
 
   // Tell WebGL to use our program when drawing
   gl.useProgram(programInfo.program);
@@ -67,15 +80,16 @@ function drawScene(gl, programInfo, buffers, canvas, squareRotation) {
 
   {
     const offset = 0;
-    const vertexCount = 4;
-    gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+    const vertexCount = 36;
+    const type = gl.UNSIGNED_SHORT;
+    gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   }
 }
 
 // Tell WebGL how to pull out the positions from the position
 // buffer into the vertexPosition attribute.
 function setPositionAttribute(gl, buffers, programInfo) {
-  const numComponents = 2; // pull out 2 values per iteration
+  const numComponents = 3; // pull out 3 values per iteration (for 3 dimensions per vertex)
   const type = gl.FLOAT; // the data in the buffer is 32bit floats
   const normalize = false; // don't normalize
   const stride = 0; // how many bytes to get from one set of values to the next
