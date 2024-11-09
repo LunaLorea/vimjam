@@ -15,7 +15,7 @@ function drawScene(gl, programInfo, buffers, canvas, texture, cubeRotation) {
   // and we only want to see objects between 0.1 units
   // and 100 units away from the camera.
 
-  const fieldOfView = (45 * Math.PI) / 180; // in radians
+  const fieldOfView = (90 * Math.PI) / 180; // in radians
   const aspect = canvas.width / canvas.height;
   const zNear = 0.1;
   const zFar = 100.0;
