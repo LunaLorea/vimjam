@@ -84,7 +84,7 @@ function main() {
   const buffers = initBuffers(gl);
 
   // Draw the scene
-  drawScene(gl, programInfo, buffers);
+  drawScene(gl, programInfo, buffers, canvas);
 
 }
 
