@@ -1,88 +1,11 @@
-import { drawObject } from "./drawObject.js";
-
-function drawScene(gl, programInfo, buffers, canvas, texture, cubeRotation) {
-  gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
-  gl.clearDepth(1.0); // Clear everything
-  gl.enable(gl.DEPTH_TEST); // Enable depth testing
-  gl.depthFunc(gl.LEQUAL); // Near things obscure far things
-
-  // Clear the canvas before we start drawing on it.
-
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  // Create a perspective matrix, a special matrix that is
-  // used to simulate the distortion of perspective in a camera.
-  // Our field of view is 45 degrees, with a width/height
-  // ratio that matches the display size of the canvas
-  // and we only want to see objects between 0.1 units
-  // and 100 units away from the camera.
-
-  const fieldOfView = (90 * Math.PI) / 180; // in radians
-  const aspect = canvas.width / canvas.height;
-  const zNear = 0.1;
-  const zFar = 100.0;
-  const projectionMatrix = mat4.create();
-
-  // note: glMatrix always has the first argument
-  // as the destination to receive the result.
-  mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-  
-  const rotation = vec3.fromValues(0, 0, 0);
-  const objPosition = vec3.fromValues(2.0, 0.0, 0.0);
-  const objPosition2 = vec3.fromValues(0.0, 0.0, 0.0);
-  const objPosition3 = vec3.fromValues(0.0, 2.0, 0.0);
-  const camPosition = vec3.fromValues(0.0, 0.0, -10.0);
-
-  vec3.rotateY(camPosition, camPosition, [0, 0, 0], cubeRotation);
-
-
-  const position = vec3.create();
-  vec3.add(position, objPosition, camPosition);
-
-  //console.log(objPosition);
-
-  drawObject(gl, buffers, programInfo, projectionMatrix, position, rotation, cubeRotation, texture);
-
-  vec3.add(position, objPosition2, camPosition);
-
-  drawObject(gl, buffers, programInfo, projectionMatrix, position, rotation, cubeRotation, texture);
-  vec3.add(position, objPosition3, camPosition);
-
-  drawObject(gl, buffers, programInfo, projectionMatrix, position, rotation, cubeRotation, texture);
-
-
-  for (let i = 0; i < 0; i++) {
-
+function drawObject(gl, buffers, programInfo, projectionMatrix, position, rotation, cubeRotation, texture) {
   // Set the drawing position to the "identity" point, which is
   // the center of the scene.
   const modelViewMatrix = mat4.create();
 
-  // Now move the drawing position a bit to where we want to
-  // start drawing the square.
-  mat4.translate(
-    modelViewMatrix, // destination matrix
-    modelViewMatrix, // matrix to translate
-    [-0.0, i, -6.0],
-  ); // amount to translate
-
-  mat4.rotate(
-    modelViewMatrix,
-    modelViewMatrix,
-    cubeRotation,
-    [0, 0, 1],
-  );
-  mat4.rotate(
-    modelViewMatrix,
-    modelViewMatrix,
-    cubeRotation* 0.7,
-    [0, 1, 0],
-  );
-  mat4.rotate(
-    modelViewMatrix,
-    modelViewMatrix,
-    cubeRotation * 0.3,
-    [1, 0, 0],
-  );
+  rotateObject(modelViewMatrix, [0, -cubeRotation, 0]);
+  setObjectPosition(modelViewMatrix, position);
+  rotateObject(modelViewMatrix, rotation)
 
   const normalMatrix = mat4.create();
   mat4.invert(normalMatrix, modelViewMatrix);
@@ -137,7 +60,36 @@ function drawScene(gl, programInfo, buffers, canvas, texture, cubeRotation) {
     const type = gl.UNSIGNED_SHORT;
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   }
-  }
+}
+
+function setObjectPosition(modelViewMatrix, position) {
+  mat4.translate(
+    modelViewMatrix,
+    modelViewMatrix,
+    position,
+  );
+}
+
+
+function rotateObject(modelViewMatrix, rotation) {
+  mat4.rotate(
+    modelViewMatrix,
+    modelViewMatrix,
+    rotation[2],
+    [0, 0, 1],
+  );
+  mat4.rotate(
+    modelViewMatrix,
+    modelViewMatrix,
+    rotation[1],
+    [0, 1, 0],
+  );
+  mat4.rotate(
+    modelViewMatrix,
+    modelViewMatrix,
+    rotation[0],
+    [1, 0, 0],
+  );
 }
 
 // Tell WebGL how to pull out the positions from the position
@@ -220,6 +172,4 @@ function setNormalAttribute(gl, buffers, programInfo) {
   gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
 }
 
-
-export { drawScene };
-
+export { drawObject };

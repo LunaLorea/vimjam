@@ -1,8 +1,18 @@
 import { initBuffers } from "./modules/init-buffers.js";
 import { drawScene } from "./modules/draw-scene.js";
+import { importString } from "./modules/importString.js";
 
 let cubeRotation = 0.0;
 let deltaTime = 0;
+let mouseX = 0;
+
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+}
 
 window.addEventListener('resize', resizeCanvas, false);
 
@@ -22,13 +32,14 @@ function main() {
   // Initialize the GL context
   const gl = canvas.getContext("webgl");
 
+
   // Only continue if WebGL is available and working
   if (gl === null) {
     alert(
       "Unable to initialize WebGL. Your browser or machine may not support it.",
     );
     return;
-  }
+   }
 
   // Set clear color to black, fully opaque
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -36,53 +47,8 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   // Vertex shader program
-  const vsSource = `
-    attribute vec4 aVertexPosition;
-    attribute vec3 aVertexNormal;
-    attribute vec2 aTextureCoord;
-
-    uniform mat4 uNormalMatrix;
-    uniform mat4 uModelViewMatrix;
-    uniform mat4 uProjectionMatrix;
-
-    
-    varying highp vec2 vTextureCoord;
-    varying highp vec3 vLighting;
-
-
-    void main(void) {
-      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-      vTextureCoord = aTextureCoord;
-
-      // Apply Lightning
-      
-      highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
-      highp vec3 directionalLightColor = vec3(1, 1, 1);
-      highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
-
-      highp vec4 transformedNormal = uNormalMatrix * vec4(aVertexNormal, 1.0);
-      
-      highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
-      vLighting = ambientLight + (directionalLightColor * directional);
-    }
-  `;
-
-  const fsSource = `
-    varying highp vec2 vTextureCoord;
-    varying highp vec3 vLighting;
-
-
-    uniform sampler2D uSampler;
-
-    void main(void) {
-      // Get Color from the Texture
-      highp vec4 texelColor = texture2D(uSampler, vTextureCoord);
-
-      // Multiply rgb values with the lighting we calculated in the VShader
-      // leave alpha Value as is.
-      gl_FragColor = vec4(texelColor.rgb * vLighting, texelColor.a);
-    }
-  `;
+  const vsSource = importString("shaders/vertexShader.glsl");
+  const fsSource = importString("shaders/fragmentShader.glsl");
 
   // Initialize a shader program; this is where all the lighting
   // for the vertices and so forth is established.
@@ -103,6 +69,7 @@ function main() {
       modelViewMatrix: gl.getUniformLocation(shaderProgram, "uModelViewMatrix"),
       uSampler: gl.getUniformLocation(shaderProgram, "uSampler"),
       normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
+      cameraRotationMatrix: gl.getUniformLocation(shaderProgram, "uCameraRotationMatrix"),
     },
   };
   // Here's where we call the routine that builds all the
@@ -114,7 +81,15 @@ function main() {
   // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-  
+  var mouseCoord = 0;
+
+  function setMouseCoord(e) {
+    mouseCoord = e.clientX;
+  }
+
+
+  canvas.addEventListener("mousemove", setMouseCoord);
+
   let then = 0;
 
   function renderer(now) {
@@ -123,8 +98,13 @@ function main() {
     then = now;
 
     drawScene(gl, programInfo, buffers, canvas, texture, cubeRotation); //Draw the current scene.
-    cubeRotation += deltaTime;
-    cubeRotation = cubeRotation % (20*Math.PI);
+    
+    var mousePos = getMousePos
+    
+    cubeRotation = (- mouseCoord / 150) + (now * 0.00001);
+
+    //cubeRotation += deltaTime;
+    //cubeRotation = cubeRotation % (20*Math.PI);
 
     var fps = (Math.round(1 / deltaTime))
     document.getElementById("fps-counter").innerHTML = fps;
@@ -228,7 +208,9 @@ function loadTexture(gl, url) {
   );
 
   const image = new Image();
+  image.src = url + "/?" + new Date().getTime();
   image.onload = () => {
+    gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(
       gl.TEXTURE_2D,
@@ -253,7 +235,6 @@ function loadTexture(gl, url) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     }
   };
-  image.src = url;
 
   return texture;
 }
