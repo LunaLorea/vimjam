@@ -55,11 +55,20 @@ function drawScene(gl, programInfo, buffers, canvas, texture, cubeRotation) {
     cubeRotation * 0.3,
     [1, 0, 0],
   );
+
+  const normalMatrix = mat4.create();
+  mat4.invert(normalMatrix, modelViewMatrix);
+  mat4.transpose(normalMatrix, normalMatrix);
+
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute.
   setPositionAttribute(gl, buffers, programInfo);
 
   setTextureAttribute(gl, buffers, programInfo);
+
+  setNormalAttribute(gl, buffers, programInfo);
+
+  gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
 
@@ -76,6 +85,12 @@ function drawScene(gl, programInfo, buffers, canvas, texture, cubeRotation) {
     programInfo.uniformLocations.modelViewMatrix,
     false,
     modelViewMatrix,
+  );
+
+  gl.uniformMatrix4fv(
+    programInfo.uniformLocations.normalMatrix,
+    false,
+    normalMatrix,
   );
 
   // Tell WebGL that we want to adress texture unit 0
@@ -154,6 +169,26 @@ function setTextureAttribute(gl, buffers, programInfo) {
     offset,
   );
   gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
+}
+
+function setNormalAttribute(gl, buffers, programInfo) {
+  const numComponents = 3;
+  const type = gl.FLOAT;
+  const normalize = false;
+  const stride = 0;
+  const offset = 0;
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+  gl.vertexAttribPointer(
+    programInfo.attribLocations.vertexNormal,
+    numComponents,
+    type,
+    normalize,
+    stride,
+    offset,
+  );
+
+  gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
 }
 
 
