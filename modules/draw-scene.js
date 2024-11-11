@@ -35,6 +35,13 @@ function drawScene(gl, programInfo, buffers, canvas, texture, camInformation, se
   
 
   drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
+  
+  objInformation.position = vec3.fromValues(2, 0, 0);
+  drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
+  objInformation.position = vec3.fromValues(4, 0, 0);
+  drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
+  objInformation.position = vec3.fromValues(0, 0, -6);
+  drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
 
 
 
