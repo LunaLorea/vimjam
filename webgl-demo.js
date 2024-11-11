@@ -1,18 +1,79 @@
 import { initBuffers } from "./modules/init-buffers.js";
 import { drawScene } from "./modules/draw-scene.js";
 import { importString } from "./modules/importString.js";
+import { loadObject } from "./modules/loadObject.js";
 
 let cubeRotation = 0.0;
 let deltaTime = 0;
-let mouseX = 0;
 
-function getMousePos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-        x: evt.clientX - rect.left,
-        y: evt.clientY - rect.top
-    };
+let firstMousePositionCaptured = false;
+let mousePosition = {
+  then: vec2.create(),
+  now: vec2.create(),
 }
+
+let wasdIsPressed = vec2.fromValues(0, 0);
+const settings = {
+  // Graphics
+  FOV: 90.0,
+}
+
+ window.addEventListener(
+  "keydown",
+  (event) => {
+    switch (event.key) {
+      case "W":
+      case "w":
+        wasdIsPressed[1] = -1;
+        break;
+      case "A":
+      case "a":
+        wasdIsPressed[0] = -1;
+        break;
+      case "S":
+      case "s":
+        wasdIsPressed[1] = 1;
+        break;
+      case "D":
+      case "d":
+        wasdIsPressed[0] = 1;
+        break;
+    }
+
+    // Cancel the default action to avoid it being handled twice
+    //event.preventDefault();
+  },
+  true,
+);
+ window.addEventListener(
+  "keyup",
+  (event) => {
+    switch (event.key) {
+      case "W":
+      case "w":
+        wasdIsPressed[1] = 0;
+        break;
+      case "A":
+      case "a":
+        wasdIsPressed[0] = 0;
+        break;
+      case "S":
+      case "s":
+        wasdIsPressed[1] = 0;
+        break;
+      case "D":
+      case "d":
+        wasdIsPressed[0] = 0;
+        break;
+    }
+
+    // Cancel the default action to avoid it being handled twice
+    //event.preventDefault();
+  },
+  true,
+);
+
+
 
 window.addEventListener('resize', resizeCanvas, false);
 
@@ -30,8 +91,8 @@ function main() {
   const canvas = document.querySelector("#gl-canvas");
 
   // Initialize the GL context
+  /** @type {WebGLRenderingContext} */
   const gl = canvas.getContext("webgl");
-
 
   // Only continue if WebGL is available and working
   if (gl === null) {
@@ -40,6 +101,8 @@ function main() {
     );
     return;
    }
+  
+  
 
   // Set clear color to black, fully opaque
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -72,36 +135,82 @@ function main() {
       cameraRotationMatrix: gl.getUniformLocation(shaderProgram, "uCameraRotationMatrix"),
     },
   };
+  // Load Models
+  const models = {
+    cube:            loadObject("models/cube.obj"),
+    hexagonal_prism: loadObject("models/hexagonal-prism.obj"),
+  }
   // Here's where we call the routine that builds all the
-// objects we'll be drawing.
-  const buffers = initBuffers(gl);
+  // objects we'll be drawing.
+  const buffers = initBuffers(gl, models);
 
   // Load texture
   const texture = loadTexture(gl, "textures/Mossy_Cobblestone.png");
   // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-  var mouseCoord = 0;
+
 
   function setMouseCoord(e) {
-    mouseCoord = e.clientX;
+    mousePosition.now[0] = - e.clientX;
+    mousePosition.now[1] = e.clientY;
+
+    if (!firstMousePositionCaptured) {
+      mousePosition.then[0] = mousePosition.now[0];
+      mousePosition.then[1] = mousePosition.now[1];
+      firstMousePositionCaptured = true;
+    }
   }
 
 
   canvas.addEventListener("mousemove", setMouseCoord);
+  canvas.addEventListener("onload", setMouseCoord);
 
   let then = 0;
+
+  const camInformation = {
+    position: vec3.fromValues(0.0, 0.0, 0.0),
+    relPosition: vec3.fromValues(0.0, 10.0, 10.0),
+    rotation: vec3.fromValues(0.0, 0.0, 0.0),
+  }
+  
+
 
   function renderer(now) {
     now *= 0.001; // Convert time to seconds
     deltaTime = now - then;
     then = now;
 
-    drawScene(gl, programInfo, buffers, canvas, texture, cubeRotation); //Draw the current scene.
+    //console.log(wasdIsPressed);
+
+    const tempVec = vec3.create();
+    vec2.scale(tempVec, wasdIsPressed, deltaTime);
+    vec2.rotate(tempVec, tempVec, [0, 0, 0], camInformation.rotation[1]*Math.PI / 2);
+    camInformation.position[0] += tempVec[0] * 3;
+    camInformation.position[2] += tempVec[1] * 3;
+
+
+    const deltaMouse = vec2.create();
+    vec2.sub(deltaMouse, mousePosition.now, mousePosition.then);
+    mousePosition.then[0] = mousePosition.now[0];
+    mousePosition.then[1] = mousePosition.now[1];
+
+    vec3.rotateY(
+      camInformation.relPosition,
+      camInformation.relPosition,
+      [0,10,0],
+      deltaMouse[0] / 150,
+    );
+
+  
     
-    var mousePos = getMousePos
+
+    camInformation.rotation[1] = - 2 *(Math.atan2(camInformation.relPosition[0], camInformation.relPosition[2]) / Math.PI) % 2;
+
+
+    drawScene(gl, programInfo, buffers, canvas, texture, camInformation, settings); //Draw the current scene.
     
-    cubeRotation = (- mouseCoord / 150) + (now * 0.00001);
+    
 
     //cubeRotation += deltaTime;
     //cubeRotation = cubeRotation % (20*Math.PI);
@@ -208,7 +317,7 @@ function loadTexture(gl, url) {
   );
 
   const image = new Image();
-  image.src = url + "/?" + new Date().getTime();
+  image.src = url + "?" + new Date().getTime();
   image.onload = () => {
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindTexture(gl.TEXTURE_2D, texture);

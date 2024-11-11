@@ -1,11 +1,23 @@
-function drawObject(gl, buffers, programInfo, projectionMatrix, position, rotation, cubeRotation, texture) {
+function drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation) {
   // Set the drawing position to the "identity" point, which is
   // the center of the scene.
   const modelViewMatrix = mat4.create();
+  
 
-  rotateObject(modelViewMatrix, [0, -cubeRotation, 0]);
-  setObjectPosition(modelViewMatrix, position);
-  rotateObject(modelViewMatrix, rotation)
+  //Move and rotate acording to the Camera
+  const tempCam1 = vec3.create();
+  const tempCam2 = vec3.create();
+  vec3.sub(tempCam1, tempCam1, camInformation.position);
+  vec3.sub(tempCam2, tempCam2, camInformation.relPosition);
+
+  rotateObject(modelViewMatrix, [0.5, 0, 0]);
+  rotateObject(modelViewMatrix, camInformation.rotation);
+  setObjectPosition(modelViewMatrix, tempCam1);
+  setObjectPosition(modelViewMatrix, tempCam2);
+  
+  // Rotate and Place Object in Space
+  setObjectPosition(modelViewMatrix, objInformation.position);
+  rotateObject(modelViewMatrix, objInformation.rotation);
 
   const normalMatrix = mat4.create();
   mat4.invert(normalMatrix, modelViewMatrix);
@@ -75,19 +87,19 @@ function rotateObject(modelViewMatrix, rotation) {
   mat4.rotate(
     modelViewMatrix,
     modelViewMatrix,
-    rotation[2],
+    rotation[2] * Math.PI / 2,
     [0, 0, 1],
   );
   mat4.rotate(
     modelViewMatrix,
     modelViewMatrix,
-    rotation[1],
+    rotation[1] * Math.PI / 2,
     [0, 1, 0],
   );
   mat4.rotate(
     modelViewMatrix,
     modelViewMatrix,
-    rotation[0],
+    rotation[0] * Math.PI / 2,
     [1, 0, 0],
   );
 }
