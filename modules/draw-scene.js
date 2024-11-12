@@ -50,7 +50,19 @@ function drawScene(gl, programInfo, buffers, canvas, texture, camInformation, se
   objInformation.position = vec3.fromValues(-15.0, 0.0, -10.0);
   objInformation.rotation = vec3.fromValues(0.0, 0.7, 0.0);
   drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
-
+  objInformation.index = 3;
+  objInformation.rotation = vec3.fromValues(0.0, 0.0, 0.0);
+  const changeBasis = mat3.fromValues( 
+    1, 0, 0,
+    0, 0, 0,
+    0.5, 0, Math.sqrt(3)/2
+    );
+  for (let i = 0; i < 10; i++) {
+    for (let j = 0; j < 10; j++) {
+      vec3.transformMat3(objInformation.position, [i*2, 0, j*2], changeBasis);
+      drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
+    }
+  }
 }
 
 

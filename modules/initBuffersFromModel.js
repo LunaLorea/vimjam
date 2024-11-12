@@ -81,14 +81,6 @@ export default class InitBuffersFromModel {
     this.initIndexBuffer(gl, indices);
     this.initTextureBuffer(gl, textureCoordinates);
     this.initNormalBuffer(gl, vertexNormals);
-    console.log("Vertex positions:");
-    console.log(vertexPositions);
-    console.log("indices:");
-    console.log(indices);
-    console.log("textureCoordinates");
-    console.log(textureCoordinates);
-    console.log("vertex normals:");
-    console.log(vertexNormals);
   }
 
 /**
