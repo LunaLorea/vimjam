@@ -46,7 +46,6 @@ const positions = [
 // shape. We do this by creating a Float32Array from the
   // JavaScript array, then use it to fill the current buffer.
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-  console.log("position buffer" + JSON.stringify(positionBuffer));
   return positionBuffer;
 }
 
@@ -61,7 +60,7 @@ function initColorBuffer(gl) {
   ];
 
   var colors = [];
-
+ 
   // Convert the array of colors into a table for all the vertices.
   for (var j = 0; j < faceColors.length; ++j) {
     const c = faceColors[j];
