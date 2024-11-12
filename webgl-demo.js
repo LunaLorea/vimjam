@@ -1,7 +1,7 @@
 import { initBuffers } from "./modules/init-buffers.js";
 import { drawScene } from "./modules/draw-scene.js";
 import { importString } from "./modules/importString.js";
-import { initBuffersFromModel } from "./modules/initBuffersFromModel.js";
+import InitBuffersFromModel from "./modules/initBuffersFromModel.js";
 
 let cubeRotation = 0.0;
 let deltaTime = 0;
@@ -148,96 +148,97 @@ function main() {
   };
   // Load Models
   const models = [
-    "models/cube.obj",
-    "models/hexagonal-prism.obj",
+    "models/ape.obj",
   ]
+  const buffers = new InitBuffersFromModel(gl, models);
+  buffers.parseModels(gl).then( () => {
+    //const buffers = initBuffers(gl);
+    // Here's where we call the routine that builds all the
+    // objects we'll be drawing.
+    //const buffers = initBuffers(gl);
 
-  const buffers2 = initBuffersFromModel(gl, models);
-  // Here's where we call the routine that builds all the
-  // objects we'll be drawing.
-  const buffers = initBuffers(gl);
-
-  // Load texture
-  const texture = loadTexture(gl, "textures/Mossy_Cobblestone.png");
-  // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-
-
-  function setMouseCoord(e) {
-    mousePosition[0] = - e.movementX;
-    mousePosition[1] = e.movementY;
-  }
+    // Load texture
+    const texture = loadTexture(gl, "textures/Mossy_Cobblestone.png");
+    // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
 
-  canvas.addEventListener("mousemove", setMouseCoord);
-  canvas.addEventListener("onload", setMouseCoord);
 
-  let then = 0;
-
-  const camInformation = {
-    position: vec3.fromValues(0.0, 0.0, 0.0),
-    relPosition: vec3.fromValues(0.0, 10.0, 10.0),
-    rotation: vec3.fromValues(0.0, 0.0, 0.0),
-  }
-  
-
-
-  function renderer(now) {
-    now *= 0.001; // Convert time to seconds
-    deltaTime = now - then;
-    then = now;
-
-    //console.log(wasdIsPressed);
-
-    // Calculate how far to move the camera
-    const tempVec = vec2.create();
-    tempVec[0] = wasdIsPressed[1] + wasdIsPressed[3];
-    tempVec[1] = wasdIsPressed[0] + wasdIsPressed[2];
-    vec2.scale(tempVec, tempVec, deltaTime);
-    //Rotate the movement to align with the current facing direction
-    vec2.rotate(tempVec, tempVec, [0, 0, 0], camInformation.rotation[1]*Math.PI / 2);
-    //Apply movement to camera position
-    camInformation.position[0] += tempVec[0] * 3;
-    camInformation.position[2] += tempVec[1] * 3;
-
-    let tempRotation = mousePosition[0];
-
-    if (!mouseLocked) {
-      tempRotation = 0;
+    function setMouseCoord(e) {
+      mousePosition[0] = - e.movementX;
+      mousePosition[1] = e.movementY;
     }
 
-    vec3.rotateY(
-      camInformation.relPosition,
-      camInformation.relPosition,
-      [0,10,0],
-      tempRotation / 150,
-    );
 
-    mousePosition[0] = 0;
+    canvas.addEventListener("mousemove", setMouseCoord);
+    canvas.addEventListener("onload", setMouseCoord);
 
-  
-    
+    let then = 0;
 
-    camInformation.rotation[1] = - 2 *(Math.atan2(camInformation.relPosition[0], camInformation.relPosition[2]) / Math.PI) % 2;
-
-
-    drawScene(gl, programInfo, buffers, canvas, texture, camInformation, settings); //Draw the current scene.
-    
-    
-
-    //cubeRotation += deltaTime;
-    //cubeRotation = cubeRotation % (20*Math.PI);
-
-    var fps = (Math.round(1 / deltaTime))
-    document.getElementById("fps-counter").innerHTML = fps;
+    const camInformation = {
+      position: vec3.fromValues(0.0, 0.0, 0.0),
+      relPosition: vec3.fromValues(0.0, 10.0, 10.0),
+      rotation: vec3.fromValues(0.0, 0.0, 0.0),
+    }
     
 
 
+    function renderer(now) {
+      now *= 0.001; // Convert time to seconds
+      deltaTime = now - then;
+      then = now;
+
+      //console.log(wasdIsPressed);
+
+      // Calculate how far to move the camera
+      const tempVec = vec2.create();
+      tempVec[0] = wasdIsPressed[1] + wasdIsPressed[3];
+      tempVec[1] = wasdIsPressed[0] + wasdIsPressed[2];
+      vec2.scale(tempVec, tempVec, deltaTime);
+      //Rotate the movement to align with the current facing direction
+      vec2.rotate(tempVec, tempVec, [0, 0, 0], camInformation.rotation[1]*Math.PI / 2);
+      //Apply movement to camera position
+      camInformation.position[0] += tempVec[0] * 3;
+      camInformation.position[2] += tempVec[1] * 3;
+
+      let tempRotation = mousePosition[0];
+
+      if (!mouseLocked) {
+        tempRotation = 0;
+      }
+
+      vec3.rotateY(
+        camInformation.relPosition,
+        camInformation.relPosition,
+        [0,10,0],
+        tempRotation / 150,
+      );
+
+      mousePosition[0] = 0;
+
+    
+      
+
+      camInformation.rotation[1] = - 2 *(Math.atan2(camInformation.relPosition[0], camInformation.relPosition[2]) / Math.PI) % 2;
+
+
+      drawScene(gl, programInfo, buffers, canvas, texture, camInformation, settings); //Draw the current scene.
+      
+      
+
+      //cubeRotation += deltaTime;
+      //cubeRotation = cubeRotation % (20*Math.PI);
+
+      var fps = (Math.round(1 / deltaTime))
+      document.getElementById("fps-counter").innerHTML = fps;
+      
+
+
+      requestAnimationFrame(renderer);
+    }  
+    
     requestAnimationFrame(renderer);
-  }  
-  requestAnimationFrame(renderer);
-
+  });
 }
 
 

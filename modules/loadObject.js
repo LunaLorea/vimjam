@@ -1,5 +1,3 @@
-
-
 /**
 * Renders something using the WebGL context.
 * @param {WebGLRenderingContext} gl - The WebGL context.
@@ -107,9 +105,9 @@ export default class ModelObject {
     // A face is a list of triplets vertex_index/texture_index/normal_index
     for (let i = 1; i < words.length; i++) {
       let vertices = words[i].split('/');
-      this.faceVertexIndexes[this.faceVertexIndexes.length-1].push(vertices[0]);
-      this.faceTextureIndexes[this.faceTextureIndexes.length-1].push(vertices[1]);
-      this.faceNormalIndexes[this.faceNormalIndexes.length-1].push(vertices[2]);
+      this.faceVertexIndexes[this.faceVertexIndexes.length-1].push(parseFloat(vertices[0]));
+      this.faceTextureIndexes[this.faceTextureIndexes.length-1].push(parseFloat(vertices[1]));
+      this.faceNormalIndexes[this.faceNormalIndexes.length-1].push(parseFloat(vertices[2]));
     }
   }
 }
