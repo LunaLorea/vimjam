@@ -21,8 +21,9 @@ export default class InitBuffersFromModel {
     let indices = [];
     let models = this.models;
 
-    let indexOffset = 0;
     for (let i = 0; i < models.length; i++) {
+      let indexOffset = 0;
+      let vertexCount = 0;
       // Load model from a .obj file.
       const model = new LoadObject(models[i]);
       await model.loadObject()
@@ -71,20 +72,23 @@ export default class InitBuffersFromModel {
             indexOffset += 1;
           }
           indices.push(map[element]);
+          vertexCount += 1;
         });
       }
-      let lastOffset = 0;
-      if (this.offsets.length >= 2) {
-        lastOffset = this.offsets[this.offsets.length-2][2];
-      }
-      this.offsets[this.offsets.length-1].push(indices.length - lastOffset);
+      this.offsets[this.offsets.length-1].push(vertexCount);
     }
     this.initPositionBuffer(gl, vertexPositions);
     this.initIndexBuffer(gl, indices);
     this.initTextureBuffer(gl, textureCoordinates);
     this.initNormalBuffer(gl, vertexNormals);
+    console.log("Vertex positions:");
     console.log(vertexPositions);
+    console.log("indices:");
     console.log(indices);
+    console.log("textureCoordinates");
+    console.log(textureCoordinates);
+    console.log("vertex normals:");
+    console.log(vertexNormals);
   }
 
 /**

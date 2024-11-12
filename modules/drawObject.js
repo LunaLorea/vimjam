@@ -1,7 +1,9 @@
-function drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation, objectIndex) {
+function drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation) {
   // Set the drawing position to the "identity" point, which is
   // the center of the scene.
   const modelViewMatrix = mat4.create();
+
+  let objectIndex = objInformation.index;
   
 
   //Move and rotate acording to the Camera
@@ -118,7 +120,7 @@ function setPositionAttribute(gl, buffers, programInfo, offset) {
     type,
     normalize,
     stride,
-    offset * 4,
+    offset * 4 * numComponents,
   );
   gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
 }
@@ -137,7 +139,7 @@ function setTextureAttribute(gl, buffers, programInfo, offset) {
     type,
     normalize,
     stride,
-    offset * 4,
+    offset * 4 * num,
   );
   gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
 }
@@ -155,7 +157,7 @@ function setNormalAttribute(gl, buffers, programInfo, offset) {
     type,
     normalize,
     stride,
-    offset*4,
+    offset*4 * numComponents,
   );
 
   gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);

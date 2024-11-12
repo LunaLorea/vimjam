@@ -28,16 +28,29 @@ function drawScene(gl, programInfo, buffers, canvas, texture, camInformation, se
   mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
   const objInformation = {
-    position: vec3.fromValues(0.0, 0.0, 0.0),
+    index: 0,
+    position: vec3.fromValues(0.0, 0.0, -20.0),
     rotation: vec3.fromValues(0.0, 0.0, 0.0),
   }
 
+  drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
+  objInformation.index = 1;
+  objInformation.position = vec3.fromValues(20.0, 0.0, -20.0);
+  objInformation.rotation = vec3.fromValues(0.0, 0.0, 0.0);
   
-  let objectIndex = 0;
-  drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation, objectIndex);
-  objectIndex = 0;
-  objInformation.position = vec3.fromValues(2.0, 0.0, 0.0);
+
+  drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
+  objInformation.index = 1;
+  objInformation.position = vec3.fromValues(30.0, 0.0, -20.0);
+  objInformation.rotation = vec3.fromValues(0.0, 0.0, 0.0);
   
+
+  drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
+  objInformation.index = 2;
+  objInformation.position = vec3.fromValues(-15.0, 0.0, -10.0);
+  objInformation.rotation = vec3.fromValues(0.0, 0.7, 0.0);
+  drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation);
+
 }
 
 

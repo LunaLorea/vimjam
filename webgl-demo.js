@@ -148,10 +148,13 @@ function main() {
   };
   // Load Models
   const models = [
-    "models/ape.obj",
+    "models/sphere.obj",
+    "models/cube.obj",
+    "models/ape.obj"
   ]
   const buffers = new InitBuffersFromModel(gl, models);
   buffers.parseModels(gl).then( () => {
+    console.log(buffers);
     //const buffers = initBuffers(gl);
     // Here's where we call the routine that builds all the
     // objects we'll be drawing.
