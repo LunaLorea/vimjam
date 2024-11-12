@@ -1,7 +1,7 @@
 import { initBuffers } from "./modules/init-buffers.js";
 import { drawScene } from "./modules/draw-scene.js";
 import { importString } from "./modules/importString.js";
-import { loadObject } from "./modules/loadObject.js";
+import { initBuffersFromModel } from "./modules/initBuffersFromModel.js";
 
 let cubeRotation = 0.0;
 let deltaTime = 0;
@@ -12,7 +12,7 @@ let mousePosition = {
   now: vec2.create(),
 }
 
-let wasdIsPressed = vec2.fromValues(0, 0);
+let wasdIsPressed = [false, false, false, false];
 const settings = {
   // Graphics
   FOV: 90.0,
@@ -24,19 +24,23 @@ const settings = {
     switch (event.key) {
       case "W":
       case "w":
-        wasdIsPressed[1] = -1;
+        wasdIsPressed[0] = -1;
         break;
       case "A":
       case "a":
-        wasdIsPressed[0] = -1;
+        wasdIsPressed[1] = -1;
         break;
       case "S":
       case "s":
-        wasdIsPressed[1] = 1;
+        wasdIsPressed[2] = 1;
         break;
       case "D":
       case "d":
-        wasdIsPressed[0] = 1;
+        wasdIsPressed[3] = 1;
+        break;
+      case "Escape":
+        document.exitPointerLock();
+        mouseLocked = false;
         break;
     }
 
@@ -51,19 +55,19 @@ const settings = {
     switch (event.key) {
       case "W":
       case "w":
-        wasdIsPressed[1] = 0;
+        wasdIsPressed[0] = 0;
         break;
       case "A":
       case "a":
-        wasdIsPressed[0] = 0;
+        wasdIsPressed[1] = 0;
         break;
       case "S":
       case "s":
-        wasdIsPressed[1] = 0;
+        wasdIsPressed[2] = 0;
         break;
       case "D":
       case "d":
-        wasdIsPressed[0] = 0;
+        wasdIsPressed[3] = 0;
         break;
     }
 
@@ -73,7 +77,7 @@ const settings = {
   true,
 );
 
-
+let mouseLocked = false;
 
 window.addEventListener('resize', resizeCanvas, false);
 
@@ -102,6 +106,13 @@ function main() {
     return;
    }
   
+  canvas.addEventListener("click", async () => {
+    console.log(mouseLocked);
+    if (!mouseLocked) {
+      await canvas.requestPointerLock();
+      mouseLocked = true;
+    }
+  });
   
 
   // Set clear color to black, fully opaque
@@ -136,13 +147,15 @@ function main() {
     },
   };
   // Load Models
-  const models = {
-    cube:            loadObject("models/cube.obj"),
-    hexagonal_prism: loadObject("models/hexagonal-prism.obj"),
-  }
+  const models = [
+    "models/cube.obj",
+    "models/hexagonal-prism.obj",
+  ]
+
+  const buffers2 = initBuffersFromModel(gl, models);
   // Here's where we call the routine that builds all the
   // objects we'll be drawing.
-  const buffers = initBuffers(gl, models);
+  const buffers = initBuffers(gl);
 
   // Load texture
   const texture = loadTexture(gl, "textures/Mossy_Cobblestone.png");
@@ -152,14 +165,8 @@ function main() {
 
 
   function setMouseCoord(e) {
-    mousePosition.now[0] = - e.clientX;
-    mousePosition.now[1] = e.clientY;
-
-    if (!firstMousePositionCaptured) {
-      mousePosition.then[0] = mousePosition.now[0];
-      mousePosition.then[1] = mousePosition.now[1];
-      firstMousePositionCaptured = true;
-    }
+    mousePosition[0] = - e.movementX;
+    mousePosition[1] = e.movementY;
   }
 
 
@@ -183,24 +190,31 @@ function main() {
 
     //console.log(wasdIsPressed);
 
-    const tempVec = vec3.create();
-    vec2.scale(tempVec, wasdIsPressed, deltaTime);
+    // Calculate how far to move the camera
+    const tempVec = vec2.create();
+    tempVec[0] = wasdIsPressed[1] + wasdIsPressed[3];
+    tempVec[1] = wasdIsPressed[0] + wasdIsPressed[2];
+    vec2.scale(tempVec, tempVec, deltaTime);
+    //Rotate the movement to align with the current facing direction
     vec2.rotate(tempVec, tempVec, [0, 0, 0], camInformation.rotation[1]*Math.PI / 2);
+    //Apply movement to camera position
     camInformation.position[0] += tempVec[0] * 3;
     camInformation.position[2] += tempVec[1] * 3;
 
+    let tempRotation = mousePosition[0];
 
-    const deltaMouse = vec2.create();
-    vec2.sub(deltaMouse, mousePosition.now, mousePosition.then);
-    mousePosition.then[0] = mousePosition.now[0];
-    mousePosition.then[1] = mousePosition.now[1];
+    if (!mouseLocked) {
+      tempRotation = 0;
+    }
 
     vec3.rotateY(
       camInformation.relPosition,
       camInformation.relPosition,
       [0,10,0],
-      deltaMouse[0] / 150,
+      tempRotation / 150,
     );
+
+    mousePosition[0] = 0;
 
   
     
