@@ -11,7 +11,7 @@ let mousePosition = {
   now: vec2.create(),
 }
 
-let wasdIsPressed = [false, false, false, false];
+let wasdIsPressed = [0, 0, 0, 0];
 const settings = {
   // Graphics
   FOV: 90.0,
@@ -78,14 +78,7 @@ const settings = {
 
 let mouseLocked = false;
 
-window.addEventListener('resize', resizeCanvas, false);
 
-function resizeCanvas() {
-  const canvas = document.querySelector("#gl-canvas");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
 main();
 //
 // start here
@@ -105,13 +98,16 @@ function main() {
     return;
    }
   
-  canvas.addEventListener("click", async () => {
-    if (!mouseLocked) {
-      await canvas.requestPointerLock();
-      mouseLocked = true;
-    }
-  });
+  function resizeCanvas() {
+    const canvas = document.querySelector("#gl-canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    console.log("test");
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resizeCanvas();
   
+  window.addEventListener('resize', resizeCanvas, false);
 
   // Set clear color to black, fully opaque
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -163,13 +159,65 @@ function main() {
     const texture = loadTexture(gl, "textures/test_initialShadingGroup_BaseColor.png");
     // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    
+
+    let mouseDown = false;
+    let mouseMoved = false;
+    canvas.addEventListener("mousedown", () => {
+      mouseDown = true;
+      mouseMoved = false;
+    });
+    canvas.addEventListener("mouseup", () => {
+      mouseDown = false;
+      if (!mouseMoved) {
+        placeHexagon();
+      }
+    });
+     
+    async function placeHexagon() {
+      const squareToHexagonal = mat3.fromValues(
+        Math.sqrt(3)/3, 0, 0,
+        0, 0, 0,
+        -1/3, 0, 2/3
+      );
+
+      const hexagonalToSquare = mat3.fromValues(
+        Math.sqrt(3), 0, 0,
+        0, 0, 0,
+        Math.sqrt(3) / 2, 0, 3/2
+      );
+
+      const hexagonalPosition = vec3.create();
+      vec3.copy(hexagonalPosition, sceneInformation.mouseInWorld);
+      vec3.transformMat3(hexagonalPosition, hexagonalPosition, hexagonalToSquare);
+      hexagonalPosition[2] *= 1/0.80;
+      vec3.scale(hexagonalPosition, hexagonalPosition, 5/16);
+      vec3.round(hexagonalPosition, hexagonalPosition);
+      vec3.scale(hexagonalPosition, hexagonalPosition, 16/5);
+      hexagonalPosition[2] *= 0.80;
+      vec3.transformMat3(hexagonalPosition, hexagonalPosition, squareToHexagonal);
       
-    sceneInformation.addNewObject("test", [0, 0, 0], [0, 0, 0], 1, texture)
+
+
+
+      sceneInformation.addNewObject("hexagonal-prism", hexagonalPosition, [0, 0, 0], 1, texture);
+    }
+    sceneInformation.addNewObject("hexagonal-prism", [0, 0, 0], [0, 0, 0], 1, texture);
 
     function setMouseCoord(e) {
       mousePosition[0] = - e.movementX;
       mousePosition[1] = e.movementY;
+      sceneInformation.mouseX = e.clientX;
+      sceneInformation.mouseY = e.clientY;
+      console.log(vec2.dot(mousePosition, mousePosition))
+      if (vec2.dot(mousePosition, mousePosition) > 30) {
+        mouseMoved = true;
+      }
     }
+
+    sceneInformation.mouseX = 0;
+    sceneInformation.mouseY = 0;
+
 
 
     canvas.addEventListener("mousemove", setMouseCoord);
@@ -200,7 +248,7 @@ function main() {
 
       let tempRotation = mousePosition[0];
 
-      if (!mouseLocked) {
+      if (!mouseDown || !mouseMoved) {
         tempRotation = 0;
       }
 
@@ -217,7 +265,8 @@ function main() {
       
 
       camera.rotation[1] = - 2 *(Math.atan2(camera.relPosition[0], camera.relPosition[2]) / Math.PI) % 2;
-
+      
+      //cube.position = sceneInformation.mouseInWorld;
 
       drawScene(programInfo, canvas, settings, sceneInformation); //Draw the current scene.
       

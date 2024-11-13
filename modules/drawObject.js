@@ -7,7 +7,7 @@ function drawObject(
   programInfo, 
   projectionMatrix, 
   objectType,
-  camInformation
+  camViewMatrix
 ) {
 
   let objectIndex = objectType.id;
@@ -15,28 +15,17 @@ function drawObject(
 
 
   objectType.instanceInformation.forEach( (objInformation) => {
-    // Set the drawing position to the "identity" point, which is
-    // the center of the scene.
+    
     const modelViewMatrix = mat4.create();
-
-    
-
-    //Move and rotate acording to the Camera
-    const tempCam1 = vec3.create();
-    const tempCam2 = vec3.create();
-    vec3.sub(tempCam1, tempCam1, camInformation.position);
-    vec3.sub(tempCam2, tempCam2, camInformation.relPosition);
-    rotateObject(modelViewMatrix, [camInformation.angle, 0, 0]);
-    rotateObject(modelViewMatrix, camInformation.rotation);
-    setObjectPosition(modelViewMatrix, tempCam1);
-    setObjectPosition(modelViewMatrix, tempCam2);
-    
+    mat4.copy(modelViewMatrix, camViewMatrix);
     // Rotate and Place Object in Space
-    setObjectPosition(modelViewMatrix, objInformation.position);
-    rotateObject(modelViewMatrix, objInformation.rotation);
+    const objectPositionMatrix = mat4.create();
+    setObjectPosition(objectPositionMatrix , objInformation.position);
+    rotateObject(objectPositionMatrix , objInformation.rotation);
 
+    mat4.mul(modelViewMatrix, modelViewMatrix, objectPositionMatrix);
     const normalMatrix = mat4.create();
-    mat4.invert(normalMatrix, modelViewMatrix);
+    mat4.invert(normalMatrix, objectPositionMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
 
 
