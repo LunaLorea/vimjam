@@ -150,6 +150,7 @@ function main() {
     ["cube", "models/cube.obj"],
     ["ape", "models/ape.obj"],
     ["hexagonal-prism", "models/hexagonal-prism.obj"],
+    ["test", "models/test.obj"],
   ];
   
   const sceneInformation = new SceneInformation(gl);
@@ -159,14 +160,11 @@ function main() {
     const camera = sceneInformation.addNewCamera([0, 0, 0], [0, 10, 10], [0, 0, 0], 0.5);
       
     // Load texture
-    const texture = loadTexture(gl, "textures/Mossy_Cobblestone.png");
+    const texture = loadTexture(gl, "textures/test_initialShadingGroup_BaseColor.png");
     // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
       
-    sceneInformation.addNewObject("cube", [0, 0, 0], [0, 0, 0], 1, texture)
-    sceneInformation.addNewObject("ape", [10, 0, 0], [0, 0, 0], 1, texture)
-    sceneInformation.addNewObject("hexagonal-prism", [-10, 0, 0], [0, 0, 0], 1, texture)
-    sceneInformation.addNewObject("sphere", [-20, 0, 0], [0, 0, 0], 1, texture)
+    sceneInformation.addNewObject("test", [0, 0, 0], [0, 0, 0], 1, texture)
 
     function setMouseCoord(e) {
       mousePosition[0] = - e.movementX;
