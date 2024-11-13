@@ -1,7 +1,6 @@
-import { initBuffers } from "./modules/init-buffers.js";
 import { drawScene } from "./modules/draw-scene.js";
 import { importString } from "./modules/importString.js";
-import InitBuffersFromModel from "./modules/initBuffersFromModel.js";
+import SceneInformation from "./modules/SceneInformation.js";
 
 let cubeRotation = 0.0;
 let deltaTime = 0;
@@ -107,7 +106,6 @@ function main() {
    }
   
   canvas.addEventListener("click", async () => {
-    console.log(mouseLocked);
     if (!mouseLocked) {
       await canvas.requestPointerLock();
       mouseLocked = true;
@@ -148,24 +146,27 @@ function main() {
   };
   // Load Models
   const models = [
-    "models/sphere.obj",
-    "models/cube.obj",
-    "models/ape.obj",
-    "models/hexagonal-prism.obj"
-  ]
-  const buffers = new InitBuffersFromModel(gl, models);
-  buffers.parseModels(gl).then( () => {
-    //const buffers = initBuffers(gl);
+    ["sphere", "models/sphere.obj"],
+    ["cube", "models/cube.obj"],
+    ["ape", "models/ape.obj"],
+    ["hexagonal-prism", "models/hexagonal-prism.obj"],
+  ];
+  
+  const sceneInformation = new SceneInformation(gl);
+  sceneInformation.initObjectTypes(models).then( () => {
     // Here's where we call the routine that builds all the
     // objects we'll be drawing.
-    //const buffers = initBuffers(gl);
-
+    const camera = sceneInformation.addNewCamera([0, 0, 0], [0, 10, 10], [0, 0, 0], 0.5);
+      
     // Load texture
     const texture = loadTexture(gl, "textures/Mossy_Cobblestone.png");
     // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-
+      
+    sceneInformation.addNewObject("cube", [0, 0, 0], [0, 0, 0], 1, texture)
+    sceneInformation.addNewObject("ape", [10, 0, 0], [0, 0, 0], 1, texture)
+    sceneInformation.addNewObject("hexagonal-prism", [-10, 0, 0], [0, 0, 0], 1, texture)
+    sceneInformation.addNewObject("sphere", [-20, 0, 0], [0, 0, 0], 1, texture)
 
     function setMouseCoord(e) {
       mousePosition[0] = - e.movementX;
@@ -178,11 +179,6 @@ function main() {
 
     let then = 0;
 
-    const camInformation = {
-      position: vec3.fromValues(0.0, 0.0, 0.0),
-      relPosition: vec3.fromValues(0.0, 10.0, 10.0),
-      rotation: vec3.fromValues(0.0, 0.0, 0.0),
-    }
     
 
 
@@ -199,10 +195,10 @@ function main() {
       tempVec[1] = wasdIsPressed[0] + wasdIsPressed[2];
       vec2.scale(tempVec, tempVec, deltaTime);
       //Rotate the movement to align with the current facing direction
-      vec2.rotate(tempVec, tempVec, [0, 0, 0], camInformation.rotation[1]*Math.PI / 2);
+      vec2.rotate(tempVec, tempVec, [0, 0, 0], camera.rotation[1]*Math.PI / 2);
       //Apply movement to camera position
-      camInformation.position[0] += tempVec[0] * 3;
-      camInformation.position[2] += tempVec[1] * 3;
+      camera.position[0] += tempVec[0] * 3;
+      camera.position[2] += tempVec[1] * 3;
 
       let tempRotation = mousePosition[0];
 
@@ -211,8 +207,8 @@ function main() {
       }
 
       vec3.rotateY(
-        camInformation.relPosition,
-        camInformation.relPosition,
+        camera.relPosition,
+        camera.relPosition,
         [0,10,0],
         tempRotation / 150,
       );
@@ -222,10 +218,10 @@ function main() {
     
       
 
-      camInformation.rotation[1] = - 2 *(Math.atan2(camInformation.relPosition[0], camInformation.relPosition[2]) / Math.PI) % 2;
+      camera.rotation[1] = - 2 *(Math.atan2(camera.relPosition[0], camera.relPosition[2]) / Math.PI) % 2;
 
 
-      drawScene(gl, programInfo, buffers, canvas, texture, camInformation, settings); //Draw the current scene.
+      drawScene(programInfo, canvas, settings, sceneInformation); //Draw the current scene.
       
       
 
