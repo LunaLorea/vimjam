@@ -36,7 +36,7 @@ export default class SceneInformation {
       position: positon,
       rotation: rotaton,
       scale:    scale,
-      texture:  texture
+      texture:  texture,
     };
     this.objectInformation[type].instanceInformation.push(object);
     return object;

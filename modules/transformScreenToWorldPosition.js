@@ -26,8 +26,11 @@ export function transformScreenToWorldPosition(
   
   const ray = vec3.create();
   vec3.sub(ray, end, start);
-  const position = vec3.create();
-  vec3.sub(position, position, intersectLinePlane(ray, start, [0, 1, 0], [0, elevation, 0]));
+  const position = intersectLinePlane(ray, start, [0, 1, 0], [0, elevation, 0]);
+  if (position == null) {
+    return null;
+  }
+  vec3.sub(position, [0, 0, 0], position); 
   return position;
 }
 

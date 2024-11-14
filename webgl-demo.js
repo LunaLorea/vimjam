@@ -1,11 +1,12 @@
 import { drawScene } from "./modules/draw-scene.js";
 import { importString } from "./modules/importString.js";
 import SceneInformation from "./modules/SceneInformation.js";
+import { initCameraMovement, updateCamera } from "./modules/cameraMovement.js";
+import { initKeyboardInput } from "./modules/inputHandler.js";
+import GameLogic from "./modules/gameLogic.js";
 
-let cubeRotation = 0.0;
 let deltaTime = 0;
 
-let firstMousePositionCaptured = false;
 let mousePosition = {
   then: vec2.create(),
   now: vec2.create(),
@@ -15,69 +16,13 @@ let wasdIsPressed = [0, 0, 0, 0];
 const settings = {
   // Graphics
   FOV: 90.0,
+  zoomMax: 30,
+  zoomMin: 2,
+  cameraSpeed: 4,
+  cameraRotationSpeed: 1 / 150,
+
+  keyMap: new Map(),
 }
-
- window.addEventListener(
-  "keydown",
-  (event) => {
-    switch (event.key) {
-      case "W":
-      case "w":
-        wasdIsPressed[0] = -1;
-        break;
-      case "A":
-      case "a":
-        wasdIsPressed[1] = -1;
-        break;
-      case "S":
-      case "s":
-        wasdIsPressed[2] = 1;
-        break;
-      case "D":
-      case "d":
-        wasdIsPressed[3] = 1;
-        break;
-      case "Escape":
-        document.exitPointerLock();
-        mouseLocked = false;
-        break;
-    }
-
-    // Cancel the default action to avoid it being handled twice
-    //event.preventDefault();
-  },
-  true,
-);
- window.addEventListener(
-  "keyup",
-  (event) => {
-    switch (event.key) {
-      case "W":
-      case "w":
-        wasdIsPressed[0] = 0;
-        break;
-      case "A":
-      case "a":
-        wasdIsPressed[1] = 0;
-        break;
-      case "S":
-      case "s":
-        wasdIsPressed[2] = 0;
-        break;
-      case "D":
-      case "d":
-        wasdIsPressed[3] = 0;
-        break;
-    }
-
-    // Cancel the default action to avoid it being handled twice
-    //event.preventDefault();
-  },
-  true,
-);
-
-let mouseLocked = false;
-
 
 main();
 //
@@ -102,7 +47,6 @@ function main() {
     const canvas = document.querySelector("#gl-canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    console.log("test");
     gl.viewport(0, 0, canvas.width, canvas.height);
   }
   resizeCanvas();
@@ -138,8 +82,11 @@ function main() {
       uSampler: gl.getUniformLocation(shaderProgram, "uSampler"),
       normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
       cameraRotationMatrix: gl.getUniformLocation(shaderProgram, "uCameraRotationMatrix"),
+      scalingMatrix: gl.getUniformLocation(shaderProgram, "uScalingMatrix"),
     },
   };
+  
+
   // Load Models
   const models = [
     ["sphere", "models/sphere.obj"],
@@ -147,138 +94,107 @@ function main() {
     ["ape", "models/ape.obj"],
     ["hexagonal-prism", "models/hexagonal-prism.obj"],
     ["test", "models/test.obj"],
+    ["hexagonal-plate-straight", "models/gerade.obj"],
+    ["hexagonal-plate-curve", "models/kurve.obj"],
+    ["hexagonal-plate-split", "models/y.obj"],
+    ["empty", "models/leer.obj"],
+    ["placement", "models/placement.obj"],
+    ["audience", "models/publikum.obj"],
+    ["tires", "models/reifen.obj"],
+    ["stop", "models/stop.obj"],
+    ["finishline", "models/ziel.obj"],
   ];
   
   const sceneInformation = new SceneInformation(gl);
   sceneInformation.initObjectTypes(models).then( () => {
-    // Here's where we call the routine that builds all the
-    // objects we'll be drawing.
+    sceneInformation.settings = settings;
+
+    const gameLogic = new GameLogic(sceneInformation);
+    initKeyboardInput(sceneInformation);
+
     const camera = sceneInformation.addNewCamera([0, 0, 0], [0, 10, 10], [0, 0, 0], 0.5);
-      
+    initCameraMovement(camera, settings, sceneInformation);
     // Load texture
     const texture = loadTexture(gl, "textures/test_initialShadingGroup_BaseColor.png");
+    const texture2 = loadTexture(gl, "textures/Mossy_Cobblestone.png");
     // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     
-
-    let mouseDown = false;
-    let mouseMoved = false;
     canvas.addEventListener("mousedown", () => {
-      mouseDown = true;
-      mouseMoved = false;
+      sceneInformation.mouseMoved = false;
     });
     canvas.addEventListener("mouseup", () => {
-      mouseDown = false;
-      if (!mouseMoved) {
+      if (!sceneInformation.mouseMoved) {
         placeHexagon();
       }
     });
-     
+    
+    let count = 0;
     async function placeHexagon() {
-      const squareToHexagonal = mat3.fromValues(
-        Math.sqrt(3)/3, 0, 0,
-        0, 0, 0,
-        -1/3, 0, 2/3
-      );
-
-      const hexagonalToSquare = mat3.fromValues(
-        Math.sqrt(3), 0, 0,
-        0, 0, 0,
-        Math.sqrt(3) / 2, 0, 3/2
-      );
-
-      const hexagonalPosition = vec3.create();
-      vec3.copy(hexagonalPosition, sceneInformation.mouseInWorld);
-      vec3.transformMat3(hexagonalPosition, hexagonalPosition, hexagonalToSquare);
-      hexagonalPosition[2] *= 1/0.80;
-      vec3.scale(hexagonalPosition, hexagonalPosition, 5/16);
-      vec3.round(hexagonalPosition, hexagonalPosition);
-      vec3.scale(hexagonalPosition, hexagonalPosition, 16/5);
-      hexagonalPosition[2] *= 0.80;
-      vec3.transformMat3(hexagonalPosition, hexagonalPosition, squareToHexagonal);
+      var x = sceneInformation.mouseInWorld[0];
+      var y = sceneInformation.mouseInWorld[2];
+      var size = 1;
       
+      var hex = pixelToFlatHexFraction(x, y);
+      var position = flat_hex_to_pixel(hex.q, hex.r);
 
-
-
-      sceneInformation.addNewObject("hexagonal-prism", hexagonalPosition, [0, 0, 0], 1, texture);
-    }
-    sceneInformation.addNewObject("hexagonal-prism", [0, 0, 0], [0, 0, 0], 1, texture);
-
-    function setMouseCoord(e) {
-      mousePosition[0] = - e.movementX;
-      mousePosition[1] = e.movementY;
-      sceneInformation.mouseX = e.clientX;
-      sceneInformation.mouseY = e.clientY;
-      console.log(vec2.dot(mousePosition, mousePosition))
-      if (vec2.dot(mousePosition, mousePosition) > 30) {
-        mouseMoved = true;
+      console.log(JSON.stringify(hex) + " " + JSON.stringify(position));
+      function pixelToFlatHexFraction(x, y) {
+        var q = ( 2./3 * x                  ) / size
+        var r = (-1./3 * x  +  Math.sqrt(3)/3 * y) / size
+        return {q: Math.round(q), r: Math.round(r)};
       }
+
+      function flat_hex_to_pixel(q, r) {
+        var x = size * (     3./2 * q                    )
+        var y = size * (Math.sqrt(3)/2 * q  +  Math.sqrt(3) * r)
+        return {x: x, y: y};
+      }
+      
+      let rot = 0;
+      if (count % 4 == 0) {
+        sceneInformation.addNewObject("hexagonal-plate-straight", [position.x, 0, position.y], [0, rot, 0], 1, texture);
+      }
+      if (count % 4 == 1) {
+        sceneInformation.addNewObject("hexagonal-plate-curve", [position.x, 0, position.y], [0, rot, 0], 1, texture);
+      }
+      if (count % 4 == 2) {
+        sceneInformation.addNewObject("hexagonal-plate-split", [position.x, 0, position.y], [0, rot, 0], 1, texture);
+      }
+      if (count % 4 == 3) {
+        sceneInformation.addNewObject("empty", [position.x, 0, position.y], [0, rot, 0], 1, texture);
+      }
+
+      count++;
     }
 
-    sceneInformation.mouseX = 0;
-    sceneInformation.mouseY = 0;
 
+    sceneInformation.addNewObject("hexagonal-plate-straight", [0, 0, 0], [0, 0, 0], 1, texture);
+    sceneInformation.addNewObject("hexagonal-plate-curve", [5, 0, 0], [0, 0, 0], 1, texture);
+    sceneInformation.addNewObject("hexagonal-plate-split", [10, 0, 0], [0, 0, 0], 1, texture);
+    sceneInformation.addNewObject("empty", [15, 0, 0], [0, 0, 0], 1, texture);
+    sceneInformation.addNewObject("placement", [20, 0, 0], [0, 0, 0], 1, texture);
+    sceneInformation.addNewObject("audience", [25, 0, 0], [0, 0, 0], 1, texture);
+    sceneInformation.addNewObject("tires", [30, 0, 0], [0, 0, 0], 1, texture);
+    sceneInformation.addNewObject("stop", [35, 0, 0], [0, 0, 0], 1, texture);
+    sceneInformation.addNewObject("finishline", [40, 0, 0], [0, 0, 0], 1, texture);
 
-
-    canvas.addEventListener("mousemove", setMouseCoord);
-    canvas.addEventListener("onload", setMouseCoord);
 
     let then = 0;
 
-    
-
+    gameLogic.startGame();
 
     function renderer(now) {
       now *= 0.001; // Convert time to seconds
       deltaTime = now - then;
       then = now;
 
-      //console.log(wasdIsPressed);
 
-      // Calculate how far to move the camera
-      const tempVec = vec2.create();
-      tempVec[0] = wasdIsPressed[1] + wasdIsPressed[3];
-      tempVec[1] = wasdIsPressed[0] + wasdIsPressed[2];
-      vec2.scale(tempVec, tempVec, deltaTime);
-      //Rotate the movement to align with the current facing direction
-      vec2.rotate(tempVec, tempVec, [0, 0, 0], camera.rotation[1]*Math.PI / 2);
-      //Apply movement to camera position
-      camera.position[0] += tempVec[0] * 3;
-      camera.position[2] += tempVec[1] * 3;
-
-      let tempRotation = mousePosition[0];
-
-      if (!mouseDown || !mouseMoved) {
-        tempRotation = 0;
-      }
-
-      vec3.rotateY(
-        camera.relPosition,
-        camera.relPosition,
-        [0,10,0],
-        tempRotation / 150,
-      );
-
-      mousePosition[0] = 0;
-
-    
-      
-
-      camera.rotation[1] = - 2 *(Math.atan2(camera.relPosition[0], camera.relPosition[2]) / Math.PI) % 2;
-      
-      //cube.position = sceneInformation.mouseInWorld;
+      updateCamera(camera, sceneInformation, deltaTime);
 
       drawScene(programInfo, canvas, settings, sceneInformation); //Draw the current scene.
-      
-      
-
-      //cubeRotation += deltaTime;
-      //cubeRotation = cubeRotation % (20*Math.PI);
-
       var fps = (Math.round(1 / deltaTime))
       document.getElementById("fps-counter").innerHTML = fps;
-      
-
 
       requestAnimationFrame(renderer);
     }  

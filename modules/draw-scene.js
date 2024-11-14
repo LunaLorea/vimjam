@@ -35,14 +35,16 @@ function drawScene(programInfo, canvas, settings, sceneInformation) {
   rotateObject(camViewMatrix, camInformation.rotation);
   setObjectPosition(camViewMatrix, tempCam1);
   
-  sceneInformation.mouseInWorld = transformScreenToWorldPosition(
+  let mousePosition = transformScreenToWorldPosition(
     projectionMatrix,
     camViewMatrix,
     [sceneInformation.mouseX, sceneInformation.mouseY],
     canvas,
     0,);
 
-    
+  if (mousePosition != null) {
+    sceneInformation.mouseInWorld = mousePosition;
+  }
   sceneInformation.objectInformation.forEach( (objectType) => {
     drawObject(
       sceneInformation.gl,

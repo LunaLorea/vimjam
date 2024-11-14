@@ -1,6 +1,9 @@
 import { setObjectAttributes } from "./setObjectAttributes.js";
 
 //function drawObject(gl, buffers, programInfo, projectionMatrix, texture, camInformation, objInformation) {
+/**
+ * @param {WebGLRenderingContext} gl 
+ */
 function drawObject(
   gl, 
   buffers, 
@@ -22,12 +25,18 @@ function drawObject(
     const objectPositionMatrix = mat4.create();
     setObjectPosition(objectPositionMatrix , objInformation.position);
     rotateObject(objectPositionMatrix , objInformation.rotation);
-
     mat4.mul(modelViewMatrix, modelViewMatrix, objectPositionMatrix);
     const normalMatrix = mat4.create();
     mat4.invert(normalMatrix, objectPositionMatrix);
     mat4.transpose(normalMatrix, normalMatrix);
-
+    
+    let scale = objInformation.scale;
+    const scalingMatrix = mat4.fromValues(
+      scale, 0, 0, 0,
+      0, scale, 0, 0,
+      0, 0, scale, 0,
+      0, 0, 0, 1,
+    );
 
     // Tell WebGL to use our program when drawing
     gl.useProgram(programInfo.program);
@@ -49,6 +58,13 @@ function drawObject(
       false,
       normalMatrix,
     );
+    gl.uniformMatrix4fv(
+      programInfo.uniformLocations.scalingMatrix,
+      false,
+      scalingMatrix
+    );
+
+    gl.uniform1f(programInfo.uniformLocations.scale, 1);
 
     // Tell WebGL that we want to adress texture unit 0
     gl.activeTexture(gl.TEXTURE0);
