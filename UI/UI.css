@@ -1,0 +1,254 @@
+body {
+   
+   /*vars:*/ 
+      /*colortheme:*/
+      --color-dark: #380066;
+      --color-default: #d1adff;
+      --color-light: #fd499d;
+      --color-accent: #536ae1;
+      /*sizes:*/
+      --element-height: 25px;
+      --padding: 20px;
+
+      --block-width: 25vw; 
+      --block-height: 70vh;
+      
+      /* alt option for block sizes
+      --block-width: 500px 
+      --block-height: 600px;
+      @media (width < calc(500px*2 + 20px*3)) {
+         --block-width: 150px;
+      }
+      @media (height < calc(700px+25px*6+20px*8)) {
+         --block-height: 200px;
+      }*/
+     
+
+   /*default settings*/
+      /*fonts*/
+      font-family: monospace;
+      font-weight:600;
+      font-size: x-large;
+} 
+
+
+
+
+
+   #actions {
+      /*positioning*/
+      position: absolute;
+      right: var(--padding);
+      bottom: var(--padding);
+
+      z-index: 4; /*above even other UI elements*/
+
+      > button {
+         height: calc(2*var(--element-height));
+         background-color: var(--color-light);
+         border-color: var(--color-light);
+         border-radius: 5000px;
+         font: inherit; /*to overwrite button defaults*/
+      }
+      > button:hover {
+         background-color: var(--color-accent); /*i have no clue about colortheory*/
+         border-color: var(--color-accent);
+      }
+   } 
+
+
+   #menu:has(#shop-toggle:checked)>#sidebar {
+      display:block;
+      #shop-sidebar {
+         display:block;
+      }
+   }
+   #menu:has(#settings-toggle:checked)>#sidebar {
+      display:block;
+      #settings-sidebar {
+         display:block;
+      }
+   }
+   #menu {
+
+      /*positioning*/
+      position: absolute;
+      right: var(--padding);
+      top: var(--padding);
+      
+      z-index: 2; /*default UI element*/
+
+      #menu-select {
+         z-index: 3; /*important UI element (no clue if that actually works)*/
+         
+         /*alignement*/
+         display: flex;
+         flex-flow: row nowrap;
+         justify-content: right;
+         align-content: top;
+         gap: calc(var(--padding)*0.5);
+
+         >label {
+            flex: 1 0;
+            background-color: var(--color-default);
+            padding: calc(var(--padding)*0.5);
+            border-radius: 10px;
+         }
+         >label:checked{
+            background-color: var(--color-accent);
+         }
+         >input { 
+            display: none;
+         }
+         >button {
+            display: none;
+         }
+      }
+      
+      #sidebar {
+         /*positioning*/
+         position: fixed;
+         top: 50%;
+         right: 0;
+         transform: translate(0, -50%);
+
+         z-index: 1; /* low priority UI element*/
+         
+         /*dont display until sth selected*/
+         display:none;
+         > div{
+            display: none;
+         }
+         
+         /*size*/
+         height: var(--block-height);
+         width: var(--block-width);
+
+         border: solid 5px var(--color-accent);
+         border-radius: 20px;
+
+         color: var(--color-dark);
+         background-color: var(--color-default);
+      }
+
+   } 
+
+
+   #queue {
+      /*positioning
+      position: absolute;
+      left: 50%; /*set right side to center of screen
+      top: var(--padding);
+      transform: translate(-50%, 0); /*to center element completely
+      width: var(--block-width);*/
+
+      /*positioning*/
+      position: absolute;
+      bottom: 0; 
+      left: var(--padding);
+      height: var(--block-height);
+      
+
+      z-index: 2;
+
+      
+      #tile-queue{
+         /*remove default style*/
+         padding: 0;
+         margin: 0;
+         list-style: none;
+
+         width: inherit;
+         height: inherit;
+
+         /*alignement*/
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: space-evenly;
+         gap: var(--padding);
+
+         > li:first-child {
+            flex: 2 0; /*first item twice the size*/
+            background-color: var(--color-light);
+            padding-right: var(--padding);
+            border-bottom: solid 3px var(--color-accent);
+         }
+         > li {
+            flex: 1 0;
+            width: 60px; /*temp, will be done when images are here*/
+            background-color: var(--color-default);
+            text-align: center;
+            align-content: center;
+         }
+      }
+   }
+
+
+   #stats {
+      /*positioning*/
+      position: absolute;
+      left: var(--padding);
+      top: var(--padding);
+
+      /*alignement*/
+      display: flex;
+      flex-direction: column;
+      justify-content: top;
+      align-content: left;
+
+      gap: var(--padding);
+
+      width: fit-content;
+      height: fit-content;
+
+      .status-name {
+         position: relative; 
+         align-content: center;
+         
+         margin: 0 0 0 0;
+         padding-left: var(--padding); /*so text doesn't clip out of border*/
+         height: 100%;
+         
+         z-index: 2;
+
+         color: var(--stat-color);
+         mix-blend-mode: difference;
+
+      }
+      .status-bar {
+         position: relative;
+         align-self: right;
+         
+         z-index: 1;
+         
+         width: var(--block-width);
+         height: var(--element-height);
+
+         border: solid 3px var(--stat-color);
+         border-radius: 5000px;
+         
+         overflow: hidden;
+         
+         > .bar-value{
+            position:absolute;
+            top: 0;
+            left: 0;
+
+            height: inherit;
+            background-color: var(--stat-color);
+         }
+      }
+      
+      #health {
+         --stat-color: var(--color-light);
+      }
+      
+      #wealth {
+         --stat-color: var(--color-default);   
+      }
+      #wave {
+         --stat-color: var(--color-accent);   
+      }
+   }
+

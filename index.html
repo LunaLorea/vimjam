@@ -12,11 +12,57 @@
       crossorigin="anonymous"
       defer></script>
     <link rel="stylesheet" href="./webgl.css" type="text/css" />
+    <link rel="stylesheet" href="./UI/UI.css" type="text/css" />
     <script src="webgl-demo.js" type="module"></script>
   </head>
 
   <body style="background-color: black;">
+
     <div id="fps-div"><p id="fps-counter">0</p></div>
+
+    <div id="stats">
+      <div class="status-bar" id="health">
+          <p class="status-name">Health</p>
+          <div id="health-value" class="bar-value" style="width:50%;"></div>
+      </div>
+      <div class="status-bar" id="wave">
+          <p class="status-name">Wave</p>
+          <div id="wave-value" class="bar-value" style="width:69%;"></div>
+      </div>
+      <div class="status-bar" id="wealth">
+          <p class="status-name">Wealth</p>
+          <div id="wealth-value" class="bar-value" style="width:12%;"></div>
+      </div>
+    </div>
+
+    <div id="menu"> 
+      <form id="menu-select">
+          <label for="shop-toggle">SHOP</label>
+          <input type="radio" name="menu" id="shop-toggle" />
+          <label for="settings-toggle">SETTINGS</label>
+          <input type="radio" name="menu" id="settings-toggle" />
+          <label for="close">CLOSE</label>
+          <button type="reset" name="menu" id="close"> CLOSE </button>
+      </form>
+      <div id="sidebar">
+        <div id="settings-sidebar">settings sidebar</div>
+        <div id="shop-sidebar">shop sidebar</div>
+      </div>
+    </div>
+
+    <div id="queue"> 
+      <ol id="tile-queue">
+        <li id="1">1</li>
+        <li id="2">2</li>
+        <li id="3">3</li>
+        <li id="4">4</li>
+      </ol>
+    </div>
+
+    <div id="actions">
+      <button type="button" onclick="console.log('start wave');">Start Wave!</button>
+    </div>
+
     <canvas id="gl-canvas"></canvas>
   </body>
 </html>
