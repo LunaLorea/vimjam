@@ -17,7 +17,6 @@ export default class GameLogic {
   }
 
   startGame() {
-    console.log("game started");
     // Settings
     let tickIntervall = 1/60 * 1000;
 
@@ -33,17 +32,14 @@ export default class GameLogic {
   }
 
   stopGame() {
-    console.log("game ended");
   
     clearInterval(this.currentGame);
   }
 
   updateGame() {
-    console.log("tick");
   }
 
   onMouseClick() {
-    this.stopGame();
   }
 
   startNewWave() {
