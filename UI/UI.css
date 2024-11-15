@@ -32,7 +32,43 @@ body {
 } 
 
 
+   #info-screen {
+      /*default invisible*/
+      display: none;
 
+      /*positioning*/
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      z-index: 1;
+
+      padding: var(--padding);
+
+      width: var(--block-width);
+      
+      color:var(--color-default);
+      background-color: var(--color-dark);
+      
+      border: solid 3px var(--color-default);
+      border-radius: 10px;
+      > i {
+         position: absolute;
+         top: 0;
+         right: 0;
+
+         transform: translate(0, -50%);
+
+         color: var(--color-light);
+
+         font-size: xxx-large;
+         font-style: italic;
+         font-weight: 900;
+
+
+      }
+   }
 
 
    #actions {
@@ -123,12 +159,13 @@ body {
          /*size*/
          height: var(--block-height);
          width: var(--block-width);
+         padding: var(--padding);
 
-         border: solid 5px var(--color-accent);
+         border: solid 5px var(--color-default);
          border-radius: 20px;
 
-         color: var(--color-dark);
-         background-color: var(--color-default);
+         color: var(--color-default);
+         background-color: var(--color-dark);
       }
 
    } 
