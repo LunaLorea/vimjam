@@ -5,14 +5,12 @@ function initKeyboardInput(sceneInformation) {
   keyMap.set("left", 1);
   keyMap.set("down", 2);
   keyMap.set("right", 3);
-  keyMap.set("firstMouseButton", 4);
-  keyMap.set("secondMouseButton", 5);
-  keyMap.set("thirdMouseButton", 6);
-  keyMap.set("fourthdMouseButton", 7);
-  keyMap.set("fifthMouseButton", 8);
+  keyMap.set("use", 4);
+  keyMap.set("Escape", 8);
+  keyMap.set("Control", 9);
 
 
-  sceneInformation.keyMapArray = [0, 0, 0, 0, 0, 0, 0, 0];
+  sceneInformation.keyMapArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   addEventListener(
     "keydown",
     (event) => {
@@ -34,8 +32,10 @@ function initKeyboardInput(sceneInformation) {
           sceneInformation.keyMapArray[3] = 1;
           break;
         case "Escape":
-          document.exitPointerLock();
-          mouseLocked = false;
+          sceneInformation.keyMapArray[8] = 1;
+          break;
+        case "Control":
+          sceneInformation.keyMapArray[9] = 1;
           break;
       }
     },
@@ -61,6 +61,12 @@ function initKeyboardInput(sceneInformation) {
         case "D":
         case "d":
           sceneInformation.keyMapArray[3] = 0;
+          break;
+        case "Escape":
+          sceneInformation.keyMapArray[8] = 0;
+          break;
+        case "Control":
+          sceneInformation.keyMapArray[9] = 0;
           break;
       }
 

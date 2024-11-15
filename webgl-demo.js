@@ -14,7 +14,7 @@ const settings = {
   zoomMax: 30,
   zoomMin: 2,
   cameraSpeed: 4,
-  cameraRotationSpeed: 1 / 150,
+  cameraRotationSpeed: 4,
 
   keyMap: new Map(),
 }
@@ -22,7 +22,6 @@ const settings = {
 main();
 //
 // start here
-//
 function main() {
   const canvas = document.querySelector("#gl-canvas");
 
@@ -98,6 +97,8 @@ function main() {
     ["hexagonal-plate-tires", "models/reifen.obj", "textures/Mossy_Cobblestone.png"],
     ["hexagonal-plate-stop", "models/stop.obj", "textures/Mossy_Cobblestone.png"],
     ["hexagonal-plate-finishline", "models/ziel.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-finishline", "models/ziel.obj", "textures/Mossy_Cobblestone.png"],
+    ["enemy-formula1", "models/car.obj", "textures/Mossy_Cobblestone.png"],
   ];
   
   const sceneInformation = new SceneInformation(gl);
@@ -122,7 +123,7 @@ function main() {
       deltaTime = now - then;
       then = now;
 
-
+      gameLogic.updateOnFrame(deltaTime);
       updateCamera(camera, sceneInformation, deltaTime);
 
       drawScene(programInfo, canvas, settings, sceneInformation); //Draw the current scene.

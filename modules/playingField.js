@@ -2,7 +2,7 @@ export default class PlayingField {
 
   #TileTypes = {
     start: {
-      exits: [3],
+      exits: [0, 3],
       objName: "hexagonal-plate-straight",
       defaultRotation: 0,
     },
@@ -79,7 +79,7 @@ export default class PlayingField {
   createNewTile(type, rotation, coordinates) {
     let tileHeight = 0;
 
-    const squareCoordinates = hexToSquareCoordinates(coordinates);
+    const squareCoordinates = this.hexToSquareCoordinates(coordinates);
     const newTile = {
       inWorldTile: this.sceneInformation.addNewObject(
         type.objName,
@@ -88,7 +88,7 @@ export default class PlayingField {
       type: type,
       rotation: rotation,
       coordinates: coordinates,
-      id: this.tileCount,
+      worldCoordinates: this.hexToSquareCoordinates(coordinates),
     }
     newTile.neighbors = this.findNeighborsOfTile(newTile);
 
@@ -117,7 +117,7 @@ export default class PlayingField {
       let relativeCoords = this.#exitCoordMap.get(relativeExit);
       let q = relativeCoords[0] + tile.coordinates.q;
       let r = relativeCoords[1] + tile.coordinates.r;
-      let absoluteCoords = hexToSquareCoordinates({q: q, r: r});
+      let absoluteCoords = this.hexToSquareCoordinates({q: q, r: r});
       if (!((this.tiles[q] == undefined) || this.tiles[q][r] == undefined)) { 
         return;
       }
@@ -149,7 +149,7 @@ export default class PlayingField {
     };
 
 
-    const hexCoords = squareToHexCoordinates(coords);
+    const hexCoords = this.squareToHexCoordinates(coords);
 
     let q = hexCoords.q;
     let r = hexCoords.r;
@@ -188,7 +188,6 @@ export default class PlayingField {
       let keyTypes = Object.keys(this.#TileTypes);
       let randomIndex = stopOffset + 2 + Math.ceil(Math.random() * (keyTypes.length-3 + stopOffset))
       this.nextTiles.push(this.#TileTypes[keyTypes[randomIndex]]);
-      console.log(randomIndex);
     }
   }
 
@@ -198,20 +197,20 @@ export default class PlayingField {
     return nextTile;
   }
   
+
+  squareToHexCoordinates(coords) {
+    let size = 1;
+    var q = ( 2./3 * coords.x                  ) / size
+    var r = (-1./3 * coords.x  +  Math.sqrt(3)/3 * coords.y) / size
+
+    return {q: Math.round(q), r: Math.round(r)};
+  }
+
+  hexToSquareCoordinates(coords) {
+    let size = 1;
+    var x = size * (     3./2 * coords.q                    )
+    var y = size * (Math.sqrt(3)/2 * coords.q  +  Math.sqrt(3) * coords.r)
+    return {x: x, y: y};
+  }
+
 }
-
-function squareToHexCoordinates(coords) {
-  let size = 1;
-  var q = ( 2./3 * coords.x                  ) / size
-  var r = (-1./3 * coords.x  +  Math.sqrt(3)/3 * coords.y) / size
-
-  return {q: Math.round(q), r: Math.round(r)};
-}
-
-function hexToSquareCoordinates(coords) {
-  let size = 1;
-  var x = size * (     3./2 * coords.q                    )
-  var y = size * (Math.sqrt(3)/2 * coords.q  +  Math.sqrt(3) * coords.r)
-  return {x: x, y: y};
-}
-
