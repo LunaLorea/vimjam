@@ -7,12 +7,7 @@ import GameLogic from "./modules/gameLogic.js";
 
 let deltaTime = 0;
 
-let mousePosition = {
-  then: vec2.create(),
-  now: vec2.create(),
-}
 
-let wasdIsPressed = [0, 0, 0, 0];
 const settings = {
   // Graphics
   FOV: 90.0,
@@ -89,20 +84,20 @@ function main() {
 
   // Load Models
   const models = [
-    ["sphere", "models/sphere.obj"],
-    ["cube", "models/cube.obj"],
-    ["ape", "models/ape.obj"],
-    ["hexagonal-prism", "models/hexagonal-prism.obj"],
-    ["test", "models/test.obj"],
-    ["hexagonal-plate-straight", "models/gerade.obj"],
-    ["hexagonal-plate-curve", "models/kurve.obj"],
-    ["hexagonal-plate-split", "models/y.obj"],
-    ["empty", "models/leer.obj"],
-    ["placement", "models/placement.obj"],
-    ["audience", "models/publikum.obj"],
-    ["tires", "models/reifen.obj"],
-    ["stop", "models/stop.obj"],
-    ["finishline", "models/ziel.obj"],
+    ["sphere", "models/sphere.obj", "textures/Mossy_Cobblestone.png"],
+    ["cube", "models/cube.obj", "textures/Mossy_Cobblestone.png"],
+    ["ape", "models/ape.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-prism", "models/hexagonal-prism.obj", "textures/Mossy_Cobblestone.png"],
+    ["test", "models/test.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-straight", "models/gerade.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-curve", "models/kurve.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-split", "models/y.obj", "textures/Mossy_Cobblestone.png"],
+    ["empty", "models/leer.obj", "textures/Mossy_Cobblestone.png"],
+    ["placement", "models/placement.obj", "textures/Mossy_Cobblestone.png"],
+    ["audience", "models/publikum.obj", "textures/Mossy_Cobblestone.png"],
+    ["tires", "models/reifen.obj", "textures/Mossy_Cobblestone.png"],
+    ["stop", "models/stop.obj", "textures/Mossy_Cobblestone.png"],
+    ["finishline", "models/ziel.obj", "textures/Mossy_Cobblestone.png"],
   ];
   
   const sceneInformation = new SceneInformation(gl);

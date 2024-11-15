@@ -1,4 +1,5 @@
 import InitBuffersFromModel from "./initBuffersFromModel.js";
+import { loadTexture } from "./loadTexture.js";
 
 export default class SceneInformation {
   constructor(gl) {
@@ -18,6 +19,7 @@ export default class SceneInformation {
         name: object[0],
         id: index,
         bufferIndex: index,
+        texture: loadTexture(this.gl, object[2]),
         instanceInformation: []
       });
       modelUrls.push(object[1]);
@@ -27,7 +29,7 @@ export default class SceneInformation {
     await this.buffers.parseModels(this.gl);
   }
 
-  addNewObject(typeName, positon, rotaton, scale, texture) {
+  addNewObject(typeName, positon, rotaton, scale) {
     let type = this.typeMap.get(typeName);
     if (this.objectInformation[type] == undefined) {
       throw Error("Object type: " + typeName + " does not exist or isn't initialized yet.");
@@ -36,7 +38,7 @@ export default class SceneInformation {
       position: positon,
       rotation: rotaton,
       scale:    scale,
-      texture:  texture,
+      texture:  this.objectInformation[type].texture,
     };
     this.objectInformation[type].instanceInformation.push(object);
     return object;

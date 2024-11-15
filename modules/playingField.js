@@ -2,7 +2,7 @@ export default class PlayingField {
   constructor(sceneInformation) {
     this.sceneInformation = sceneInformation;
     this.tileCount = 0;
-    this.startTile = this.createNewTile("start", 0, [0, 0, 0]);
+    this.startTile = this.createNewTile("straight", 0, [0, 0, 0]);
   }
 
   createNewTile(type, rotation, coordinates) {
@@ -10,11 +10,11 @@ export default class PlayingField {
       inWorldTile: this.sceneInformation.addNewObject(
         "hexagonal-plate-" + type,
         coordinates,
-        [0, rotation, 0], 1, texture),
+        [0, rotation, 0], 1),
       type: type,
       rotation: rotation,
       coordinates: coordinates,
-      neighbors: findNeighbors(coordinates),
+      neighbors: this.findNeighborsOfTile(coordinates),
       id: this.tileCount++,
     }
 
