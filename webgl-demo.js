@@ -14,7 +14,7 @@ const settings = {
   zoomMax: 30,
   zoomMin: 2,
   cameraSpeed: 4,
-  cameraRotationSpeed: 1 / 150,
+  cameraRotationSpeed: 4,
 
   keyMap: new Map(),
 }
@@ -22,7 +22,6 @@ const settings = {
 main();
 //
 // start here
-//
 function main() {
   const canvas = document.querySelector("#gl-canvas");
 
@@ -92,12 +91,14 @@ function main() {
     ["hexagonal-plate-straight", "models/gerade.obj", "textures/Mossy_Cobblestone.png"],
     ["hexagonal-plate-curve", "models/kurve.obj", "textures/Mossy_Cobblestone.png"],
     ["hexagonal-plate-split", "models/y.obj", "textures/Mossy_Cobblestone.png"],
-    ["empty", "models/leer.obj", "textures/Mossy_Cobblestone.png"],
-    ["placement", "models/placement.obj", "textures/Mossy_Cobblestone.png"],
-    ["audience", "models/publikum.obj", "textures/Mossy_Cobblestone.png"],
-    ["tires", "models/reifen.obj", "textures/Mossy_Cobblestone.png"],
-    ["stop", "models/stop.obj", "textures/Mossy_Cobblestone.png"],
-    ["finishline", "models/ziel.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-empty", "models/leer.obj", "textures/Mossy_Cobblestone.png"],
+    ["available", "models/placement.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-audience", "models/publikum.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-tires", "models/reifen.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-stop", "models/stop.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-finishline", "models/ziel.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-finishline", "models/ziel.obj", "textures/Mossy_Cobblestone.png"],
+    ["enemy-formula1", "models/car.obj", "textures/Mossy_Cobblestone.png"],
   ];
   
   const sceneInformation = new SceneInformation(gl);
@@ -110,71 +111,9 @@ function main() {
     const camera = sceneInformation.addNewCamera([0, 0, 0], [0, 10, 10], [0, 0, 0], 0.5);
     initCameraMovement(camera, settings, sceneInformation);
     // Load texture
-    const texture = loadTexture(gl, "textures/test_initialShadingGroup_BaseColor.png");
-    const texture2 = loadTexture(gl, "textures/Mossy_Cobblestone.png");
     // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     
-    canvas.addEventListener("mousedown", () => {
-      sceneInformation.mouseMoved = false;
-    });
-    canvas.addEventListener("mouseup", () => {
-      if (!sceneInformation.mouseMoved) {
-        placeHexagon();
-      }
-    });
-    
-    let count = 0;
-    async function placeHexagon() {
-      var x = sceneInformation.mouseInWorld[0];
-      var y = sceneInformation.mouseInWorld[2];
-      var size = 1;
-      
-      var hex = pixelToFlatHexFraction(x, y);
-      var position = flat_hex_to_pixel(hex.q, hex.r);
-
-      console.log(JSON.stringify(hex) + " " + JSON.stringify(position));
-      function pixelToFlatHexFraction(x, y) {
-        var q = ( 2./3 * x                  ) / size
-        var r = (-1./3 * x  +  Math.sqrt(3)/3 * y) / size
-        return {q: Math.round(q), r: Math.round(r)};
-      }
-
-      function flat_hex_to_pixel(q, r) {
-        var x = size * (     3./2 * q                    )
-        var y = size * (Math.sqrt(3)/2 * q  +  Math.sqrt(3) * r)
-        return {x: x, y: y};
-      }
-      
-      let rot = 0;
-      if (count % 4 == 0) {
-        sceneInformation.addNewObject("hexagonal-plate-straight", [position.x, 0, position.y], [0, rot, 0], 1, texture);
-      }
-      if (count % 4 == 1) {
-        sceneInformation.addNewObject("hexagonal-plate-curve", [position.x, 0, position.y], [0, rot, 0], 1, texture);
-      }
-      if (count % 4 == 2) {
-        sceneInformation.addNewObject("hexagonal-plate-split", [position.x, 0, position.y], [0, rot, 0], 1, texture);
-      }
-      if (count % 4 == 3) {
-        sceneInformation.addNewObject("empty", [position.x, 0, position.y], [0, rot, 0], 1, texture);
-      }
-
-      count++;
-    }
-
-
-    sceneInformation.addNewObject("hexagonal-plate-straight", [0, 0, 0], [0, 0, 0], 1, texture);
-    sceneInformation.addNewObject("hexagonal-plate-curve", [5, 0, 0], [0, 0, 0], 1, texture);
-    sceneInformation.addNewObject("hexagonal-plate-split", [10, 0, 0], [0, 0, 0], 1, texture);
-    sceneInformation.addNewObject("empty", [15, 0, 0], [0, 0, 0], 1, texture);
-    sceneInformation.addNewObject("placement", [20, 0, 0], [0, 0, 0], 1, texture);
-    sceneInformation.addNewObject("audience", [25, 0, 0], [0, 0, 0], 1, texture);
-    sceneInformation.addNewObject("tires", [30, 0, 0], [0, 0, 0], 1, texture);
-    sceneInformation.addNewObject("stop", [35, 0, 0], [0, 0, 0], 1, texture);
-    sceneInformation.addNewObject("finishline", [40, 0, 0], [0, 0, 0], 1, texture);
-
-
     let then = 0;
 
     gameLogic.startGame();
@@ -184,7 +123,7 @@ function main() {
       deltaTime = now - then;
       then = now;
 
-
+      gameLogic.updateOnFrame(deltaTime);
       updateCamera(camera, sceneInformation, deltaTime);
 
       drawScene(programInfo, canvas, settings, sceneInformation); //Draw the current scene.

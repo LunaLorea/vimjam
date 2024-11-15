@@ -2,6 +2,11 @@ function initCameraMovement(camera, settings, sceneInformation) {
     addEventListener("wheel", onwheel);
 
     function onwheel (event) {
+      if (sceneInformation.keyMapArray[sceneInformation.settings.keyMap.get("Control")] == 1) {
+        return;
+      }
+
+      console.log(sceneInformation.keyMapArray[sceneInformation.settings.keyMap.get("Control")]);
       let scrollAmount = event.deltaY;
       let cameraLength = Math.sqrt(vec3.dot(camera.relPosition, camera.relPosition));
       if (scrollAmount > 0) {
@@ -52,7 +57,7 @@ function updateCamera(camera, sceneInformation, deltaTime) {
   
   let cameraRotation = sceneInformation.relativeMouse;
   if (
-    sceneInformation.keyMapArray[sceneInformation.settings.keyMap.get("firstMouseButton")] == 0
+    sceneInformation.keyMapArray[sceneInformation.settings.keyMap.get("use")] == 0
   ) {
     vec2.scale(cameraRotation, cameraRotation, 0);
   }
@@ -61,7 +66,7 @@ function updateCamera(camera, sceneInformation, deltaTime) {
     camera.relPosition,
     camera.relPosition,
     [0, 0, 0], 
-    -cameraRotation[0] * sceneInformation.settings.cameraRotationSpeed
+    -cameraRotation[0] * sceneInformation.settings.cameraRotationSpeed / 150
   );
 
   vec2.scale(cameraRotation, cameraRotation, 0);

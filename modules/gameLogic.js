@@ -1,4 +1,5 @@
 import PlayingField from "./playingField.js";
+import EnemyHandler from "./enemyHandler.js";
 
 export default class GameLogic {
   constructor(sceneInformation) {
@@ -17,12 +18,11 @@ export default class GameLogic {
   }
 
   startGame() {
-    console.log("game started");
     // Settings
     let tickIntervall = 1/60 * 1000;
 
     this.playingField = new PlayingField(this.sceneInformation);
-
+    this.enemyHandler = new EnemyHandler(this.playingField, this.sceneInformation);
     // Initial Game State
     this.health = 10;
     this.money = 1000.0;
@@ -33,17 +33,18 @@ export default class GameLogic {
   }
 
   stopGame() {
-    console.log("game ended");
   
     clearInterval(this.currentGame);
   }
 
   updateGame() {
-    console.log("tick");
+  }
+
+  updateOnFrame(deltaTime) {
+    this.enemyHandler.doAnimations(deltaTime);
   }
 
   onMouseClick() {
-    this.stopGame();
   }
 
   startNewWave() {
