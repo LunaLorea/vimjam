@@ -31,7 +31,7 @@ export default class SceneInformation {
 
   addNewObject(typeName, positon, rotaton, scale) {
     let type = this.typeMap.get(typeName);
-    if (!(type in this.objectInformation)) { // tree: for dict checks, use the 'in' keyword, it could theoretically be that you have a key value pair, with value = undefined
+    if (this.objectInformation[type] == undefined) {
       throw Error("Object type: " + typeName + " does not exist or isn't initialized yet.");
     }
     let object = {
@@ -39,6 +39,7 @@ export default class SceneInformation {
       rotation: rotaton,
       scale:    scale,
       texture:  this.objectInformation[type].texture,
+      alpha: 1,
     };
     this.objectInformation[type].instanceInformation.push(object);
     return object;

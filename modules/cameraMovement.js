@@ -6,7 +6,6 @@ function initCameraMovement(camera, settings, sceneInformation) {
         return;
       }
 
-      console.log(sceneInformation.keyMapArray[sceneInformation.settings.keyMap.get("Control")]);
       let scrollAmount = event.deltaY;
       let cameraLength = Math.sqrt(vec3.dot(camera.relPosition, camera.relPosition));
       if (scrollAmount > 0) {

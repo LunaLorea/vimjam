@@ -1,5 +1,6 @@
 import PlayingField from "./playingField.js";
 import EnemyHandler from "./enemyHandler.js";
+import TowerHandler from "../models/towerHandler.js";
 import { setHealth, setWaveProgress, setWealth } from "./uiHook.js";
 
 export default class GameLogic {
@@ -24,7 +25,7 @@ export default class GameLogic {
 
     this.playingField = new PlayingField(this.sceneInformation);
     this.enemyHandler = new EnemyHandler(this.playingField, this.sceneInformation);
-
+    this.towerHandler = new TowerHandler(this.sceneInformation, this.playingField, this.enemyHandler);
     // Initial Game State
     this.maxHealth = 10;
     this.health = this.maxHealth;
@@ -42,11 +43,13 @@ export default class GameLogic {
 
   updateGame() {
     this.enemyHandler.doTick();
+    this.towerHandler.doTick();
     this.updateStats();
   }
 
   updateOnFrame(deltaTime) {
     this.enemyHandler.doAnimations(deltaTime);
+    this.towerHandler.doAnimations(deltaTime);
   }
 
   onMouseClick() {

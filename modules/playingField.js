@@ -69,7 +69,7 @@ export default class PlayingField {
     },
   };
 
-  #RoadTypes = ["straight", "tires", "curve_right", "curve_left", "split", "stop", ];
+  #RoadTypes = ["straight", "curve_right", "curve_left", "split", "stop", ];
 
 
   #exitCoordMap = new Map();
@@ -182,6 +182,7 @@ export default class PlayingField {
         this.availableTiles[q][r].parentTiles.push(tile);
         this.availableTiles[q][r].parentExits.push(exit);
       }
+      this.availableTiles[q][r].obj.alpha = 0.32;
     });
      
     return neighbors;
