@@ -4,6 +4,7 @@ import SceneInformation from "./modules/SceneInformation.js";
 import { initCameraMovement, updateCamera } from "./modules/cameraMovement.js";
 import { initKeyboardInput } from "./modules/inputHandler.js";
 import GameLogic from "./modules/gameLogic.js";
+import { initWaveButton } from "./modules/uiHook.js";
 
 let deltaTime = 0;
 
@@ -112,6 +113,7 @@ function main() {
     sceneInformation.windowWidth = window.innerWidth;
 
     const gameLogic = new GameLogic(sceneInformation);
+    initWaveButton(gameLogic.startNewWave);
     initKeyboardInput(sceneInformation);
 
     const camera = sceneInformation.addNewCamera([0, 0, 0], [0, 10, 10], [0, 0, 0], 0.5);

@@ -31,6 +31,10 @@ import {addShopItem} from "./modules/uiHook.js";
 addShopItem("straight", 7000, 1);
 */
 
+export function initWaveButton(triggerFunction) {
+    document.getElementById("wave-button").onclick=triggerFunction;
+}
+
 const health_bar1 = document.getElementById("health-bar");
 const health_bar2 = document.getElementById("health-bar2");
 const health_value = document.getElementById("health-value");

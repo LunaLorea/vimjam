@@ -24,6 +24,7 @@ export default class GameLogic {
 
     this.playingField = new PlayingField(this.sceneInformation);
     this.enemyHandler = new EnemyHandler(this.playingField, this.sceneInformation);
+
     // Initial Game State
     this.maxHealth = 10;
     this.health = this.maxHealth;
