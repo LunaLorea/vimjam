@@ -5,36 +5,43 @@ export default class PlayingField {
       exits: [0, 3],
       objName: "hexagonal-plate-straight",
       defaultRotation: 0,
+      hasEntrance: true,
     },
     empty: {
       exits: [],
       objName: "hexagonal-plate-empty",
       defaultRotation: 0,
+      hasEntrance: false,
     },
     stop: {
       exits: [],
       objName: "hexagonal-plate-stop",
       defaultRotation: 3,
+      hasEntrance: true,
     },
     straight: {
       exits: [3],
       objName: "hexagonal-plate-straight",
       defaultRotation: 0,
+      hasEntrance: true,
     },
     curve_right: {
       exits: [4],
       objName: "hexagonal-plate-curve",
       defaultRotation: 2,
+      hasEntrance: true,
     },
     curve_left: {
       exits: [2],
       objName: "hexagonal-plate-curve",
       defaultRotation: -2,
+      hasEntrance: true,
     },
     split: {
       exits: [2, 4],
       objName: "hexagonal-plate-split",
       defaultRotation: 1,
+      hasEntrance: true,
     },
   };
 
@@ -61,7 +68,7 @@ export default class PlayingField {
     this.startTile0 = this.createNewTile(this.#TileTypes.straight, 0, {q: 0, r: 0});
     this.startTile1 = this.createNewTile(this.#TileTypes.empty, 0, {q: -1, r: 1});
     this.startTile2 = this.createNewTile(this.#TileTypes.empty, 0, {q: -1, r: 0});
-    this.startTile3 = this.createNewTile(this.#TileTypes.straight, 3, {q: 0, r: 1});
+    this.startTile3 = this.createNewTile(this.#TileTypes.split, 3, {q: 0, r: 1});
     this.startTile4 = this.createNewTile(this.#TileTypes.empty, 0, {q: 1, r: 0});
     this.startTile5 = this.createNewTile(this.#TileTypes.empty, 0, {q: 1, r: -1});
     this.startTile6 = this.createNewTile(this.#TileTypes.straight, 0, {q: 0, r: -1});
@@ -82,6 +89,7 @@ export default class PlayingField {
     const squareCoordinates = this.hexToSquareCoordinates(coordinates);
     const newTile = {
       inWorldTile: this.sceneInformation.addNewObject(
+
         type.objName,
         [squareCoordinates.x, tileHeight, squareCoordinates.y],
         [0, -(rotation + type.defaultRotation) * 2/3, 0], 1),
@@ -105,7 +113,6 @@ export default class PlayingField {
     } else {
       throw Error("This tile already exists");
     }
-
     return newTile;
   }
 
@@ -195,6 +202,19 @@ export default class PlayingField {
     const nextTile = this.nextTiles.shift();2
     this.generateNextTile();
     return nextTile;
+  }
+
+  getTileFromExit(tile, exit) {
+    let rotation = (exit + tile.rotation) % 6;
+    const tilePos = tile.coordinates;
+    const relPos = this.#exitCoordMap.get(rotation);
+    let q = tilePos.q + relPos[0];
+    let r = tilePos.r + relPos[1];
+    if (this.tiles[q] == undefined) {
+      return undefined;
+    }
+    return this.tiles[q][r];
+
   }
   
 

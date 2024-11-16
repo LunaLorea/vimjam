@@ -29,7 +29,7 @@ export default class GameLogic {
     this.waveCounter = 0;
     this.score = 0;
 
-    this.currentGame = setInterval(this.updateGame, tickIntervall);
+    this.currentGame = setInterval(() => {this.updateGame()}, tickIntervall);
   }
 
   stopGame() {
@@ -38,6 +38,7 @@ export default class GameLogic {
   }
 
   updateGame() {
+    this.enemyHandler.doTick();
   }
 
   updateOnFrame(deltaTime) {

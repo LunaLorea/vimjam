@@ -8,6 +8,7 @@ export default class EnemyHandler {
       objName: "enemy-formula1",
       unusedObjects: [],
       trackHeight: 0.2,
+      defaultRotation: 3,
     },
   }
 
@@ -25,7 +26,7 @@ export default class EnemyHandler {
     let startPosition = [0, type.trackHeight, 0];
     const newEnemie = {
       type: type,
-      currentTile: this.playingField.startTile3,
+      currentTile: this.playingField.startTile0,
     }
 
 
@@ -39,7 +40,7 @@ export default class EnemyHandler {
         type.objName,
         [0, type.trackHeight, 0],
         [0, 0, 0],
-        0.5
+        0.34
       );
     }
 
@@ -47,8 +48,22 @@ export default class EnemyHandler {
   }
 
   doTick() {
-    this.currentEnemies.forEach( () => {
-      
+    this.currentEnemies.forEach( (enemy) => {
+      if (enemy.distanceToTargetTile <= 1e-5) {
+
+        const exits = enemy.currentTile.type.exits;
+        let random = Math.floor(Math.random() * exits.length);
+        if (exits.length == 0) {
+          return;
+        }
+        const nextTile = this.playingField.getTileFromExit(enemy.currentTile, exits[random]);
+        console.log(nextTile, exits[random]);
+        if (nextTile == undefined || nextTile.rotation != (3 + exits[random]+enemy.currentTile.rotation) % 6 || !nextTile.type.hasEntrance) {
+          return;
+        }
+        enemy.inWorldEnemy.rotation[1] = -(nextTile.rotation + enemy.type.defaultRotation) % 6 * 2/3;
+        enemy.currentTile = nextTile;
+      }
     });
   }
 
@@ -68,7 +83,6 @@ export default class EnemyHandler {
 
       vec3.normalize(targetVector, targetVector);
       vec3.scale(targetVector, targetVector, Math.min(stepDistance, enemy.distanceToTargetTile));
-      console.log(Math.min(stepDistance, enemy.distanceToTargetTile));
       vec3.add(enemyPos, enemyPos, targetVector)
 
     });
