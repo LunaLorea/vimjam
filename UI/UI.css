@@ -298,16 +298,17 @@ body {
 
       > li:first-child {
          flex: 5 0; /*first item twice the size*/
-         background-color: var(--color-light);
          padding-bottom: var(--padding);
          border-bottom: solid 3px var(--color-accent);
       }
       > li {
          flex: 4 0;
          aspect-ratio: 1;
-         background-color: var(--color-default);
-         text-align: center;
          align-content: center;
+         > img {
+            height: 100%;
+            width: 100%;
+         }
       }
    }
    

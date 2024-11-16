@@ -1,5 +1,16 @@
 
+// here's an example
+/*
+    import { setHealth, setWealth, setWaveProgress } from "./modules/uiHook.js";
+document.addEventListener('click', () => {
+  const randomValue = Math.round(Math.random()*100)/100;
+  setHealth(randomValue, 1);
+  setWealth(randomValue*10000, 10000);
+  setWaveProgress(randomValue, 13);
+  console.log("changed stats");
+});
 
+*/
 
 const health_bar1 = document.getElementById("health-bar");
 const health_bar2 = document.getElementById("health-bar2");
