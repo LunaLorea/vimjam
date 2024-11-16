@@ -37,7 +37,6 @@ body {
 } 
 
 #loading{ /*i know this one is weird, but trust me*/
-   display: none;
    /*positioning*/
    position: absolute;
    top:50%;

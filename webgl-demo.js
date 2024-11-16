@@ -4,7 +4,7 @@ import SceneInformation from "./modules/SceneInformation.js";
 import { initCameraMovement, updateCamera } from "./modules/cameraMovement.js";
 import { initKeyboardInput } from "./modules/inputHandler.js";
 import GameLogic from "./modules/gameLogic.js";
-import { initWaveButton } from "./modules/uiHook.js";
+import { initWaveButton, setLoading } from "./modules/uiHook.js";
 
 let deltaTime = 0;
 
@@ -144,7 +144,7 @@ function main() {
 
       requestAnimationFrame(renderer);
     }  
-    
+    setLoading(false);
     requestAnimationFrame(renderer);
   });
 }
