@@ -43,7 +43,15 @@ export default class PlayingField {
       defaultRotation: 1,
       hasEntrance: true,
     },
+    start: {
+      exits: [3, 0],
+      objName: "hexagonal-plate-start",
+      defaultRotation: 0,
+      hasEntrance: true,
+    },
   };
+
+  #RoadTypes = ["straight", "curve_right", "curve_left", "split", "stop", ];
 
 
   #exitCoordMap = new Map();
@@ -53,10 +61,17 @@ export default class PlayingField {
     this.tileCount = 0;
     this.tiles = [];
     this.availableTiles = [];
-    this.leaves = 1;
+    this.leaves = 2;
+
+    this.rotateTileCount = 0;
+    addEventListener("keydown", () => {
+      if (sceneInformation.getKeyValue("rotate") == 1) {
+       this.rotateTileCount += 1;
+      }
+    });
 
     this.nextTiles = [];
-    this.generateNextTile(3);
+    this.generateNextTile(4);
 
     this.#exitCoordMap.set(0, [0, 1]);
     this.#exitCoordMap.set(1, [-1, 1]);
@@ -65,10 +80,10 @@ export default class PlayingField {
     this.#exitCoordMap.set(4, [1, -1]);
     this.#exitCoordMap.set(5, [1, 0]);
 
-    this.startTile0 = this.createNewTile(this.#TileTypes.straight, 0, {q: 0, r: 0});
+    this.startTile0 = this.createNewTile(this.#TileTypes.start, 0, {q: 0, r: 0});
     this.startTile1 = this.createNewTile(this.#TileTypes.empty, 0, {q: -1, r: 1});
     this.startTile2 = this.createNewTile(this.#TileTypes.empty, 0, {q: -1, r: 0});
-    this.startTile3 = this.createNewTile(this.#TileTypes.split, 3, {q: 0, r: 1});
+    this.startTile3 = this.createNewTile(this.#TileTypes.straight, 3, {q: 0, r: 1});
     this.startTile4 = this.createNewTile(this.#TileTypes.empty, 0, {q: 1, r: 0});
     this.startTile5 = this.createNewTile(this.#TileTypes.empty, 0, {q: 1, r: -1});
     this.startTile6 = this.createNewTile(this.#TileTypes.straight, 0, {q: 0, r: -1});
@@ -97,10 +112,12 @@ export default class PlayingField {
       rotation: rotation,
       coordinates: coordinates,
       worldCoordinates: this.hexToSquareCoordinates(coordinates),
+      children: [...type.exits],
+      parentTile: null,
     }
     newTile.neighbors = this.findNeighborsOfTile(newTile);
 
-    this.tileCount += 1;
+    this.tileCount += 2;
 
     let q = coordinates.q;
     let r = coordinates.r;
@@ -110,16 +127,16 @@ export default class PlayingField {
     } 
     if (this.tiles[q][r] == undefined) {
       this.tiles[q][r] = newTile;
+      return newTile;
     } else {
       throw Error("This tile already exists");
     }
-    return newTile;
   }
 
   findNeighborsOfTile(tile) {
     const neighbors = [];
     // ToDo find neighbors
-    tile.type.exits.forEach( (exit) => {
+    tile.children.forEach( (exit) => {
       let relativeExit = (exit + tile.rotation) % 6;
       let relativeCoords = this.#exitCoordMap.get(relativeExit);
       let q = relativeCoords[0] + tile.coordinates.q;
@@ -134,6 +151,8 @@ export default class PlayingField {
       if (this.availableTiles[q][r] == undefined) {
         this.availableTiles[q][r] = {
           parents: [(relativeExit+3) % 6],
+          parentTiles: [tile],
+          parentExits: [exit],
           obj: this.sceneInformation.addNewObject(
             "available",
             [absoluteCoords.x, 0, absoluteCoords.y],
@@ -142,10 +161,19 @@ export default class PlayingField {
         };
       } else {
         this.availableTiles[q][r].parents.push((relativeExit+3)%6);
+        this.availableTiles[q][r].parentTiles.push(tile);
+        this.availableTiles[q][r].parentExits.push(exit);
       }
     });
      
     return neighbors;
+  }
+
+  #ghostTiles = {
+    current: 0,
+  }
+  placeGhostTile() {
+    
   }
 
 
@@ -154,6 +182,7 @@ export default class PlayingField {
       x: this.sceneInformation.mouseInWorld[0],
       y: this.sceneInformation.mouseInWorld[2],
     };
+
 
 
     const hexCoords = this.squareToHexCoordinates(coords);
@@ -167,21 +196,27 @@ export default class PlayingField {
         ) {
       return;
     }
-
+    
+    const availableTile = this.availableTiles[q][r];
     const parentTileEntrances = this.availableTiles[q][r].parents;
+    let chosenParent = this.rotateTileCount % parentTileEntrances.length;
+    console.log(chosenParent, parentTileEntrances.length);
     // ToDo remove
     const tile = this.getNextTile();
-    if (tile.type == this.#TileTypes["split"]) {
+    let newTile;
+    try {
+      newTile = this.createNewTile(tile, parentTileEntrances[chosenParent], hexCoords);
+    } catch {}
+    newTile.parentTile = availableTile.parentTiles[chosenParent];
+    newTile.parentExit = availableTile.parentExits[chosenParent];
+    
+
+    if (tile == this.#TileTypes["split"]) {
       this.leaves += 1;
     }
-    if (tile.type == this.#TileTypes["stop"]) {
+    if (tile == this.#TileTypes["stop"]) {
       this.leaves -= 1;
-    }
-    
-    try {
-    this.createNewTile(tile, parentTileEntrances[0], hexCoords);
-    }
-    catch (error) {
+      this.removeBranch(newTile);
     }
 
   }
@@ -192,8 +227,8 @@ export default class PlayingField {
       if (this.leaves > 3) {
         stopOffset = 1;
       }
-      let keyTypes = Object.keys(this.#TileTypes);
-      let randomIndex = stopOffset + 2 + Math.ceil(Math.random() * (keyTypes.length-3 + stopOffset))
+      let keyTypes = this.#RoadTypes;
+      let randomIndex = Math.floor(Math.random() * (keyTypes.length-1 + stopOffset))
       this.nextTiles.push(this.#TileTypes[keyTypes[randomIndex]]);
     }
   }
@@ -215,6 +250,19 @@ export default class PlayingField {
     }
     return this.tiles[q][r];
 
+  }
+
+  removeBranch(stopTile) {
+    this.removeExitRecursivly(stopTile.parentTile, stopTile.parentExit);
+  }
+
+  removeExitRecursivly(tile, exit) {
+    let exitIndex = tile.children.findIndex((element) => {element == exit;});
+    tile.children.shift(exitIndex);
+    if (tile.children.length > 0) {
+      return;
+    }
+    this.removeExitRecursivly(tile.parentTile, tile.parentExit);
   }
   
 

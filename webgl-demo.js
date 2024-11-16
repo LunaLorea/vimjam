@@ -95,15 +95,19 @@ function main() {
     ["available", "models/placement.obj", "textures/Mossy_Cobblestone.png"],
     ["hexagonal-plate-audience", "models/publikum.obj", "textures/Mossy_Cobblestone.png"],
     ["hexagonal-plate-tires", "models/reifen.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-stop", "models/stop.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-stop", "models/roadblock.obj", "textures/Mossy_Cobblestone.png"],
     ["hexagonal-plate-finishline", "models/ziel.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-finishline", "models/ziel.obj", "textures/Mossy_Cobblestone.png"],
-    ["enemy-formula1", "models/car.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-start", "models/start.obj", "textures/Mossy_Cobblestone.png"],
+    ["enemy-formula1", "models/car.obj", "textures/car_BaseColors.png"],
   ];
   
   const sceneInformation = new SceneInformation(gl);
   sceneInformation.initObjectTypes(models).then( () => {
     sceneInformation.settings = settings;
+    window.addEventListener('resize', () => {
+      sceneInformation.windowWidth = window.innerWidth;
+    });
+    sceneInformation.windowWidth = window.innerWidth;
 
     const gameLogic = new GameLogic(sceneInformation);
     initKeyboardInput(sceneInformation);

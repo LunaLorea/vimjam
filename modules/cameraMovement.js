@@ -56,6 +56,7 @@ function updateCamera(camera, sceneInformation, deltaTime) {
   // Camera rotation based on mouse input
   
   let cameraRotation = sceneInformation.relativeMouse;
+  vec2.scale(cameraRotation, cameraRotation, 1 / sceneInformation.windowWidth * 100);
   if (
     sceneInformation.keyMapArray[sceneInformation.settings.keyMap.get("use")] == 0
   ) {

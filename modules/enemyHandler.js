@@ -22,9 +22,41 @@ export default class EnemyHandler {
 
   }
 
+  getEnemiesInRadius(position, radius) {
+    const enemiesInRange = [];
+    const distanceVector = vec3.create();
+    this.currentEnemies.forEach( (enemy) => {
+      vec3.sub(distanceVector, position, enemy.inWorldEnemy.position)
+      let distance = Math.sqrt(vec3.dot(distanceVector, distanceVector));
+      if (distance <= radius) {
+        enemiesInRange.push(enemy);
+      }
+    });
+
+  }
+
+  damageEnemy(enemy, damage) {
+    enemy.health -= damage;
+    if (enemy.health <= 0) {
+      this.killEnemy(enemy);
+    }
+  }
+
+  killEnemy(enemy) {
+    let enemyIndex = this.currentEnemies.findIndex( (otherEnemy) => {
+      otherEnemy == enemy;
+    });
+    this.currentEnemies[enemyIndex] = undefined;
+    this.currentEnemies.sort;
+  }
+
+  slowEnemy() {}
+
   spawnNewEnemy(type) {
     let startPosition = [0, type.trackHeight, 0];
     const newEnemie = {
+      health: type.health,
+      speed: type.speed,
       type: type,
       currentTile: this.playingField.startTile0,
     }
@@ -57,7 +89,6 @@ export default class EnemyHandler {
           return;
         }
         const nextTile = this.playingField.getTileFromExit(enemy.currentTile, exits[random]);
-        console.log(nextTile, exits[random]);
         if (nextTile == undefined || nextTile.rotation != (3 + exits[random]+enemy.currentTile.rotation) % 6 || !nextTile.type.hasEntrance) {
           return;
         }

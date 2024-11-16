@@ -54,7 +54,10 @@ export function loadTexture(gl, url) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     }
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
   };
+
+
 
   return texture;
 }

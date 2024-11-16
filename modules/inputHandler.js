@@ -8,9 +8,13 @@ function initKeyboardInput(sceneInformation) {
   keyMap.set("use", 4);
   keyMap.set("Escape", 8);
   keyMap.set("Control", 9);
+  keyMap.set("rotate", 10);
+  
+  sceneInformation.getKeyValue = (keyName) => {
+    return sceneInformation.keyMapArray[sceneInformation.settings.keyMap.get(keyName)];
+  }
 
-
-  sceneInformation.keyMapArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  sceneInformation.keyMapArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   addEventListener(
     "keydown",
     (event) => {
@@ -36,6 +40,10 @@ function initKeyboardInput(sceneInformation) {
           break;
         case "Control":
           sceneInformation.keyMapArray[9] = 1;
+          break;
+        case "r":
+        case "R":
+          sceneInformation.keyMapArray[10] = 1;
           break;
       }
     },
@@ -67,6 +75,10 @@ function initKeyboardInput(sceneInformation) {
           break;
         case "Control":
           sceneInformation.keyMapArray[9] = 0;
+          break;
+        case "r":
+        case "R":
+          sceneInformation.keyMapArray[10] = 0;
           break;
       }
 
