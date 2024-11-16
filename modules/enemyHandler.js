@@ -6,13 +6,13 @@ export default class EnemyHandler {
       health: 3,
       
       objName: "enemy-formula1",
-      unusedObjects: [],
+      unusedObjects: new Set(),
       trackHeight: 0.2,
       defaultRotation: 3,
     },
   }
 
-  currentEnemies = [];
+  currentEnemies = new Set();
 
 
   constructor(playingField, sceneInformation) {
@@ -46,15 +46,13 @@ export default class EnemyHandler {
     if (enemy.health <= 0) {
       this.killEnemy(enemy);
     }
-    console.log(enemy.health);
   }
 
   killEnemy(enemy) {
-    let enemyIndex = this.currentEnemies.findIndex( (otherEnemy) => {
-      otherEnemy == enemy;
-    });
-    this.currentEnemies[enemyIndex] = undefined;
-    this.currentEnemies.sort;
+    const obj = enemy.inWorldEnemy;
+    obj.alpha = 0;
+    this.enemyTypes.formula1.unusedObjects.add(obj);
+    this.currentEnemies.delete(enemy);
   }
 
   slowEnemy(enemy, slowfactor) {
@@ -73,9 +71,11 @@ export default class EnemyHandler {
 
 
 
-    if (type.unusedObjects.length > 0) {
-      newEnemie.inWorldEnemy = type.unusedObjects.pop();
+    if (type.unusedObjects.size > 0) {
+      newEnemie.inWorldEnemy = type.unusedObjects.values().next().value;
+      type.unusedObjects.delete(newEnemie.inWorldEnemy);
       newEnemie.inWorldEnemy.position = startPosition; 
+      newEnemie.inWorldEnemy.alpha = 1;
     } 
     else {
       newEnemie.inWorldEnemy = this.sceneInformation.addNewObject(
@@ -86,7 +86,7 @@ export default class EnemyHandler {
       );
     }
 
-    this.currentEnemies.push(newEnemie);
+    this.currentEnemies.add(newEnemie);
   }
 
   doTick() {

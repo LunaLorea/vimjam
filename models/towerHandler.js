@@ -11,11 +11,12 @@ export default class TowerHandler {
       resellValue: 60,
       objName: "tower-tire",
       // secends per projectile
-      defaultFireRate: 2,
+      defaultFireRate: 1.5,
+      timeToFirstShot: 0.2,
       defaultRadius: 2,
       defaultDamage: 1,
       defaultMode: this.AttackModes.closeFirst,
-      unusedObj: [],
+      unusedObj: new Set(),
       initFunction: (tower) => this.initTireTower(tower),
       doTickFunction: (tower) => this.tickTireTower(tower),
     },
@@ -23,7 +24,7 @@ export default class TowerHandler {
       cost: 75,
       resellValues: 45,
       objName: "tower-spikes",
-      unusedObj: [],
+      unusedObj: new Set(),
       initFunction: this.initSpikesTower,
       doTickFunction: this.tickSpikesTower,
     },
@@ -31,7 +32,7 @@ export default class TowerHandler {
       cost: 150,
   resellValue: 80,
       objName: "",
-      unusedObj: [],
+      unusedObj: new Set(),
       initFunction: this.initTollTower,
       doTickFunction: this.tickTollTower,
     }
@@ -45,7 +46,7 @@ export default class TowerHandler {
     },
   };
 
-  currentTowers = [];
+  currentTowers = new Set();
   currentProjectiles = new Set();
 
   constructor(sceneInformation, playingField, enemyHandler) {
@@ -58,8 +59,9 @@ export default class TowerHandler {
 
   addNewTower(type, slot) {
     let towerObject = null;
-    if (type.unusedObj.length > 0) {
-      towerObject = type.unusedObj.pop();
+    if (type.unusedObj.size > 0) {
+      towerObject = type.unusedObj.values().next().value;
+      type.unusedObj.delete(towerObject);
       towerObject.alpha = 1;
       towerObject.position = slot.position;
       towerObject.rotation = slot.rotation;
@@ -79,7 +81,7 @@ export default class TowerHandler {
     }
 
     type.initFunction(newTower);
-    this.currentTowers.push(newTower)
+    this.currentTowers.add(newTower)
   }
 
   doTick() {
@@ -134,17 +136,24 @@ export default class TowerHandler {
   tickProjectiles(projectile, index) {
     if (projectile.distanceToTarget < 0.1) {
       this.enemyHandler.damageEnemy(projectile.target, projectile.damage)
-      
+      this.deleteProjectile(projectile);   
+    }
+  }
+
+  deleteProjectile(projectile) {
       this.currentProjectiles.delete(projectile);
       const obj = projectile.inWorldObj;
       obj.alpha = 0;
       projectile.type.unusedObj.add(obj);
-    }
   }
 
 
   animateProjectiles(projectile, deltaTime) {
     if (projectile == undefined) return;
+    if (projectile.target == undefined) {
+      this.deleteProjectile(projectile);
+      return;
+    }
     const targetPos = projectile.target.inWorldEnemy.position;
     const projectilePos = projectile.inWorldObj.position;
 
@@ -167,7 +176,7 @@ export default class TowerHandler {
     tower.radius = type.defaultRadius;
     tower.position = tower.inWorldObj.position;
     tower.mode = type.defaultMode;
-    tower.timer = 0;
+    tower.timer = tower.fireRate - type.timeToFirstShot;
     tower.damage = type.defaultDamage;
   }
 
@@ -175,7 +184,7 @@ export default class TowerHandler {
     tower.timer += 1/60;
     let target = null;
 
-    if (tower.timer > tower.fireRate) {
+    if (tower.timer >= tower.fireRate) {
       const position = tower.position;
       const enemiesInRange = this.enemyHandler.getEnemiesInRadius(position, tower.radius);
 
