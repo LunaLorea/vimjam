@@ -18,6 +18,7 @@ export default class EnemyHandler {
   constructor(playingField, sceneInformation) {
     this.playingField = playingField;
     this.sceneInformation = sceneInformation;
+    this.spawnNewEnemy(this.enemyTypes.formula1);
 
   }
 
