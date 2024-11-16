@@ -182,7 +182,7 @@ export default class PlayingField {
         this.availableTiles[q][r].parentTiles.push(tile);
         this.availableTiles[q][r].parentExits.push(exit);
       }
-      this.availableTiles[q][r].obj.alpha = 0.6;
+      this.availableTiles[q][r].obj.alpha = 0.32;
     });
      
     return neighbors;

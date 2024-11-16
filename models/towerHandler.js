@@ -10,13 +10,13 @@ export default class TowerHandler {
       cost: 100,
       resellValue: 60,
       objName: "tower-tire",
-      // firerate per second
+      // secends per projectile
       defaultFireRate: 1,
       defaultRadius: 2,
       defaultMode: this.AttackModes.closeFirst,
       unusedObj: [],
-      initFunction: this.initTireTower,
-      doTickFunction: this.tickTireTower,
+      initFunction: (tower) => this.initTireTower(tower),
+      doTickFunction: (tower) => this.tickTireTower(tower),
     },
     spikes: {
       cost: 75,
@@ -35,8 +35,16 @@ export default class TowerHandler {
       doTickFunction: this.tickTollTower,
     }
   };
+  ProjectileTypes = {
+    tires: {
+      speed: 1,
+      unusedObj: [],
+      defaultRotation = [0, 0, 0],
+    },
+  };
 
   currentTowers = [];
+  currentProjectiles = [];
 
   constructor(sceneInformation, playingField, enemyHandler) {
     this.sceneInformation = sceneInformation;
@@ -47,15 +55,25 @@ export default class TowerHandler {
   }
 
   addNewTower(type, slot) {
-    const newTower = {
-      type: type,
-      level: 1,
-      inWorldObj: this.sceneInformation.addNewObject(
+    let towerObject = null;
+    if (type.unusedObj.length > 0) {
+      towerObject = type.unusedObj.pull();
+      towerObject.alpha = 1;
+      towerObject.position = slot.position;
+      towerObject.rotation = slot.rotation;
+    } else {
+      towerObject = this.sceneInformation.addNewObject(
         type.objName,
         slot.position,
         slot.rotation,
         1
-      ),
+      );
+    }
+
+    const newTower = {
+      type: type,
+      level: 1,
+      inWorldObj: towerObject,
     }
 
     type.initFunction(newTower);
@@ -64,8 +82,47 @@ export default class TowerHandler {
 
   doTick() {
     this.currentTowers.forEach( (tower) => {
-      //tower.type.doTickFunction(tower);
+      tower.type.doTickFunction(tower);
     });
+  }
+
+  doAnimations(deltaTime) {
+    this.currentProjectiles.forEach( (projectile) => {
+      this.animateProjectiles(projectile, deltaTime);
+    });
+  }
+
+  addProjectile(type, target, startPosition) {
+    
+    let projectileObject = null;
+
+    if (type.unusedObj.length > 0) {
+      projectileObject = type.unusedObj.pull();
+      projectileObject.position = startPosition;
+      projectileObject.rotation = type.defaultRotaion;
+      projectileObject.alpha = 1;
+    } else {
+      projectileObject = this.sceneInformation.addNewObject(
+        type.objName,
+        startPosition,
+        type.defaultRotation,
+        1
+      );
+    }
+
+    const newProjectile = {
+      type: type,
+      target: target,
+      inWorldObj: projectileObject,
+    };
+
+    this.currentProjectiles.push(newProjectile);
+  }
+
+  tickProjectiles() {}
+  animateProjectiles(projectile, deltaTime) {
+    const targetPos = projectile.target.inWorldEnemy.position;
+
   }
 
   initTireTower(tower) {
@@ -74,18 +131,30 @@ export default class TowerHandler {
     tower.radius = type.defaultRadius;
     tower.position = tower.inWorldObj.position;
     tower.mode = type.defaultMode;
-    console.log("tire tower initialized");
+    tower.timer = 0;
   }
 
   tickTireTower(tower) {
-    const position = tower.position;
-    const enemiesInRange = 0;
-    console.log(this.enemyHandler);
-    if (tower.mode == 1) {
-      let closestIndex = indexOfSmallest(enemiesInRange.distances);
-      const target = enemiesInRange.enemies[closestIndex];
-      console.log(target);
+    tower.timer += 1/60;
+    let target = null;
+
+    if (tower.timer > tower.fireRate) {
+      const position = tower.position;
+      const enemiesInRange = this.enemyHandler.getEnemiesInRadius(position, tower.radius);
+
+      if (enemiesInRange.length == 0) return;
+
+      if (tower.mode == 1) {
+        let closestIndex = indexOfSmallest(enemiesInRange.distances);
+        target = enemiesInRange.enemies[closestIndex];
+      }
+      if (tower.mode == 2) {}
+      if (tower.mode == 3) {}
     }
+
+    this.addProjectile(this.ProjectileTypes.tires, target, tower.position);
+
+    tower.timer = tower.timer % tower.fireRate;
   }
 
   initSpikesTower() {}

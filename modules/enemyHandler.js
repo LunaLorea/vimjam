@@ -23,15 +23,21 @@ export default class EnemyHandler {
   }
 
   getEnemiesInRadius(position, radius) {
-    const enemiesInRange = [];
+    const enemiesInRange = {
+      enemies: [],
+      distances: [],
+    };
     const distanceVector = vec3.create();
     this.currentEnemies.forEach( (enemy) => {
       vec3.sub(distanceVector, position, enemy.inWorldEnemy.position)
       let distance = Math.sqrt(vec3.dot(distanceVector, distanceVector));
       if (distance <= radius) {
-        enemiesInRange.push(enemy);
+        enemiesInRange.enemies.push(enemy);
+        enemiesInRange.distances.push(distance);
       }
     });
+
+    return enemiesInRange;
 
   }
 
