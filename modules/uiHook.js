@@ -12,6 +12,19 @@ document.addEventListener('click', () => {
 
 */
 
+// example to set loading screen (you can choose between 3 animations by setting the inner divs id to one of loading1, loading2, loading3)
+
+/*
+import {setLoading} from "./modules/uiHook.js";
+
+setLoading(true);
+
+// init
+
+setLoading(false);
+
+*/
+
 const health_bar1 = document.getElementById("health-bar");
 const health_bar2 = document.getElementById("health-bar2");
 const health_value = document.getElementById("health-value");
@@ -55,4 +68,9 @@ export function setWaveProgress(currentWaveProgress, waveReached) {
     wave_bar2.style.width = `${newWidth}%`; 
 
     wave_value.innerText= `${currentWaveProgress}/${waveReached}`;
+}
+
+export function setLoading(state) {
+    const loadingElement = document.getElementById("loading");
+    loadingElement.style.display = state ? "block" : "none";
 }
