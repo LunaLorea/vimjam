@@ -40,8 +40,6 @@ const maxWidth = getComputedStyle(health_bar1).getPropertyValue("--block-width")
 export function setHealth(currentHealth, maxHealth) {
     const newWidth = currentHealth / maxHealth * 100;
 
-    console.log(newWidth);
-
     health_bar1.style.width = `${newWidth}%`; 
     health_bar2.style.width = `${newWidth}%`; 
 
@@ -73,7 +71,7 @@ export function setWaveProgress(currentWaveProgress, waveReached) {
     wave_bar1.style.width = `${newWidth}%`; 
     wave_bar2.style.width = `${newWidth}%`; 
 
-    wave_value.innerText= `${currentWaveProgress}/${waveReached}`;
+    wave_value.innerText= `${currentWaveProgress*100}%/${waveReached}`;
 }
 
 export function setLoading(state) {

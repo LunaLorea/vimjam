@@ -132,8 +132,10 @@ function main() {
       updateCamera(camera, sceneInformation, deltaTime);
 
       drawScene(programInfo, canvas, settings, sceneInformation); //Draw the current scene.
-      var fps = (Math.round(1 / deltaTime))
-      document.getElementById("fps-counter").innerHTML = fps;
+      var fps = (Math.round(1 / deltaTime)) 
+      if(isFinite(fps)){ // tree: sometimes fps becomes infinity, when deltatime is 0, happens sometimes on button click for menu open
+        document.getElementById("fps-counter").innerHTML = fps;
+      }
 
       requestAnimationFrame(renderer);
     }  
