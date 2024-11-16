@@ -33,6 +33,15 @@ setQueue("straight", 1);
 
 */
 
+// add a shopItem (there is a corresponding dictionary in this file, named tileNameDesc, but it only contains a placeholder for now)
+/*
+
+import {addShopItem} from "./modules/uiHook.js";
+
+addShopItem("straight");
+
+*/
+
 const health_bar1 = document.getElementById("health-bar");
 const health_bar2 = document.getElementById("health-bar2");
 const health_value = document.getElementById("health-value");
@@ -86,4 +95,63 @@ export function setLoading(state) {
 
 export function setQueue(tile, index) {
     document.getElementById(`queue-img-${index}`).src = `/UI/images/${tile}.png`;
+}
+
+const shop = document.getElementById("shop-sidebar");
+
+const tileNameDesc = {
+    "straight":["A very cool Tower","this tower does cool things! (trust me)"]
+};
+
+export function addShopItem(tile, price) {
+
+    // error handling
+    console.assert(tile in tileNameDesc);
+
+    const [name, desc] = tileNameDesc[tile];
+
+
+    //chat gpt constructing the html element:
+    /*
+    <div class="shop-item">
+        <img class="shop-item-img" src="/UI/images/tires.png">
+        <button class="shop-item-buy">Buy!</button>
+        <h1 class="shop-item-title">road</h1>
+        <p class="shop-item-description">a road worth buying</p>
+    </div>
+    */
+
+    // Create the main container div
+    const shopItem = document.createElement('div');
+    shopItem.classList.add('shop-item');
+
+    // Create the img element
+    const img = document.createElement('img');
+    img.classList.add('shop-item-img');
+    img.src = `/UI/images/${tile}.png`;  // Set the image source
+
+    // Create the button element
+    const button = document.createElement('button');
+    button.classList.add('shop-item-buy');
+    button.onclick = () => {console.log(`buying ${tile}`)} // HERE YOU CAN INSERT THE BUY FUNCTION
+    button.textContent = `${price}`;  // Set the text content of the button
+
+    // Create the h1 element
+    const h1 = document.createElement('h1');
+    h1.classList.add('shop-item-title');
+    h1.textContent = `${name}`;  // Set the title text
+
+    // Create the p element
+    const p = document.createElement('p');
+    p.classList.add('shop-item-description');
+    p.textContent = `${desc}`;  // Set the description text
+
+    // Append the elements to the div
+    shopItem.appendChild(img);
+    shopItem.appendChild(button);
+    shopItem.appendChild(h1);
+    shopItem.appendChild(p);
+
+    shop.appendChild(shopItem);
+    console.log("shop item added");
 }
