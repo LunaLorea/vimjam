@@ -11,8 +11,9 @@ export default class TowerHandler {
       resellValue: 60,
       objName: "tower-tire",
       // secends per projectile
-      defaultFireRate: 1,
+      defaultFireRate: 2,
       defaultRadius: 2,
+      defaultDamage: 1,
       defaultMode: this.AttackModes.closeFirst,
       unusedObj: [],
       initFunction: (tower) => this.initTireTower(tower),
@@ -37,14 +38,15 @@ export default class TowerHandler {
   };
   ProjectileTypes = {
     tires: {
-      speed: 1,
-      unusedObj: [],
+      speed: 5,
+      unusedObj: new Set(),
       defaultRotation: [0, 0, 0],
+      objName: "projectile-tire",
     },
   };
 
   currentTowers = [];
-  currentProjectiles = [];
+  currentProjectiles = new Set();
 
   constructor(sceneInformation, playingField, enemyHandler) {
     this.sceneInformation = sceneInformation;
@@ -57,7 +59,7 @@ export default class TowerHandler {
   addNewTower(type, slot) {
     let towerObject = null;
     if (type.unusedObj.length > 0) {
-      towerObject = type.unusedObj.pull();
+      towerObject = type.unusedObj.pop();
       towerObject.alpha = 1;
       towerObject.position = slot.position;
       towerObject.rotation = slot.rotation;
@@ -84,6 +86,12 @@ export default class TowerHandler {
     this.currentTowers.forEach( (tower) => {
       tower.type.doTickFunction(tower);
     });
+    this.currentProjectiles.forEach( (projectile, index) => {
+      this.tickProjectiles(projectile, index);
+    });
+
+    
+
   }
 
   doAnimations(deltaTime) {
@@ -92,37 +100,65 @@ export default class TowerHandler {
     });
   }
 
-  addProjectile(type, target, startPosition) {
+  addProjectile(type, target, startPosition, damage) {
     
     let projectileObject = null;
 
-    if (type.unusedObj.length > 0) {
-      projectileObject = type.unusedObj.pull();
-      projectileObject.position = startPosition;
-      projectileObject.rotation = type.defaultRotaion;
+    if (type.unusedObj.size > 0) {
+      projectileObject = type.unusedObj.values().next().value;
+      type.unusedObj.delete(projectileObject);
+      projectileObject.position = [...startPosition];
+      projectileObject.rotation = type.defaultRotation;
       projectileObject.alpha = 1;
     } else {
       projectileObject = this.sceneInformation.addNewObject(
         type.objName,
-        startPosition,
+        [...startPosition],
         type.defaultRotation,
         1
       );
     }
 
+    projectileObject.position[1] = 0.45;
+
     const newProjectile = {
       type: type,
       target: target,
       inWorldObj: projectileObject,
+      damage: damage,
     };
 
-    this.currentProjectiles.push(newProjectile);
+    this.currentProjectiles.add(newProjectile);
   }
 
-  tickProjectiles() {}
-  animateProjectiles(projectile, deltaTime) {
-    const targetPos = projectile.target.inWorldEnemy.position;
+  tickProjectiles(projectile, index) {
+    if (projectile.distanceToTarget < 0.1) {
+      this.enemyHandler.damageEnemy(projectile.target, projectile.damage)
+      
+      this.currentProjectiles.delete(projectile);
+      const obj = projectile.inWorldObj;
+      obj.alpha = 0;
+      projectile.type.unusedObj.add(obj);
+    }
+  }
 
+
+  animateProjectiles(projectile, deltaTime) {
+    if (projectile == undefined) return;
+    const targetPos = projectile.target.inWorldEnemy.position;
+    const projectilePos = projectile.inWorldObj.position;
+
+    const targetVector = vec3.create();
+    vec3.sub(targetVector, targetPos, projectilePos);
+
+    const distance = Math.sqrt(vec3.dot(targetVector, targetVector));
+    projectile.distanceToTarget = distance;
+
+    let stepDistance = Math.min(distance, projectile.type.speed * deltaTime);
+    vec3.normalize(targetVector, targetVector);
+    vec3.scale(targetVector, targetVector, stepDistance);
+
+    vec3.add(projectilePos,projectilePos, targetVector);
   }
 
   initTireTower(tower) {
@@ -132,6 +168,7 @@ export default class TowerHandler {
     tower.position = tower.inWorldObj.position;
     tower.mode = type.defaultMode;
     tower.timer = 0;
+    tower.damage = type.defaultDamage;
   }
 
   tickTireTower(tower) {
@@ -150,9 +187,10 @@ export default class TowerHandler {
       }
       if (tower.mode == 2) {}
       if (tower.mode == 3) {}
+
+      this.addProjectile(this.ProjectileTypes.tires, target, tower.position, tower.damage);
     }
 
-    this.addProjectile(this.ProjectileTypes.tires, target, tower.position);
 
     tower.timer = tower.timer % tower.fireRate;
   }

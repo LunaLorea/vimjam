@@ -3,7 +3,7 @@ export default class EnemyHandler {
   enemyTypes  = {
     formula1: {
       speed: 5,
-      health: 1,
+      health: 3,
       
       objName: "enemy-formula1",
       unusedObjects: [],
@@ -46,6 +46,7 @@ export default class EnemyHandler {
     if (enemy.health <= 0) {
       this.killEnemy(enemy);
     }
+    console.log(enemy.health);
   }
 
   killEnemy(enemy) {
@@ -73,7 +74,7 @@ export default class EnemyHandler {
 
 
     if (type.unusedObjects.length > 0) {
-      newEnemie.inWorldEnemy = type.unusedObjects.pull();
+      newEnemie.inWorldEnemy = type.unusedObjects.pop();
       newEnemie.inWorldEnemy.position = startPosition; 
     } 
     else {
