@@ -83,22 +83,24 @@ function main() {
 
   // Load Models
   const models = [
-    ["sphere", "models/sphere.obj", "textures/Mossy_Cobblestone.png"],
-    ["cube", "models/cube.obj", "textures/Mossy_Cobblestone.png"],
-    ["ape", "models/ape.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-prism", "models/hexagonal-prism.obj", "textures/Mossy_Cobblestone.png"],
-    ["test", "models/test.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-straight", "models/gerade.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-curve", "models/kurve.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-split", "models/y.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-empty", "models/leer.obj", "textures/Mossy_Cobblestone.png"],
-    ["available", "models/placement.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-audience", "models/publikum.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-tires", "models/reifen.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-stop", "models/roadblock.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-finishline", "models/ziel.obj", "textures/Mossy_Cobblestone.png"],
-    ["hexagonal-plate-start", "models/start.obj", "textures/Mossy_Cobblestone.png"],
+    ["hexagonal-plate-straight", "models/gerade.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-curve", "models/kurve.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-split", "models/y.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-empty", "models/leer.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-audience", "models/publikum.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-tires", "models/reifen.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-stop", "models/roadblock.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-finishline", "models/ziel.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-start", "models/start.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-flag", "models/flagge.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-stage", "models/publikum.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-straight-tire", "models/reifenstrasse.obj", "textures/all_tiles_BaseColor.png"],
+    ["available", "models/placement.obj", "textures/placement_BaseColor.png"],
     ["enemy-formula1", "models/car.obj", "textures/car_BaseColors.png"],
+    ["flag", "models/flaggonly.obj", "textures/flaggonly_BaseColor.png"],
+    ["projectile-tire", "models/reifen-projektil.obj", "textures/car_BaseColors.png"],
+    ["tower-tire", "models/reifentower.obj", "textures/defenstextures_BaseColor.png"],
+    ["tower-spikes", "models/spikes.obj", "textures/defenstextures_BaseColor.png"],
   ];
   
   const sceneInformation = new SceneInformation(gl);
@@ -116,7 +118,6 @@ function main() {
     initCameraMovement(camera, settings, sceneInformation);
     // Load texture
     // Flip image pixels to bottom-to-top order because webgl uses different order than browser.
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     
     let then = 0;
 
