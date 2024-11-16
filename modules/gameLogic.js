@@ -50,5 +50,6 @@ export default class GameLogic {
 
   startNewWave() {
     this.waveCounter += 1;
+    this.enemyHandler.spawnNewEnemy(this.enemyHandler.enemyTypes.formula1);
   }
 }
