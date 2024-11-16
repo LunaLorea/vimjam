@@ -24,28 +24,35 @@
     <div id="stats">
       <div class="status-bar" id="health">
           <p class="status-name">Health</p>
-          <div id="health-value" class="bar-value" style="width:50%;"></div>
-      </div>
-      <div class="status-bar" id="wave">
-          <p class="status-name">Wave</p>
-          <div id="wave-value" class="bar-value" style="width:69%;"></div>
+          <p id="health-value" class="status-value">1000/2000</p>
+          <div id="health-bar2" class="bar-value"></div>
+          <div id="health-bar" class="bar-value bar-dmg-indicator" ></div>
       </div>
       <div class="status-bar" id="wealth">
           <p class="status-name">Wealth</p>
-          <div id="wealth-value" class="bar-value" style="width:12%;"></div>
+          <p id="wealth-value"class="status-value">18k/150k</p>
+          <div id="wealth-bar2" class="bar-value" ></div>
+          <div id="wealth-bar"  class="bar-value bar-dmg-indicator" ></div>
+      </div>
+      <div class="status-bar" id="wave">
+          <p class="status-name">Wave</p>
+          <p id="wave-value"class="status-value">1</p>
+          <div id="wave-bar2" class="bar-value" ></div>
+          <div id="wave-bar" class="bar-value bar-dmg-indicator" ></div>
       </div>
     </div>
 
     <div id="menu"> 
-      <form id="menu-select">
-          <label for="shop-toggle">SHOP</label>
+      <form id="menu-select"> 
           <input type="radio" name="menu" id="shop-toggle" />
-          <label for="settings-toggle">SETTINGS</label>
+          <label class="menu-button" for="shop-toggle">SHOP</label>
           <input type="radio" name="menu" id="settings-toggle" />
-          <label for="close">CLOSE</label>
+          <label class="menu-button" for="settings-toggle">SETTINGS</label>
           <button type="reset" name="menu" id="close"> CLOSE </button>
       </form>
       <div id="sidebar">
+
+        <label class="menu-button" for="close">CLOSE</label>
         <div id="settings-sidebar">settings sidebar</div>
         <div id="shop-sidebar">shop sidebar</div>
       </div>

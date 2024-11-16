@@ -22,7 +22,12 @@ body {
       @media (height < calc(700px+25px*6+20px*8)) {
          --block-height: 200px;
       }*/
-     
+   
+   /*experimental settings*/
+      /*stat display*/
+      --health-percentage: 0.5;
+      --wealth-percentage: 0.12;
+      --wave-percentage: 0.69;
 
    /*default settings*/
       /*fonts*/
@@ -193,13 +198,18 @@ body {
       }
    }
    #menu {
-
       /*positioning*/
       position: absolute;
       right: var(--padding);
       top: var(--padding);
       
       z-index: 2; /*default UI element*/
+
+      .menu-button {
+         background-color: var(--color-default);
+         padding: calc(var(--padding)*0.5);
+         border-radius: 10px;
+      }
 
       #menu-select {
          z-index: 3; /*important UI element (no clue if that actually works)*/
@@ -211,13 +221,10 @@ body {
          align-content: top;
          gap: calc(var(--padding)*0.5);
 
-         >label {
+         > label {
             flex: 1 0;
-            background-color: var(--color-default);
-            padding: calc(var(--padding)*0.5);
-            border-radius: 10px;
          }
-         >label:checked{
+         > input:checked+label{
             background-color: var(--color-accent);
          }
          >input { 
@@ -253,6 +260,13 @@ body {
 
          color: var(--color-default);
          background-color: var(--color-dark);
+
+         .menu-button {
+            position: absolute;
+            right: var(--padding);
+            top: var(--padding);
+            color: var(--color-dark);
+         }
       }
 
    }    
@@ -319,22 +333,40 @@ body {
       .status-name {
          position: relative; 
          align-content: center;
+         display: inline;
          
          margin: 0 0 0 0;
          padding-left: var(--padding); /*so text doesn't clip out of border*/
          height: 100%;
          
-         z-index: 2;
+         z-index: 3;
 
          color: var(--stat-color);
          mix-blend-mode: difference;
 
       }
+
+      .status-value {
+         position: absolute; 
+         align-content: center;
+         display: inline;
+         
+         margin: 0 0 0 0;
+         right: var(--padding); /*so text doesn't clip out of border*/
+         height: 100%;
+         
+         z-index: 3;
+
+         color: var(--stat-color);
+         mix-blend-mode: difference;
+
+      }
+
       .status-bar {
          position: relative;
          align-self: right;
          
-         z-index: 1;
+         z-index: 2;
          
          width: var(--block-width);
          height: var(--element-height);
@@ -348,9 +380,22 @@ body {
             position:absolute;
             top: 0;
             left: 0;
+            z-index: 2;
 
+
+            width: 10px;
             height: inherit;
+
             background-color: var(--stat-color);
+         }
+         > .bar-dmg-indicator { 
+            
+            width: 10px;
+            height: inherit;
+            
+            background-color: var(--color-dark);
+            transition: width 2s;
+            z-index: 1;
          }
       }
       
