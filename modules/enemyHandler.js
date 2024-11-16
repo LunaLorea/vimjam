@@ -50,13 +50,16 @@ export default class EnemyHandler {
     this.currentEnemies.sort;
   }
 
-  slowEnemy() {}
+  slowEnemy(enemy, slowfactor) {
+    enemy.slowFactor = max(slowfactor, enemy.slowfactor);
+  }
 
   spawnNewEnemy(type) {
     let startPosition = [0, type.trackHeight, 0];
     const newEnemie = {
       health: type.health,
       speed: type.speed,
+      slowFactor: 1,
       type: type,
       currentTile: this.playingField.startTile0,
     }
@@ -83,7 +86,7 @@ export default class EnemyHandler {
     this.currentEnemies.forEach( (enemy) => {
       if (enemy.distanceToTargetTile <= 1e-5) {
 
-        const exits = enemy.currentTile.type.exits;
+        const exits = enemy.currentTile.children;
         let random = Math.floor(Math.random() * exits.length);
         if (exits.length == 0) {
           return;
@@ -109,7 +112,11 @@ export default class EnemyHandler {
       vec3.sub(targetVector, targetPos, enemyPos);
       enemy.distanceToTargetTile = Math.sqrt(vec3.dot(targetVector, targetVector));
       
-      let stepDistance = enemy.type.speed * deltaTime * (0.1 + Math.sin(enemy.distanceToTargetTile / 1.72092 * Math.PI));
+      let stepDistance = 
+        enemy.type.speed *
+        enemy.slowFactor * 
+        deltaTime * 
+        (0.4 + (0.5 * Math.sin(enemy.distanceToTargetTile / 1.72092 * Math.PI)));
       
 
       vec3.normalize(targetVector, targetVector);

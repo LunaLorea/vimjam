@@ -7,10 +7,22 @@ export default class PlayingField {
       defaultRotation: 0,
       hasEntrance: true,
     },
+    startFlag: {
+      exits: [],
+      objName: "hexagonal-plate-flag",
+      defaultRotation: 0,
+      hasEntrance: true,
+    },
     empty: {
       exits: [],
       objName: "hexagonal-plate-empty",
       defaultRotation: 0,
+      hasEntrance: false,
+    },
+    audience: {
+      exits: [],
+      objName: "hexagonal-plate-audience",
+      defaultRotation: 3,
       hasEntrance: false,
     },
     stop: {
@@ -22,6 +34,12 @@ export default class PlayingField {
     straight: {
       exits: [3],
       objName: "hexagonal-plate-straight",
+      defaultRotation: 0,
+      hasEntrance: true,
+    },
+    tires: {
+      exits: [3],
+      objName: "hexagonal-plate-tires",
       defaultRotation: 0,
       hasEntrance: true,
     },
@@ -51,7 +69,7 @@ export default class PlayingField {
     },
   };
 
-  #RoadTypes = ["straight", "curve_right", "curve_left", "split", "stop", ];
+  #RoadTypes = ["straight", "tires", "curve_right", "curve_left", "split", "stop", ];
 
 
   #exitCoordMap = new Map();
@@ -81,11 +99,11 @@ export default class PlayingField {
     this.#exitCoordMap.set(5, [1, 0]);
 
     this.startTile0 = this.createNewTile(this.#TileTypes.start, 0, {q: 0, r: 0});
-    this.startTile1 = this.createNewTile(this.#TileTypes.empty, 0, {q: -1, r: 1});
-    this.startTile2 = this.createNewTile(this.#TileTypes.empty, 0, {q: -1, r: 0});
+    this.startTile1 = this.createNewTile(this.#TileTypes.audience, 4, {q: -1, r: 1});
+    this.startTile2 = this.createNewTile(this.#TileTypes.audience, 5, {q: -1, r: 0});
     this.startTile3 = this.createNewTile(this.#TileTypes.straight, 3, {q: 0, r: 1});
-    this.startTile4 = this.createNewTile(this.#TileTypes.empty, 0, {q: 1, r: 0});
-    this.startTile5 = this.createNewTile(this.#TileTypes.empty, 0, {q: 1, r: -1});
+    this.startTile4 = this.createNewTile(this.#TileTypes.audience, 2, {q: 1, r: 0});
+    this.startTile5 = this.createNewTile(this.#TileTypes.audience, 1, {q: 1, r: -1});
     this.startTile6 = this.createNewTile(this.#TileTypes.straight, 0, {q: 0, r: -1});
 
     addEventListener("mousedown", () => {
