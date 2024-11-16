@@ -1,6 +1,7 @@
 import PlayingField from "./playingField.js";
 import EnemyHandler from "./enemyHandler.js";
 import TowerHandler from "../models/towerHandler.js";
+import { setHealth, setWaveProgress, setWealth } from "./uiHook.js";
 
 export default class GameLogic {
   constructor(sceneInformation) {
@@ -26,7 +27,8 @@ export default class GameLogic {
     this.enemyHandler = new EnemyHandler(this.playingField, this.sceneInformation);
     this.towerHandler = new TowerHandler(this.sceneInformation, this.playingField, this.enemyHandler);
     // Initial Game State
-    this.health = 10;
+    this.maxHealth = 10;
+    this.health = this.maxHealth;
     this.money = 1000.0;
     this.waveCounter = 0;
     this.score = 0;
@@ -42,6 +44,7 @@ export default class GameLogic {
   updateGame() {
     this.enemyHandler.doTick();
     this.towerHandler.doTick();
+    this.updateStats();
   }
 
   updateOnFrame(deltaTime) {
@@ -55,5 +58,11 @@ export default class GameLogic {
   startNewWave() {
     this.waveCounter += 1;
     this.enemyHandler.spawnNewEnemy(this.enemyHandler.enemyTypes.formula1);
+  }
+
+  updateStats() { // tree: no wealth, wave progress exists yet
+    setWaveProgress(1, this.waveCounter);
+    setHealth(this.health, this.maxHealth);
+    setWealth(this.score, this.score);
   }
 }

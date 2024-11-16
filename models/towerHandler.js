@@ -39,7 +39,7 @@ export default class TowerHandler {
     tires: {
       speed: 1,
       unusedObj: [],
-      defaultRotation = [0, 0, 0],
+      defaultRotation: [0, 0, 0],
     },
   };
 
