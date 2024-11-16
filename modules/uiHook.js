@@ -97,7 +97,6 @@ export function queuePush(tile) {
 export function queuePop() {
     let queueList = document.getElementById('tile-queue');
     queueList.removeChild(queueList.firstChild);
-    console.log("pop");
 }
 
 const shop1 = document.getElementById("shop-category-1");

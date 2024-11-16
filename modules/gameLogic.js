@@ -2,6 +2,7 @@ import PlayingField from "./playingField.js";
 import EnemyHandler from "./enemyHandler.js";
 import TowerHandler from "../models/towerHandler.js";
 import { setHealth, setWaveProgress, setWealth } from "./uiHook.js";
+import { generateEnemyPattern } from "./waveLogic.js";
 
 export default class GameLogic {
   constructor(sceneInformation) {
@@ -34,6 +35,10 @@ export default class GameLogic {
     this.score = 0;
 
     this.currentGame = setInterval(() => {this.updateGame()}, tickIntervall);
+    // wave settings
+    this.currentWave;
+    this.wavePattern = [];
+    this.turn;
   }
 
   stopGame() {
@@ -56,8 +61,28 @@ export default class GameLogic {
   }
 
   startNewWave() {
-    this.waveCounter += 1;
-    this.enemyHandler.spawnNewEnemy(this.enemyHandler.enemyTypes.formula1);
+    if (this.currentWave == undefined || this.currentWave == null) { // check if wave is running
+      this.waveCounter += 1;
+      this.wavePattern = generateEnemyPattern(this.waveCounter);
+      let spawnIntervall = 3*1000;
+      this.currentWave = setInterval(() => {this.waveSpawn()}, spawnIntervall);
+    }
+  }
+
+  waveSpawn() {
+    let turnPattern = this.wavePattern[this.turn];
+    if (turnPattern&1 == 1) {
+      this.enemyHandler.spawnNewEnemy(this.enemyHandler.enemyTypes.formula1);
+    }
+    if (turnPattern==0) {
+      this.turn++;
+    }
+    else {
+      this.wavePattern[this.turn] = turnPattern>>1;
+    }
+    if (this.turn >= this.wavePattern.length) {
+      clearInterval(this.currentWave);
+    }
   }
 
   updateStats() { // tree: no wealth, wave progress exists yet
