@@ -51,6 +51,8 @@ function main() {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   // Clear the color buffer with specified clear color
   gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   // Vertex shader program
   const vsSource = importString("shaders/vertexShader.glsl");
@@ -77,6 +79,7 @@ function main() {
       normalMatrix: gl.getUniformLocation(shaderProgram, "uNormalMatrix"),
       cameraRotationMatrix: gl.getUniformLocation(shaderProgram, "uCameraRotationMatrix"),
       scalingMatrix: gl.getUniformLocation(shaderProgram, "uScalingMatrix"),
+      alpha: gl.getUniformLocation(shaderProgram, "uAlpha"),
     },
   };
   
@@ -88,7 +91,7 @@ function main() {
     ["hexagonal-plate-split", "models/y.obj", "textures/all_tiles_BaseColor.png"],
     ["hexagonal-plate-empty", "models/leer.obj", "textures/all_tiles_BaseColor.png"],
     ["hexagonal-plate-audience", "models/publikum.obj", "textures/all_tiles_BaseColor.png"],
-    ["hexagonal-plate-tires", "models/reifen.obj", "textures/all_tiles_BaseColor.png"],
+    ["hexagonal-plate-tires", "models/reifen.obj", "textures/reifenstrasse_BaseColor.png"],
     ["hexagonal-plate-stop", "models/roadblock.obj", "textures/all_tiles_BaseColor.png"],
     ["hexagonal-plate-finishline", "models/ziel.obj", "textures/all_tiles_BaseColor.png"],
     ["hexagonal-plate-start", "models/start.obj", "textures/all_tiles_BaseColor.png"],

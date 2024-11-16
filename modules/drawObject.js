@@ -64,7 +64,8 @@ function drawObject(
       scalingMatrix
     );
 
-    gl.uniform1f(programInfo.uniformLocations.scale, 1);
+    gl.uniform1f(programInfo.uniformLocations.alpha, objInformation.alpha);
+
 
     // Tell WebGL that we want to adress texture unit 0
     gl.activeTexture(gl.TEXTURE0);
