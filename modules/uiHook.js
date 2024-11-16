@@ -25,6 +25,14 @@ setLoading(false);
 
 */
 
+// set the images of the queue
+/*
+import {setQueue} from "./modules/uiHook.js";
+
+setQueue("straight", 1);
+
+*/
+
 const health_bar1 = document.getElementById("health-bar");
 const health_bar2 = document.getElementById("health-bar2");
 const health_value = document.getElementById("health-value");
@@ -73,4 +81,9 @@ export function setWaveProgress(currentWaveProgress, waveReached) {
 export function setLoading(state) {
     const loadingElement = document.getElementById("loading");
     loadingElement.style.display = state ? "block" : "none";
+}
+
+
+export function setQueue(tile, index) {
+    document.getElementById(`queue-img-${index}`).src = `/UI/images/${tile}.png`;
 }
