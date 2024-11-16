@@ -1,3 +1,5 @@
+import { queuePop, queuePush } from "./uiHook.js";
+
 export default class PlayingField {
 
   #TileTypes = {
@@ -241,6 +243,7 @@ export default class PlayingField {
   }
 
   generateNextTile(count = 1) {
+    queuePop(); //in UI
     for (let i = 0; i < count; i++) {
       let stopOffset = 0;
       if (this.leaves > 3) {
@@ -248,12 +251,14 @@ export default class PlayingField {
       }
       let keyTypes = this.#RoadTypes;
       let randomIndex = Math.floor(Math.random() * (keyTypes.length-1 + stopOffset))
-      this.nextTiles.push(this.#TileTypes[keyTypes[randomIndex]]);
+      let tileName=[keyTypes[randomIndex]];
+      this.nextTiles.push(this.#TileTypes[tileName]);
+      queuePush(tileName);
     }
   }
 
   getNextTile() {
-    const nextTile = this.nextTiles.shift();2
+    const nextTile = this.nextTiles.shift();
     this.generateNextTile();
     return nextTile;
   }

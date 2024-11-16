@@ -84,8 +84,20 @@ export function setLoading(state) {
 }
 
 
-export function setQueue(tile, index) {
-    document.getElementById(`queue-img-${index}`).src = `/UI/images/${tile}.png`;
+export function queuePush(tile) {
+    let listItem = document.createElement('li');
+    let image = document.createElement('img');
+    image.src=`/UI/images/${tile}.png`;
+    image.width="128";
+    image.height="128";
+
+    document.getElementById('tile-queue').appendChild(listItem.appendChild(image));
+}
+
+export function queuePop() {
+    let queueList = document.getElementById('tile-queue');
+    queueList.removeChild(queueList.firstChild);
+    console.log("pop");
 }
 
 const shop1 = document.getElementById("shop-category-1");
