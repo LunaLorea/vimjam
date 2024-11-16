@@ -1,5 +1,5 @@
 
-// here's an example
+// here's an example for stats
 /*
     import { setHealth, setWealth, setWaveProgress } from "./modules/uiHook.js";
 document.addEventListener('click', () => {
@@ -9,37 +9,26 @@ document.addEventListener('click', () => {
   setWaveProgress(randomValue, 13);
   console.log("changed stats");
 });
-
 */
 
 // example to set loading screen (you can choose between 3 animations by setting the inner divs id to one of loading1, loading2, loading3)
-
 /*
 import {setLoading} from "./modules/uiHook.js";
-
 setLoading(true);
-
 // init
-
 setLoading(false);
-
 */
 
 // set the images of the queue
 /*
 import {setQueue} from "./modules/uiHook.js";
-
 setQueue("straight", 1);
-
 */
 
 // add a shopItem (there is a corresponding dictionary in this file, named tileNameDesc, but it only contains a placeholder for now)
 /*
-
 import {addShopItem} from "./modules/uiHook.js";
-
-addShopItem("straight");
-
+addShopItem("straight", 7000, 1);
 */
 
 const health_bar1 = document.getElementById("health-bar");
@@ -97,16 +86,33 @@ export function setQueue(tile, index) {
     document.getElementById(`queue-img-${index}`).src = `/UI/images/${tile}.png`;
 }
 
-const shop = document.getElementById("shop-sidebar");
+const shop1 = document.getElementById("shop-category-1");
+const shop2 = document.getElementById("shop-category-2");
 
 const tileNameDesc = {
-    "straight":["A very cool Tower","this tower does cool things! (trust me)"]
+    "straight":["Bad Tower","this tower does cool things! (trust me)"]
 };
 
-export function addShopItem(tile, price) {
+export function addShopItem(tile, price, category) {
+
+    let shop;
+    switch (category) { // i hate that a case statement is drop through
+        case 1:
+            shop = shop1;
+            break;
+        case 2:
+            shop = shop2;
+            break;
+        default:
+            console.log("invalid category");
+            return;
+    }
 
     // error handling
-    console.assert(tile in tileNameDesc);
+    if (!(tile in tileNameDesc)) {
+        console.assert(tile in tileNameDesc);
+        return;
+    }
 
     const [name, desc] = tileNameDesc[tile];
 
@@ -137,9 +143,9 @@ export function addShopItem(tile, price) {
     button.textContent = `${price}`;  // Set the text content of the button
 
     // Create the h1 element
-    const h1 = document.createElement('h1');
-    h1.classList.add('shop-item-title');
-    h1.textContent = `${name}`;  // Set the title text
+    const title = document.createElement('p');
+    title.classList.add('shop-item-title');
+    title.textContent = `${name}`;  // Set the title text
 
     // Create the p element
     const p = document.createElement('p');
@@ -149,7 +155,7 @@ export function addShopItem(tile, price) {
     // Append the elements to the div
     shopItem.appendChild(img);
     shopItem.appendChild(button);
-    shopItem.appendChild(h1);
+    shopItem.appendChild(title);
     shopItem.appendChild(p);
 
     shop.appendChild(shopItem);
