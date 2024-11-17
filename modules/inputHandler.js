@@ -88,12 +88,12 @@ function initKeyboardInput(sceneInformation) {
     true,
   );
 
-  addEventListener(
+  document.getElementById("gl-canvas").addEventListener(
     "mousedown",
     (event) => {
       sceneInformation.keyMapArray[event.button+4] = 1;
     });
-  addEventListener(
+    document.getElementById("gl-canvas").addEventListener(
     "mouseup",
     (event) => {
       sceneInformation.keyMapArray[event.button+4] = 0;

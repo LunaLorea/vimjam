@@ -18,7 +18,7 @@ export default class GameLogic {
       },
     };
 
-    addEventListener("click", () => {this.onMouseClick()});
+    document.getElementById("gl-canvas").addEventListener("click", () => {this.onMouseClick()});
   }
 
   startGame() {

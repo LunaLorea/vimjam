@@ -33,7 +33,7 @@ export default class Shop {
     this.money = 250; // starting money
 
     this.itemBought;
-    addEventListener("mousedown", () => {this.placeTower();});
+    document.getElementById("gl-canvas").addEventListener("mousedown", () => {this.placeTower();});
     this.initShop();
   }
 
@@ -144,7 +144,7 @@ export default class Shop {
       
       const type = this.playingField.TileTypes[tileIdentifier];
       const rotation = 0;
-
+      
       const newTile = this.playingField.createNewTile(type, rotation, tileCoord);
       
       if (newTile == null) {
@@ -153,11 +153,8 @@ export default class Shop {
         /*tmp*/
         return;
       }
-
       this.money -= price; // to always deduct money before placing, to avoid potential glitches
-      // TODO: place non road tile, you have available the variables tileIdentifier and chosenSlot
 
-      console.log("imagine placing a bought tile, removing it for free");
     }
     else {
       console.log(`no such item: ${this.itemBought}`);

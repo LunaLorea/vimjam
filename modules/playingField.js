@@ -137,7 +137,7 @@ export default class PlayingField {
     this.placeableTileCount = 6;
 
     this.rotateTileCount = 0;
-    addEventListener("keydown", () => {
+    document.getElementById("gl-canvas").addEventListener("keydown", () => {
       if (sceneInformation.getKeyValue("rotate") == 1) {
        this.rotateTileCount += 1;
       }
@@ -167,10 +167,10 @@ export default class PlayingField {
 
     this.initGhostTiles();
 
-    addEventListener("mousedown", () => {
+    document.getElementById("gl-canvas").addEventListener("mousedown", () => {
       sceneInformation.mouseMoved = false;
     });
-    addEventListener("mouseup", () => {
+    document.getElementById("gl-canvas").addEventListener("mouseup", () => {
       if (!sceneInformation.mouseMoved) {
         this.placeNewTile();
       }
