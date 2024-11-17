@@ -184,18 +184,23 @@ body {
 @keyframes l3 {
 100% {text-shadow: 0 -20em 0 var(--color-default)}
 }
-
+   .active#info-screen{
+      top: var(--padding);
+      transition: top 2s ease-out;
+   }
    #info-screen {
       /*default invisible*/
-      display: none;
+      /*display: none;*/
 
       /*positioning*/
       position: absolute;
-      top: 50%;
+      top: calc(-1*var(--block-height));
+      transition: top 2s ease-in;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, 0);
 
       z-index: 1;
+      opacity: 0.5;
 
       padding: var(--padding);
 
