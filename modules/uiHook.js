@@ -94,7 +94,7 @@ export function queueAppend(tile) {
 
     queueList.appendChild(listItem.appendChild(image));
 }
-export function queuePush(tile) {
+/*export function queuePush(tile) {
     let listItem = document.createElement('li');
     let image = document.createElement('img');
     image.src=`/UI/images/${tile}.png`;
@@ -102,7 +102,7 @@ export function queuePush(tile) {
     image.height="128";
 
     queueList.insertBefore(listItem.appendChild(image), listItem.firstChild);
-}
+}*/
 
 export function queuePop() {
     queueList.removeChild(queueList.firstChild);
@@ -112,10 +112,12 @@ const shop1 = document.getElementById("shop-category-1");
 const shop2 = document.getElementById("shop-category-2");
 
 const tileNameDesc = {
-    "straight":["Bad Tower","this tower does cool things! (trust me)"]
+    "straight":["Bad Tower","this tower does cool things! (trust me)"],
+    "tire":["Tire Tirade", "This Tower uses the weapon of cars against them. Launching tires at nearby cars to take them out!"],
+    "empty":["Flat Tile", "This is prime real estate, for your hard earned money you can hold back the void another day."]
 };
 
-export function addShopItem(tile, price, category) {
+export function addShopItem(tile, price, category, buyingFunc) {
 
     let shop;
     switch (category) { // i hate that a case statement is drop through
@@ -132,6 +134,7 @@ export function addShopItem(tile, price, category) {
 
     // error handling
     if (!(tile in tileNameDesc)) {
+        console.log(tile);
         console.assert(tile in tileNameDesc);
         return;
     }
@@ -161,7 +164,7 @@ export function addShopItem(tile, price, category) {
     // Create the button element
     const button = document.createElement('button');
     button.classList.add('shop-item-buy');
-    button.onclick = () => {console.log(`buying ${tile}`)} // HERE YOU CAN INSERT THE BUY FUNCTION
+    button.onclick = () => {buyingFunc()} // HERE YOU CAN INSERT THE BUY FUNCTION
     button.textContent = `${price}`;  // Set the text content of the button
 
     // Create the h1 element
