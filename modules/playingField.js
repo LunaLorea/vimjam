@@ -40,10 +40,10 @@ export default class PlayingField {
       hasEntrance: false,
       slots: [{
         rotation: [0, 0, 0],
-        relPosition: {x: 0, y:0.4, z:-0.3},
+        relPosition: {x: 0, y:0.52, z:-0.28},
         damageMultiplier: 1,
         rangeMultiplier: 1.5,
-        scale: 1,
+        scale: 0.9,
       }],
       ghostTile: {},
     },
