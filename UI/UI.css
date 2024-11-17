@@ -273,6 +273,7 @@ body {
             color: var(--color-light);
          }
          .category:not(:last-child) {
+            padding-bottom: var(--padding);
             border-bottom: double 10px var(--color-accent);
          }
          .shop-category-title {
