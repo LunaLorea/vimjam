@@ -19,6 +19,9 @@ export default class Shop {
       empty: {
         identifier: "empty",
         price: 100,},
+      audience: {
+        identifier: "audience",
+        price: 50,}
     },
 
   }
