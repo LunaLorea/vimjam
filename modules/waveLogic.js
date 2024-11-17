@@ -8,9 +8,9 @@ export function generateEnemyPattern(round) {
             // number of masks depends on number of turns, calc from rounds
     
     const turns = Math.floor(round/10 + 1);
-    const maxEnemiesPerTurn = Math.atan(round)/Math.PI*32;
+    let maxEnemiesPerTurn = Math.atan(round)/Math.PI*32;
     const minEnemiesPerTurn = Math.round(maxEnemiesPerTurn/2);
-    const maxTotalEnemies = round%10==0? turns * maxEnemiesPerTurn : 0.8 * turns * maxEnemiesPerTurn;
+    const maxTotalEnemies = round%10==0? turns * maxEnemiesPerTurn : Math.round(0.8 * turns * maxEnemiesPerTurn);
 
     let enemyPattern= [];
     let enemyCount=0;
@@ -20,18 +20,16 @@ export function generateEnemyPattern(round) {
         enemyPattern[i] = mask;
         enemyCount += countBits(mask);
     }
-    enemyPattern.forEach(num => {
-        console.log(num.toString(2));  // Convert each number to binary and print it
-    });
     return enemyPattern;
 
 }
 
-function generateIntWithOnes(minOnes, maxOnes, maxBits = 32) {
+function generateIntWithOnes(minOnes, maxOnes, maxBits = 31) {
     // Ensure the maxOnes is not greater than the maxBits
     maxOnes = Math.min(maxOnes, maxBits);
-  
-    let number = 0;
+    let ones=Math.random()*(maxOnes-minOnes) + minOnes;
+    let number = 2^(ones+1)-1;
+    /*
     // Generate a random number of 1s (<= maxOnes, >= minOnes)
     for (let i = 0; i < minOnes; i++) {
         const bitPosition = Math.floor(Math.random() * maxBits);
@@ -41,7 +39,7 @@ function generateIntWithOnes(minOnes, maxOnes, maxBits = 32) {
       const bitPosition = Math.floor(Math.random() * maxBits);
       number |= (1 << bitPosition);  // Set the bit at the random position
     }
-  
+    */
     return number;
 }
 

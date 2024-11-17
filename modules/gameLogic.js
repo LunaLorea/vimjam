@@ -60,12 +60,14 @@ export default class GameLogic {
   onMouseClick() {
   }
 
-  startNewWave() {
-    if (this.currentWave == undefined || this.currentWave == null) { // check if wave is running
+  startNewWave = () => {
+    if (this.currentWave !== undefined || this.currentWave !== null) { // check if wave is running
       this.waveCounter += 1;
       this.wavePattern = generateEnemyPattern(this.waveCounter);
       let spawnIntervall = 3*1000;
+      this.turn=0;
       this.currentWave = setInterval(() => {this.waveSpawn()}, spawnIntervall);
+      console.log("wave started");
     }
   }
 
@@ -75,12 +77,13 @@ export default class GameLogic {
       this.enemyHandler.spawnNewEnemy(this.enemyHandler.enemyTypes.formula1);
     }
     if (turnPattern==0) {
-      this.turn++;
+      this.turn = this.turn + 1;
     }
     else {
       this.wavePattern[this.turn] = turnPattern>>1;
     }
     if (this.turn >= this.wavePattern.length) {
+      console.log("wave over");
       clearInterval(this.currentWave);
     }
   }
