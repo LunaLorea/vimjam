@@ -108,7 +108,35 @@ export default class Shop {
       this.towerHandler.addNewTower(this.towerHandler.TowerTypes[towerIdentifier], chosenSlot);
     }
     else if(this.itemBought in this.Items.tiles) {
-      // TODO: place non road tile
+      // copied but translated from the tower placing branch
+      const tileIdentifier = this.Items.tiles[this.itemBought].identifier;
+      const price = this.Items.tiles[this.itemBought].price;
+
+      let chosenSlot = null;
+      //TODO: find where to place
+      
+      /*const availableSlots = this.playingField.availableSlots;
+        availableSlots.forEach( (slot) => {
+        const distVec = vec3.create();
+        let tempPos = [...slot.position];
+        tempPos[1] = 0;
+        vec3.sub(distVec, tempPos, this.sceneInformation.mouseInWorld);
+        let distance = Math.sqrt(vec3.dot(distVec, distVec));
+        if (distance <= 0.38) {
+          chosenSlot = slot;
+        }
+      });*/
+      
+      if (chosenSlot == null) {
+        /*tmp*/
+        console.log("couldn't place");
+        /*tmp*/
+        return;
+      }
+
+      this.money -= price; // to always deduct money before placing, to avoid potential glitches
+      // TODO: place non road tile, you have available the variables tileIdentifier and chosenSlot
+
       console.log("imagine placing a bought tile, removing it for free");
     }
     else {
