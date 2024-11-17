@@ -232,10 +232,8 @@ export default class TowerHandler {
     tower.timer += 1/60;
 
     if (tower.timer > tower.fireRate) {
-      console.log("fire!");
       const position = tower.position;
       const enemiesInRange = this.enemyHandler.getEnemiesInRadius(position, tower.radius);
-      console.log(enemiesInRange);
       this.addMoney(tower.moneyPerCar * enemiesInRange.enemies.length);
     }
 
