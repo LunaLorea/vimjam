@@ -40,6 +40,10 @@ const tileNameDesc = {
     "sniper":["Sniper Shot","This tire pile has the high ground to snipe all cars into early reTIREment!"]
 };
 
+export function setTileCount(amount) {
+    document.getElementById("tile-count").innerHTML=amount;
+}
+
 export function initWaveButton(triggerFunction) {
     document.getElementById("wave-button").onclick=triggerFunction;
 }

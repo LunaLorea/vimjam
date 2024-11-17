@@ -1,4 +1,4 @@
-import { queuePop, queueAppend } from "./uiHook.js";
+import { queuePop, queueAppend, setTileCount } from "./uiHook.js";
 
 export default class PlayingField {
 
@@ -135,6 +135,7 @@ export default class PlayingField {
     this.leaves = 2;
     this.canPlaceTiles = true;
     this.placeableTileCount = 6;
+    setTileCount(this.placeableTileCount);
 
     this.rotateTileCount = 0;
     document.getElementById("gl-canvas").addEventListener("keydown", () => {
@@ -217,6 +218,7 @@ export default class PlayingField {
   activateTilePlacing(tileAmount = 3) {
     this.canPlaceTiles = true;
     this.placeableTileCount += tileAmount;
+    setTileCount(this.placeableTileCount);
     this.allAvailableMarkers.forEach((marker) => {
       marker.alpha = 0.8;
     });
@@ -427,6 +429,7 @@ export default class PlayingField {
       this.removeBranch(newTile);
     }
     this.placeableTileCount -= 1;
+    setTileCount(this.placeableTileCount);
     if (this.placeableTileCount <= 0) {
       this.deactivateTilePlacing();
     }
