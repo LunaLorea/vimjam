@@ -186,7 +186,7 @@ body {
 }
    .active#info-screen{
       top: var(--padding);
-      transition: top 2s ease-out;
+      transition: top 1s ease-out;
    }
    #info-screen {
       /*default invisible*/

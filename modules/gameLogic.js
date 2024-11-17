@@ -80,7 +80,7 @@ export default class GameLogic {
   startNewWave = () => {
     if (this.currentWave == undefined || this.currentWave == null) { // check if wave is running
       this.waveCounter += 1;
-      sendMsg("Wave started!", "⚠", 1000);
+      //sendMsg("Wave started!", "⚠", 1000);
       this.wavePattern = generateEnemyPattern(this.waveCounter);
       let spawnIntervall = 1*1000; // HERE WE CAN AFFECT WAVE SPAWN SPEED, IMPORTANT TO COMPARE WITH SHOOTING SPEED
       //progress tracking
@@ -118,7 +118,7 @@ export default class GameLogic {
   }
 
   roundReward = () => {
-    const rewards = [250, 500, 500, 1000, 1000, 1000, 2500, 2500, 2500, 5000];
+    const rewards = [25, 50, 50, 100, 100, 100, 250, 250, 250, 500];
     const index = Math.min(Math.round(this.waveCounter/10), 9);
     return rewards[index];
   }

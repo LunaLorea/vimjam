@@ -214,5 +214,5 @@ function removeInfo() {
 
 export function sendMsg(info, icon, delay) {
     setInfo(info, icon);
-    setTimeout(() => removeInfo(), 2000+delay); // 2s is animation time
+    setTimeout(() => removeInfo(), 1000+delay); // 1s is animation time
 }
