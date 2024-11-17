@@ -70,6 +70,26 @@ body {
          font-size: 6cap;
          opacity: inherit;
       }
+      > button {
+         /*positioning*/
+         position: absolute;
+         bottom: -calc(2*var(--element-height));
+         left: 50%;
+
+         transform: translate(-50%, var(--padding));
+
+         height: calc(2*var(--element-height));
+         background-color: var(--color-light);
+         border-color: var(--color-light);
+         border-radius: 5000px;
+         font: inherit; /*to overwrite button defaults*/
+         padding-left: var(--padding);
+         padding-right: var(--padding);
+      }
+      > button:hover {
+         background-color: var(--color-accent); /*i have no clue about colortheory*/
+         border-color: var(--color-accent);
+      }
    }
 }
 .game-over-lay.active {

@@ -30,7 +30,7 @@ export default class GameLogic {
     this.towerHandler = new TowerHandler(this.sceneInformation, this.playingField, this.enemyHandler);
     this.shop = new Shop(this.playingField, this.sceneInformation, this.towerHandler);
     // Initial Game State
-    this.maxHealth = 1;
+    this.maxHealth = 0;
     this.health = this.maxHealth;
     this.money = 1000.0;
     this.maxMoney = Math.max(this.money);
@@ -57,6 +57,7 @@ export default class GameLogic {
     if (this.health <= 0) {
       this.health = 0;
       toggleGameOverlay(true);
+      this.stopGame();
     }
     this.towerHandler.doTick();
     this.money = this.shop.money;

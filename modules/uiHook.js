@@ -31,8 +31,18 @@ import {addShopItem} from "./modules/uiHook.js";
 addShopItem("straight", 7000, 1);
 */
 
+const tileNameDesc = {
+    "tire":["Tire Tirade", "This Tower uses the weapon of cars against them. Launching tires at nearby cars to take them out!"],
+    "toll":["Toll Booth", "Have capitalism on your side. Line your pockets with every car, that escapes!"],
+    "spikes":["Sike Strike", "An automated spike strip deployer. So that no car can escape your ra(n)ge!"],
+    "empty":["Flat Tile", "This is prime real estate, for your hard earned money you can hold back the void another day."]
+};
+
 export function initWaveButton(triggerFunction) {
     document.getElementById("wave-button").onclick=triggerFunction;
+}
+export function initRestartButton(triggerFunction) {
+    document.getElementById("restart-button").onclick=triggerFunction;
 }
 
 const health_bar1 = document.getElementById("health-bar");
@@ -110,13 +120,6 @@ export function queuePop() {
 
 const shop1 = document.getElementById("shop-category-1");
 const shop2 = document.getElementById("shop-category-2");
-
-const tileNameDesc = {
-    "tire":["Tire Tirade", "This Tower uses the weapon of cars against them. Launching tires at nearby cars to take them out!"],
-    "toll":["Toll Booth", "Have capitalism on your side. Line your pockets with every car, that escapes!"],
-    "spikes":["Sike Strike", "An automated spike strip deployer. So that no car can escape your ra(n)ge!"],
-    "empty":["Flat Tile", "This is prime real estate, for your hard earned money you can hold back the void another day."]
-};
 
 export function addShopItem(tile, price, category, buyingFunc) {
 
