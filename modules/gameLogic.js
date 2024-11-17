@@ -1,6 +1,6 @@
 import PlayingField from "./playingField.js";
 import EnemyHandler from "./enemyHandler.js";
-import TowerHandler from "../models/towerHandler.js";
+import TowerHandler from "./towerHandler.js";
 import Shop from "./shop.js";
 import { setHealth, sendMsg, setWaveProgress, setWealth, toggleGameOverlay } from "./uiHook.js";
 import { generateEnemyPattern } from "./waveLogic.js";
