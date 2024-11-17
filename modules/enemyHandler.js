@@ -94,13 +94,15 @@ export default class EnemyHandler {
   }
 
   doTick() {
-    this.currentEnemies.forEach( (enemy) => {
+    this.tickDmg = 0;
+    this.currentEnemies.forEach( enemy => {
       if (enemy.distanceToTargetTile <= 1e-5) {
 
         if (enemy.hasReachedEnd) {
           this.deleteEnemy(enemy);
           console.log("aua");
           //do damage
+          this.tickDmg += 1;
           return;
         }
         const exits = enemy.currentTile.children;
@@ -116,6 +118,7 @@ export default class EnemyHandler {
         enemy.currentTile = nextTile;
       }
     });
+    return this.tickDmg;
   }
 
   doAnimations(deltaTime) {

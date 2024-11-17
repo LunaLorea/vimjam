@@ -49,7 +49,8 @@ export default class GameLogic {
   }
 
   updateGame() {
-    this.enemyHandler.doTick();
+    let dmg = this.enemyHandler.doTick();
+    this.health -= dmg;
     this.towerHandler.doTick();
     this.updateStats();
   }
