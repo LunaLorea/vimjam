@@ -26,10 +26,10 @@ export default class PlayingField {
       hasEntrance: false,
       slots: [{
         rotation: [0, 0, 0],
-        relPosition: {x: 0, y:-0.2, z:0},
-        damageMultiplier: 2,
+        relPosition: {x: 0, y:0.1, z:0},
+        damageMultiplier: 1.5,
         rangeMultiplier: 1,
-        scale: 2,
+        scale: 1.7,
       }],
       ghostTile: {},
     },
@@ -68,14 +68,14 @@ export default class PlayingField {
       hasEntrance: true,
       slots: [{
         rotation: [0, 1, 0],
-        relPosition: {x: 0.72, y:0.1, z:0},
+        relPosition: {x: 0.72, y:0.2, z:0},
         damageMultiplier: 0.5,
         rangeMultiplier: 0.5,
         scale: 0.7,
       },
       {
         rotation: [0, 1, 0],
-        relPosition: {x: -0.72, y:0.1, z:0},
+        relPosition: {x: -0.72, y:0.2, z:0},
         damageMultiplier: 0.5,
         rangeMultiplier: 0.5,
         scale: 0.7,
@@ -144,6 +144,18 @@ export default class PlayingField {
       }
     });
 
+    sceneInformation.addNewObject(
+        "flag",
+        [0, 0.2, -2.4],
+        [0, 0, 0],
+        0.65, );
+    sceneInformation.addNewObject(
+        "flag",
+        [0, 0.2, 2.4],
+        [0, 0, 0],
+        0.65, );
+
+
     this.nextTiles = [];
     this.generateNextTile(4);
 
@@ -156,11 +168,11 @@ export default class PlayingField {
 
     this.startTile0 = this.createNewTile(this.TileTypes.start, 0, {q: 0, r: 0});
     this.startTile1 = this.createNewTile(this.TileTypes.audience, 4, {q: -1, r: 1});
-    this.startTile2 = this.createNewTile(this.TileTypes.audience, 5, {q: -1, r: 0});
+    this.startTile2 = this.createNewTile(this.TileTypes.empty, 5, {q: -1, r: 0});
     this.startTile3 = this.createNewTile(this.TileTypes.straight, 3, {q: 0, r: 1});
     this.startTile3.parentTile = this.startTile0;
     this.startTile3.parentExit = 0;
-    this.startTile4 = this.createNewTile(this.TileTypes.audience, 2, {q: 1, r: 0});
+    this.startTile4 = this.createNewTile(this.TileTypes.empty, 2, {q: 1, r: 0});
     this.startTile5 = this.createNewTile(this.TileTypes.audience, 1, {q: 1, r: -1});
     this.startTile6 = this.createNewTile(this.TileTypes.straight, 0, {q: 0, r: -1});
     this.startTile6.parentTile = this.startTile0;
