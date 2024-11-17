@@ -2,7 +2,7 @@ import PlayingField from "./playingField.js";
 import EnemyHandler from "./enemyHandler.js";
 import TowerHandler from "../models/towerHandler.js";
 import Shop from "./shop.js";
-import { setHealth, setWaveProgress, setWealth, toggleGameOverlay } from "./uiHook.js";
+import { setHealth, sendMsg, setWaveProgress, setWealth, toggleGameOverlay } from "./uiHook.js";
 import { generateEnemyPattern } from "./waveLogic.js";
 
 export default class GameLogic {
@@ -80,6 +80,7 @@ export default class GameLogic {
   startNewWave = () => {
     if (this.currentWave == undefined || this.currentWave == null) { // check if wave is running
       this.waveCounter += 1;
+      //sendMsg("Wave started!", "⚠", 1000);
       this.wavePattern = generateEnemyPattern(this.waveCounter);
       let spawnIntervall = 1*1000; // HERE WE CAN AFFECT WAVE SPAWN SPEED, IMPORTANT TO COMPARE WITH SHOOTING SPEED
       //progress tracking
@@ -110,14 +111,14 @@ export default class GameLogic {
     }
     if (this.turn >= this.wavePattern.length) { // wave over
       this.shop.money += this.roundReward();
-      this.playingField.activateTilePlacing(5);
+      this.playingField.activateTilePlacing(2);
       clearInterval(this.currentWave);
       this.currentWave=null;
     }
   }
 
   roundReward = () => {
-    const rewards = [250, 500, 500, 1000, 1000, 1000, 2500, 2500, 2500, 5000];
+    const rewards = [25, 50, 50, 100, 100, 100, 250, 250, 250, 500];
     const index = Math.min(Math.round(this.waveCounter/10), 9);
     return rewards[index];
   }

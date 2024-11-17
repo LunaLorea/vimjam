@@ -184,18 +184,23 @@ body {
 @keyframes l3 {
 100% {text-shadow: 0 -20em 0 var(--color-default)}
 }
-
+   .active#info-screen{
+      top: var(--padding);
+      transition: top 1s ease-out;
+   }
    #info-screen {
       /*default invisible*/
-      display: none;
+      /*display: none;*/
 
       /*positioning*/
       position: absolute;
-      top: 50%;
+      top: calc(-1*var(--block-height));
+      transition: top 2s ease-in;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, 0);
 
       z-index: 1;
+      opacity: 0.5;
 
       padding: var(--padding);
 
@@ -423,13 +428,12 @@ body {
       justify-content:space-evenly;
       gap: var(--padding);
 
-      > li:first-child {
+      > img:first-child {
          flex: 5 0; /*first item twice the size*/
-         padding-bottom: var(--padding);
          border-bottom: solid 3px var(--color-accent);
          
       }
-      > li {
+      > {
          width: inherit;
          flex: 4 0;
          aspect-ratio: 1;

@@ -197,3 +197,22 @@ export function toggleGameOverlay(boolean){
     overlay.style.display = boolean ? "block" : "none";
     overlay.classList.toggle("active", boolean);
 }
+
+const infobox = document.getElementById("info-screen");
+
+function setInfo(info, hotCorner) {
+    console.log("setInfo");
+    infobox.firstChild.innerText = hotCorner;
+    document.getElementById("info").innerText = info;
+    infobox.classList.toggle("active", true);
+}
+
+function removeInfo() {
+    console.log("delInfo");
+    infobox.classList.toggle("active", false);
+}
+
+export function sendMsg(info, icon, delay) {
+    setInfo(info, icon);
+    setTimeout(() => removeInfo(), 1000+delay); // 1s is animation time
+}

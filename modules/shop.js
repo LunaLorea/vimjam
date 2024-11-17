@@ -10,10 +10,10 @@ export default class Shop {
       },
       toll: {
         identifier: "toll",
-        price: 100,},
+        price: 200,},
       spikes: {
         identifier: "spikes",
-        price: 100,},
+        price: 50,},
     },
     tiles: {
       empty: {
@@ -55,6 +55,9 @@ export default class Shop {
   }
 
   addMoney = (amount) => {
+    if (amount < 0) {
+      console.error("adding negative amount to money is called stealing");
+    }
     this.money += amount;
   }
 
@@ -114,6 +117,11 @@ export default class Shop {
       
       console.log(this.towerHandler.TowerTypes[towerIdentifier]);
 
+
+      if (this.money < price) {
+        console.error("trying to place, to expensive object")
+        return
+      }
       this.money -= price; // to always deduct money before placing, to avoid potential glitches
       this.towerHandler.addNewTower(this.towerHandler.TowerTypes[towerIdentifier], chosenSlot);
     }
@@ -146,7 +154,11 @@ export default class Shop {
       
       const type = this.playingField.TileTypes[tileIdentifier];
       const rotation = 0;
-      
+      if (this.money < price) {
+        console.error("trying to place, to expensive object")
+        return
+      }
+      this.money -= price; // to always deduct money before placing, to avoid potential glitches
       const newTile = this.playingField.createNewTile(type, rotation, tileCoord);
       
       if (newTile == null) {
@@ -155,7 +167,6 @@ export default class Shop {
         /*tmp*/
         return;
       }
-      this.money -= price; // to always deduct money before placing, to avoid potential glitches
 
     }
     else {
