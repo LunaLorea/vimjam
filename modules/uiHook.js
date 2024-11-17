@@ -83,7 +83,17 @@ export function setLoading(state) {
     loadingElement.style.display = state ? "block" : "none";
 }
 
+const queueList = document.getElementById('tile-queue');
 
+export function queueAppend(tile) {
+    let listItem = document.createElement('li');
+    let image = document.createElement('img');
+    image.src=`/UI/images/${tile}.png`;
+    image.width="128";
+    image.height="128";
+
+    queueList.appendChild(listItem.appendChild(image));
+}
 export function queuePush(tile) {
     let listItem = document.createElement('li');
     let image = document.createElement('img');
@@ -91,11 +101,10 @@ export function queuePush(tile) {
     image.width="128";
     image.height="128";
 
-    document.getElementById('tile-queue').appendChild(listItem.appendChild(image));
+    queueList.insertBefore(listItem.appendChild(image), listItem.firstChild);
 }
 
 export function queuePop() {
-    let queueList = document.getElementById('tile-queue');
     queueList.removeChild(queueList.firstChild);
 }
 

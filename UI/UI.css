@@ -275,6 +275,12 @@ body {
          .category:not(:last-child) {
             border-bottom: double 10px var(--color-accent);
          }
+         .shop-category-title {
+            text-align: center;
+            margin: 0 0 0 0;
+            text-decoration: wavy;
+            border-bottom: double 10px var(--color-accent);
+         }
          .shop-item {
             display: grid;
             grid-template-columns: 50% 50%;

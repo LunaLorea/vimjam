@@ -1,4 +1,4 @@
-import { queuePop, queuePush } from "./uiHook.js";
+import { queuePop, queueAppend } from "./uiHook.js";
 
 export default class PlayingField {
 
@@ -348,7 +348,7 @@ export default class PlayingField {
       let randomIndex = Math.floor(Math.random() * (keyTypes.length-1 + stopOffset))
       let tileName=[keyTypes[randomIndex]];
       this.nextTiles.push(this.#TileTypes[tileName]);
-      queuePush(tileName);
+      queueAppend(tileName);
     }
   }
 

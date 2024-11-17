@@ -18,7 +18,7 @@ export default class Shop {
     this.playingField = playingField;
     this.sceneInformation = sceneInformation;
     this.towerHandler = towerHandler;
-    this.money = 1000;
+    this.money = 1000; // starting money
     addEventListener("mousedown", () => this.placeTower() );
   }
 
