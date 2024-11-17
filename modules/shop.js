@@ -156,7 +156,8 @@ export default class Shop {
       }
       
       const type = this.playingField.TileTypes[tileIdentifier];
-      const rotation = 0;
+      const rotation = this.playingField.rotateTileCount % 6;
+      console.log(rotation);
       if (this.money < price) {
         console.error("trying to place, to expensive object")
         return
@@ -171,6 +172,7 @@ export default class Shop {
         return;
       }
 
+      
     }
     else {
       console.log(`no such item: ${this.itemBought}`);
