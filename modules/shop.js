@@ -108,6 +108,8 @@ export default class Shop {
         /*tmp*/
         return;
       }
+      
+      console.log(this.towerHandler.TowerTypes[towerIdentifier]);
 
       this.money -= price; // to always deduct money before placing, to avoid potential glitches
       this.towerHandler.addNewTower(this.towerHandler.TowerTypes[towerIdentifier], chosenSlot);

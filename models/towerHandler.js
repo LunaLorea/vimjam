@@ -13,7 +13,7 @@ export default class TowerHandler {
       // secends per projectile
       defaultFireRate: 1.5,
       timeToFirstShot: 0.2,
-      defaultRadius: 2,
+      defaultRadius: 3,
       defaultDamage: 1,
       defaultMode: this.AttackModes.closeFirst,
       unusedObj: new Set(),
@@ -22,7 +22,7 @@ export default class TowerHandler {
     },
     spikes: {
       cost: 75,
-      resellValues: 45,
+      resellValue: 45,
       objName: "tower-spikes",
       unusedObj: new Set(),
       initFunction: this.initSpikesTower,
@@ -30,11 +30,14 @@ export default class TowerHandler {
     },
     toll: {
       cost: 150,
-  resellValue: 80,
-      objName: "",
+      resellValue: 100,
+      objName: "tower-toll",
+      defaultFireRate: 0.4,
+      defaultRadius: 3,
+      moneyPerCar: 3,
       unusedObj: new Set(),
-      initFunction: this.initTollTower,
-      doTickFunction: this.tickTollTower,
+      initFunction: (tower) => this.initTollTower(tower),
+      doTickFunction: (tower) => this.tickTollTower(tower),
     }
   };
   ProjectileTypes = {
@@ -53,6 +56,7 @@ export default class TowerHandler {
     this.sceneInformation = sceneInformation;
     this.playingField = playingField;
     this.enemyHandler = enemyHandler;
+    console.log(this.TowerTypes.toll.objName);
   }
 
   addNewTower(type, slot) {
@@ -63,6 +67,7 @@ export default class TowerHandler {
       towerObject.position = slot.position;
       towerObject.rotation = slot.rotation;
     } else {
+      console.log(type)
       towerObject = this.sceneInformation.addNewObject(
         type.objName,
         slot.position,
@@ -209,13 +214,33 @@ export default class TowerHandler {
     tower.timer = tower.timer % tower.fireRate;
   }
 
-  initSpikesTower() {}
+  initSpikesTower(tower) {
+  }
 
   tickSpikesTower() {}
 
-  initTollTower() {}
+  initTollTower(tower) {
+    const type = this.TowerTypes.toll;
+    tower.fireRate = type.defaultFireRate;
+    tower.radius = type.defaultRadius * tower.rangeM;
+    tower.position = tower.inWorldObj.position;
+    tower.timer = 0;
+    tower.moneyPerCar = type.moneyPerCar;
+  }
 
-  tickTollTower() {}
+  tickTollTower(tower) {
+    tower.timer += 1/60;
+
+    if (tower.timer > tower.fireRate) {
+      console.log("fire!");
+      const position = tower.position;
+      const enemiesInRange = this.enemyHandler.getEnemiesInRadius(position, tower.radius);
+      console.log(enemiesInRange);
+      this.addMoney(tower.moneyPerCar * enemiesInRange.enemies.length);
+    }
+
+    tower.timer = tower.timer % tower.fireRate;
+  }
 
 
 

@@ -30,6 +30,7 @@ export default class GameLogic {
     this.towerHandler = new TowerHandler(this.sceneInformation, this.playingField, this.enemyHandler);
     this.shop = new Shop(this.playingField, this.sceneInformation, this.towerHandler);
     this.enemyHandler.addMoney = this.shop.addMoney;
+    this.towerHandler.addMoney = this.shop.addMoney;
     // Initial Game State
     this.maxHealth = 10;
     this.health = this.maxHealth;
