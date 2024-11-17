@@ -26,7 +26,7 @@ export default class PlayingField {
       hasEntrance: false,
       slots: [{
         rotation: [0, 0, 0],
-        relPosition: {x: 0, y:0, z:0},
+        relPosition: {x: 0, y:-0.2, z:0},
         damageMultiplier: 2,
         rangeMultiplier: 1,
         scale: 2,
@@ -191,7 +191,6 @@ export default class PlayingField {
     let obj = null;
     let scale = 0.4;
 
-      console.log(slot);
     if (this.billboard.unusedObj.length > 0) {
       obj = this.billboard.unusedObj.pull();
       obj.position = slot.position;
@@ -438,7 +437,7 @@ export default class PlayingField {
     queuePop(); //in UI
     for (let i = 0; i < count; i++) {
       let stopOffset = 0;
-      if (this.leaves > 3) {
+      if (this.leaves > 5) {
         stopOffset = 1;
       }
       let keyTypes = this.#RoadTypes;
@@ -473,12 +472,10 @@ export default class PlayingField {
   }
 
   removeBranch(stopTile) {
-    console.log("remove branch from", stopTile);
     this.removeExitRecursivly(stopTile.parentTile, stopTile.parentExit);
   }
 
   removeExitRecursivly(tile, exit) {
-    console.log("remove exit from tile", tile, exit);
     tile.children.delete(exit);
     if (tile.children.size > 0) {
       return;

@@ -39,7 +39,7 @@ export default class TowerHandler {
   };
   ProjectileTypes = {
     tires: {
-      speed: 5,
+      speed: 10,
       unusedObj: new Set(),
       defaultRotation: [0, 0, 0],
       objName: "projectile-tire",
@@ -100,6 +100,10 @@ export default class TowerHandler {
     this.currentProjectiles.forEach( (projectile) => {
       this.animateProjectiles(projectile, deltaTime);
     });
+  }
+
+  showGhostTower() {
+    
   }
 
   addProjectile(type, target, startPosition, damage) {

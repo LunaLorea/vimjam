@@ -5,6 +5,7 @@ export default class EnemyHandler {
       speed: 5,
       health: 1,
       scale: 0.38,
+      worth: 10,
       
       objName: "enemy-formula1",
       unusedObjects: new Set(),
@@ -49,6 +50,7 @@ export default class EnemyHandler {
 
   killEnemy(enemy) {
     this.deleteEnemy(enemy);
+    this.addMoney(enemy.type.worth);
   }
 
   deleteEnemy(enemy) {
@@ -91,12 +93,13 @@ export default class EnemyHandler {
     }
 
     this.currentEnemies.add(newEnemie);
+    newEnemie.gotNewTarget=true;
   }
 
   doTick() {
     this.tickDmg = 0;
     this.currentEnemies.forEach( enemy => {
-      if (enemy.distanceToTargetTile <= 1e-5) {
+      if (enemy.distanceToTargetTile <= 1e-5 && !enemy.gotNewTarget) {
 
         if (enemy.hasReachedEnd) {
           this.deleteEnemy(enemy);
@@ -116,20 +119,17 @@ export default class EnemyHandler {
 
         let chosenExit = exitArray[random];
 
-        console.log(chosenExit);
-
         const nextTile = this.playingField.getTileFromExit(enemy.currentTile, exitArray[random]);
-        console.log(nextTile)
         if (
           nextTile == undefined || 
           nextTile.rotation != (3 + chosenExit+enemy.currentTile.rotation) % 6 ||
           !nextTile.type.hasEntrance
         ) {
-          console.log("hasReachedEnd");
           enemy.hasReachedEnd = true;
         }
         enemy.inWorldEnemy.rotation[1] = -(nextTile.rotation + enemy.type.defaultRotation) % 6 * 2/3;
         enemy.currentTile = nextTile;
+        enemy.gotNewTarget = true;
       }
     });
     return this.tickDmg;
@@ -138,6 +138,7 @@ export default class EnemyHandler {
   doAnimations(deltaTime) {
     
     this.currentEnemies.forEach( (enemy) => {
+
       const enemyPos = enemy.inWorldEnemy.position;
       const targetPos = [
         enemy.currentTile.worldCoordinates.x, enemy.type.trackHeight, enemy.currentTile.worldCoordinates.y
@@ -146,6 +147,8 @@ export default class EnemyHandler {
       vec3.sub(targetVector, targetPos, enemyPos);
       enemy.distanceToTargetTile = Math.sqrt(vec3.dot(targetVector, targetVector));
       
+      if (enemy.distanceToTargetTile < 1e-6);
+
       let stepDistance = 
         enemy.type.speed *
         enemy.slowFactor * 
@@ -156,7 +159,7 @@ export default class EnemyHandler {
       vec3.normalize(targetVector, targetVector);
       vec3.scale(targetVector, targetVector, Math.min(stepDistance, enemy.distanceToTargetTile));
       vec3.add(enemyPos, enemyPos, targetVector)
-
+      enemy.gotNewTarget = false;
     });
     
   }
