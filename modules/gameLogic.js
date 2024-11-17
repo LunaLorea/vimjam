@@ -31,7 +31,7 @@ export default class GameLogic {
     this.shop = new Shop(this.playingField, this.sceneInformation, this.towerHandler);
     this.enemyHandler.addMoney = this.shop.addMoney;
     // Initial Game State
-    this.maxHealth = 0;
+    this.maxHealth = 10;
     this.health = this.maxHealth;
     this.money = 250.0;
     this.maxMoney = Math.max(this.money);
@@ -107,11 +107,16 @@ export default class GameLogic {
     else {
       this.wavePattern[this.turn] = turnPattern-1;
     }
-    if (this.turn >= this.wavePattern.length) {
+    if (this.turn >= this.wavePattern.length) { // wave over
+      this.shop.money += this.roundReward(round);
       this.playingField.activateTilePlacing(5);
       clearInterval(this.currentWave);
       this.currentWave=null;
     }
+  }
+
+  roundReward = (round) => {
+    return 250;
   }
 
   updateStats() { // tree: no wealth exists yet
