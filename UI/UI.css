@@ -284,6 +284,7 @@ body {
          }
          .shop-item {
             display: grid;
+            gap: 5px;
             grid-template-columns: 50% 50%;
             grid-template-rows: 1rem 70% calc(var(--element-height)+2*var(--padding));
 
