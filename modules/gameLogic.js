@@ -39,6 +39,8 @@ export default class GameLogic {
     this.currentWave;
     this.wavePattern = [];
     this.turn;
+    this.totalEnemies=1;
+    this.enemiesSpawned=0;
   }
 
   stopGame() {
@@ -64,8 +66,13 @@ export default class GameLogic {
     if (this.currentWave !== undefined || this.currentWave !== null) { // check if wave is running
       this.waveCounter += 1;
       this.wavePattern = generateEnemyPattern(this.waveCounter);
-      let spawnIntervall = 3*1000;
+      let spawnIntervall = 3*1000; // HERE WE CAN AFFECT WAVE SPAWN SPEED, IMPORTANT TO COMPARE WITH SHOOTING SPEED
       this.turn=0;
+      this.totalEnemies=0;
+      this.enemiesSpawned=0;
+      this.wavePattern.forEach(num => {
+        this.totalEnemies += num.toString(2).split('1').length - 1;
+      })
       this.currentWave = setInterval(() => {this.waveSpawn()}, spawnIntervall);
       this.playingField.deactivateTilePlacing();
       console.log("wave started");
@@ -76,9 +83,10 @@ export default class GameLogic {
     let turnPattern = this.wavePattern[this.turn];
     if (turnPattern&1 == 1) {
       this.enemyHandler.spawnNewEnemy(this.enemyHandler.enemyTypes.formula1);
+      this.enemiesSpawned += 1;
     }
     if (turnPattern==0) {
-      this.turn = this.turn + 1;
+      this.turn += 1;
     }
     else {
       this.wavePattern[this.turn] = turnPattern>>1;
@@ -90,8 +98,8 @@ export default class GameLogic {
     }
   }
 
-  updateStats() { // tree: no wealth, wave progress exists yet
-    setWaveProgress(1, this.waveCounter);
+  updateStats() { // tree: no wealth exists yet
+    setWaveProgress(this.enemiesSpawned/this.totalEnemies, this.waveCounter);
     setHealth(this.health, this.maxHealth);
     setWealth(this.score, this.score);
   }

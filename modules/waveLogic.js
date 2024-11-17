@@ -28,7 +28,7 @@ function generateIntWithOnes(minOnes, maxOnes, maxBits = 31) {
     // Ensure the maxOnes is not greater than the maxBits
     maxOnes = Math.min(maxOnes, maxBits);
     let ones=Math.random()*(maxOnes-minOnes) + minOnes;
-    let number = 2^(ones+1)-1;
+    let number = 2^(ones+1)-2;
     /*
     // Generate a random number of 1s (<= maxOnes, >= minOnes)
     for (let i = 0; i < minOnes; i++) {
