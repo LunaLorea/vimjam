@@ -428,13 +428,12 @@ body {
       justify-content:space-evenly;
       gap: var(--padding);
 
-      > li:first-child {
+      > img:first-child {
          flex: 5 0; /*first item twice the size*/
-         padding-bottom: var(--padding);
          border-bottom: solid 3px var(--color-accent);
          
       }
-      > li {
+      > {
          width: inherit;
          flex: 4 0;
          aspect-ratio: 1;

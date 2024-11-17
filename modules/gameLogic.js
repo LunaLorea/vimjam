@@ -111,7 +111,7 @@ export default class GameLogic {
     }
     if (this.turn >= this.wavePattern.length) { // wave over
       this.shop.money += this.roundReward();
-      this.playingField.activateTilePlacing(5);
+      this.playingField.activateTilePlacing(2);
       clearInterval(this.currentWave);
       this.currentWave=null;
     }
