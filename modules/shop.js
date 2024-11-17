@@ -112,22 +112,34 @@ export default class Shop {
       const tileIdentifier = this.Items.tiles[this.itemBought].identifier;
       const price = this.Items.tiles[this.itemBought].price;
 
-      let chosenSlot = null;
       //TODO: find where to place
+      const mouseCoord = {
+        x: this.sceneInformation.mouseInWorld[0],
+        y: this.sceneInformation.mouseInWorld[2],
+      }
+      const tileCoord = this.playingField.squareToHexCoordinates(mouseCoord);
+      let q = tileCoord.q;
+      let r = tileCoord.r;
+
+      if (!(this.playingField.tiles[q] == undefined || this.playingField.tiles[q][r] == undefined)) {
+        console.log("Tile is already occupied");
+        return;
+      }
+      if ( !(
+          this.playingField.availableTiles[q] == undefined || 
+          this.playingField.availableTiles[q][r] == undefined
+        )
+      ) {
+        console.log("Tile is a potential place for a road");
+        return;
+      }
       
-      /*const availableSlots = this.playingField.availableSlots;
-        availableSlots.forEach( (slot) => {
-        const distVec = vec3.create();
-        let tempPos = [...slot.position];
-        tempPos[1] = 0;
-        vec3.sub(distVec, tempPos, this.sceneInformation.mouseInWorld);
-        let distance = Math.sqrt(vec3.dot(distVec, distVec));
-        if (distance <= 0.38) {
-          chosenSlot = slot;
-        }
-      });*/
+      const type = this.playingField.TileTypes[tileIdentifier];
+      const rotation = 0;
+
+      const newTile = this.playingField.createNewTile(type, rotation, tileCoord);
       
-      if (chosenSlot == null) {
+      if (newTile == null) {
         /*tmp*/
         console.log("couldn't place");
         /*tmp*/

@@ -66,7 +66,7 @@ export default class TowerHandler {
       towerObject = this.sceneInformation.addNewObject(
         type.objName,
         slot.position,
-        [0, 0, 0],
+        slot.rotation,
         slot.scale,
       );
     }
@@ -78,7 +78,7 @@ export default class TowerHandler {
       dmgM: slot.damageMultiplier,
       rangeM: slot.rangeMultiplier,
     }
-
+    this.playingField.removeBillBoard(slot);
     type.initFunction(newTower);
     this.currentTowers.add(newTower)
     return newTower;

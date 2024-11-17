@@ -105,6 +105,9 @@ function main() {
     ["projectile-tire", "models/reifen-projektil.obj", "textures/defenstextures_BaseColor.png"],
     ["tower-tire", "models/reifentower.obj", "textures/defenstextures_BaseColor.png"],
     ["tower-spikes", "models/spikes.obj", "textures/defenstextures_BaseColor.png"],
+    ["tower-toll", "models/tollstation.obj", "textures/towers_BaseColor.png"],
+    ["tower-sniper", "models/snipertower.obj", "textures/towers_BaseColor.png"],
+    ["deko-billboard", "models/billboards.obj", "textures/towers_BaseColor.png"],
   ];
   
   const sceneInformation = new SceneInformation(gl);

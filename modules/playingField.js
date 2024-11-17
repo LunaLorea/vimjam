@@ -2,7 +2,7 @@ import { queuePop, queueAppend } from "./uiHook.js";
 
 export default class PlayingField {
 
-  #TileTypes = {
+  TileTypes = {
     start: {
       exits: [3, 0],
       objName: "hexagonal-plate-start",
@@ -25,6 +25,7 @@ export default class PlayingField {
       defaultRotation: 0,
       hasEntrance: false,
       slots: [{
+        rotation: [0, 0, 0],
         relPosition: {x: 0, y:0, z:0},
         damageMultiplier: 2,
         rangeMultiplier: 1,
@@ -38,6 +39,7 @@ export default class PlayingField {
       defaultRotation: 3,
       hasEntrance: false,
       slots: [{
+        rotation: [0, 0, 0],
         relPosition: {x: 0, y:0.4, z:-0.3},
         damageMultiplier: 1,
         rangeMultiplier: 1.5,
@@ -51,6 +53,7 @@ export default class PlayingField {
       defaultRotation: 3,
       hasEntrance: true,
       slots: [{
+        rotation: [0, 0, 0],
         relPosition: {x: 0, y:0, z:0},
         damageMultiplier: 0.75,
         rangeMultiplier: 0.75,
@@ -64,12 +67,14 @@ export default class PlayingField {
       defaultRotation: 0,
       hasEntrance: true,
       slots: [{
+        rotation: [0, 1, 0],
         relPosition: {x: 0.72, y:0.1, z:0},
         damageMultiplier: 0.5,
         rangeMultiplier: 0.5,
         scale: 0.7,
       },
       {
+        rotation: [0, 1, 0],
         relPosition: {x: -0.72, y:0.1, z:0},
         damageMultiplier: 0.5,
         rangeMultiplier: 0.5,
@@ -84,6 +89,7 @@ export default class PlayingField {
       hasEntrance: true,
       slots: [{
         relPosition: {x: -0.4, y:0.1, z:-0.4},
+        rotation: [0, 0, 0],
         damageMultiplier: 1,
         rangeMultiplier: 1,
         scale: 0.75,
@@ -96,7 +102,8 @@ export default class PlayingField {
       defaultRotation: -2,
       hasEntrance: true,
       slots: [{
-        relPosition: {x: 0.4, y:0.1, z:0.4},
+        rotation: [0, 0, 0],
+        relPosition: {x: 0.4, y:0.1, z:-0.34},
         damageMultiplier: 1,
         rangeMultiplier: 1,
         scale: 1,
@@ -146,13 +153,17 @@ export default class PlayingField {
     this.#exitCoordMap.set(4, [1, -1]);
     this.#exitCoordMap.set(5, [1, 0]);
 
-    this.startTile0 = this.createNewTile(this.#TileTypes.start, 0, {q: 0, r: 0});
-    this.startTile1 = this.createNewTile(this.#TileTypes.audience, 4, {q: -1, r: 1});
-    this.startTile2 = this.createNewTile(this.#TileTypes.audience, 5, {q: -1, r: 0});
-    this.startTile3 = this.createNewTile(this.#TileTypes.straight, 3, {q: 0, r: 1});
-    this.startTile4 = this.createNewTile(this.#TileTypes.audience, 2, {q: 1, r: 0});
-    this.startTile5 = this.createNewTile(this.#TileTypes.audience, 1, {q: 1, r: -1});
-    this.startTile6 = this.createNewTile(this.#TileTypes.straight, 0, {q: 0, r: -1});
+    this.startTile0 = this.createNewTile(this.TileTypes.start, 0, {q: 0, r: 0});
+    this.startTile1 = this.createNewTile(this.TileTypes.audience, 4, {q: -1, r: 1});
+    this.startTile2 = this.createNewTile(this.TileTypes.audience, 5, {q: -1, r: 0});
+    this.startTile3 = this.createNewTile(this.TileTypes.straight, 3, {q: 0, r: 1});
+    this.startTile3.parentTile = this.startTile0;
+    this.startTile3.parentExit = 0;
+    this.startTile4 = this.createNewTile(this.TileTypes.audience, 2, {q: 1, r: 0});
+    this.startTile5 = this.createNewTile(this.TileTypes.audience, 1, {q: 1, r: -1});
+    this.startTile6 = this.createNewTile(this.TileTypes.straight, 0, {q: 0, r: -1});
+    this.startTile6.parentTile = this.startTile0;
+    this.startTile6.parentExit = 3;
 
     addEventListener("mousedown", () => {
       sceneInformation.mouseMoved = false;
@@ -165,6 +176,42 @@ export default class PlayingField {
   }
 
   availableSlots = new Set();
+
+  billboard = {
+    unusedObj: [],
+    objName: "deko-billboard",
+  }
+
+
+
+  addBillBoard(slot) {
+
+    let obj = null;
+    let scale = 0.4;
+
+      console.log(slot);
+    if (this.billboard.unusedObj.length > 0) {
+      obj = this.billboard.unusedObj.pull();
+      obj.position = slot.position;
+      obj.rotation = slot.rotation;
+      obj.scale = slot.scale * scale;
+    } else {
+      obj = this.sceneInformation.addNewObject(
+        this.billboard.objName,
+        slot.position,
+        slot.rotation, 
+        slot.scale * scale,
+      )
+    }
+
+    slot.billboard = obj;
+  }
+
+  removeBillBoard(slot) {
+    const obj = slot.billboard;
+    slot.billboard = null;
+    obj.scale = 0;
+  }
 
   activateTilePlacing(tileAmount = 3) {
     this.canPlaceTiles = true;
@@ -194,20 +241,23 @@ export default class PlayingField {
       rotation: rotation,
       coordinates: coordinates,
       worldCoordinates: this.hexToSquareCoordinates(coordinates),
-      children: [...type.exits],
+      children: new Set([...type.exits]),
       parentTile: null,
       slots: [...type.slots],
     }
 
     let tilePos = newTile.inWorldTile.position;
+    let tileRot = newTile.inWorldTile.rotation;
 
     newTile.slots.forEach( (slot) => {
       const relPos = vec3.create();
       vec3.rotateY(relPos, [slot.relPosition.x, slot.relPosition.y, slot.relPosition.z], [0, 0, 0], - newTile.rotation );
-      console.log(relPos);
       slot.position = vec3.create();
       vec3.add(slot.position, relPos, tilePos);
-      this.availableSlots.add(structuredClone(slot));
+      const clone = structuredClone(slot);
+      vec3.add(clone.rotation, clone.rotation, tileRot);
+      this.availableSlots.add(clone);
+      this.addBillBoard(clone);
     });
 
 
@@ -268,7 +318,7 @@ export default class PlayingField {
   }
 
   initGhostTiles() {
-    for (const type in this.#TileTypes) {
+    for (const type in this.TileTypes) {
       const obj = this.sceneInformation.addNewObject(
         type.objName,
         [0, 0, 0],
@@ -323,10 +373,10 @@ export default class PlayingField {
     newTile.parentExit = availableTile.parentExits[chosenParent];
     
 
-    if (tile == this.#TileTypes["split"]) {
+    if (tile == this.TileTypes["split"]) {
       this.leaves += 1;
     }
-    if (tile == this.#TileTypes["stop"]) {
+    if (tile == this.TileTypes["stop"]) {
       this.leaves -= 1;
       this.removeBranch(newTile);
     }
@@ -347,7 +397,7 @@ export default class PlayingField {
       let keyTypes = this.#RoadTypes;
       let randomIndex = Math.floor(Math.random() * (keyTypes.length-1 + stopOffset))
       let tileName=[keyTypes[randomIndex]];
-      this.nextTiles.push(this.#TileTypes[tileName]);
+      this.nextTiles.push(this.TileTypes[tileName]);
       queueAppend(tileName);
     }
   }
@@ -376,13 +426,14 @@ export default class PlayingField {
   }
 
   removeBranch(stopTile) {
+    console.log("remove branch from", stopTile);
     this.removeExitRecursivly(stopTile.parentTile, stopTile.parentExit);
   }
 
   removeExitRecursivly(tile, exit) {
-    let exitIndex = tile.children.findIndex((element) => {element == exit;});
-    tile.children.shift(exitIndex);
-    if (tile.children.length > 0) {
+    console.log("remove exit from tile", tile, exit);
+    tile.children.delete(exit);
+    if (tile.children.size > 0) {
       return;
     }
     this.removeExitRecursivly(tile.parentTile, tile.parentExit);

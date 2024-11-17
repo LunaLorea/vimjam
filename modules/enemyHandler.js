@@ -105,12 +105,27 @@ export default class EnemyHandler {
           return;
         }
         const exits = enemy.currentTile.children;
-        let random = Math.floor(Math.random() * exits.length);
+
+        const exitArray = Array.from(exits);
+
+        let random = Math.floor(Math.random() * exitArray.length);
         if (exits.length == 0) {
+          console.error("enemy found no valid path");
           return;
         }
-        const nextTile = this.playingField.getTileFromExit(enemy.currentTile, exits[random]);
-        if (nextTile == undefined || nextTile.rotation != (3 + exits[random]+enemy.currentTile.rotation) % 6 || !nextTile.type.hasEntrance) {
+
+        let chosenExit = exitArray[random];
+
+        console.log(chosenExit);
+
+        const nextTile = this.playingField.getTileFromExit(enemy.currentTile, exitArray[random]);
+        console.log(nextTile)
+        if (
+          nextTile == undefined || 
+          nextTile.rotation != (3 + chosenExit+enemy.currentTile.rotation) % 6 ||
+          !nextTile.type.hasEntrance
+        ) {
+          console.log("hasReachedEnd");
           enemy.hasReachedEnd = true;
         }
         enemy.inWorldEnemy.rotation[1] = -(nextTile.rotation + enemy.type.defaultRotation) % 6 * 2/3;
