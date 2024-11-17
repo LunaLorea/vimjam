@@ -65,7 +65,6 @@ export default class Shop {
       return false;
     }
     if (this.money >= price) {
-      // TODO: push tower to top of towers bought stack? (or a single one)
       this.itemBought = item;
       return true;
     }
