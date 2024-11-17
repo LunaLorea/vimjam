@@ -7,30 +7,40 @@ export default class TowerHandler {
   };
   TowerTypes = {
     tire: {
-      cost: 100,
-      resellValue: 60,
       objName: "tower-tire",
       // secends per projectile
       defaultFireRate: 1.5,
       timeToFirstShot: 0.2,
       defaultRadius: 3,
       defaultDamage: 1,
+      projectileSpeed: 1,
+      projetileSize: 1,
+      defaultMode: this.AttackModes.closeFirst,
+      unusedObj: new Set(),
+      initFunction: (tower) => this.initTireTower(tower),
+      doTickFunction: (tower) => this.tickTireTower(tower),
+    },
+    sniper: {
+      objName: "tower-sniper",
+      // secends per projectile
+      defaultFireRate: 3.5,
+      timeToFirstShot: 0.2,
+      defaultRadius: 15,
+      defaultDamage: 1,
+      projectileSpeed: 2,
+      projetileSize: 1.5,
       defaultMode: this.AttackModes.closeFirst,
       unusedObj: new Set(),
       initFunction: (tower) => this.initTireTower(tower),
       doTickFunction: (tower) => this.tickTireTower(tower),
     },
     spikes: {
-      cost: 75,
-      resellValue: 45,
       objName: "tower-spikes",
       unusedObj: new Set(),
       initFunction: this.initSpikesTower,
       doTickFunction: this.tickSpikesTower,
     },
     toll: {
-      cost: 150,
-      resellValue: 100,
       objName: "tower-toll",
       defaultFireRate: 0.4,
       defaultRadius: 3,
