@@ -49,6 +49,7 @@ export default class GameLogic {
 
   stopGame() {
     this.playingField.deactivateTilePlacing(); //optional?
+    clearInterval(this.currentWave);
     clearInterval(this.currentGame);
   }
 
