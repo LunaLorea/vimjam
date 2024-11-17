@@ -5,6 +5,7 @@ export default class EnemyHandler {
       speed: 5,
       health: 1,
       scale: 0.38,
+      worth: 10,
       
       objName: "enemy-formula1",
       unusedObjects: new Set(),
@@ -49,6 +50,7 @@ export default class EnemyHandler {
 
   killEnemy(enemy) {
     this.deleteEnemy(enemy);
+    this.addMoney(enemy.type.worth);
   }
 
   deleteEnemy(enemy) {

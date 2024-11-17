@@ -27,7 +27,8 @@ export default class Shop {
     this.playingField = playingField;
     this.sceneInformation = sceneInformation;
     this.towerHandler = towerHandler;
-    this.money = 1000; // starting money
+    this.money = 250; // starting money
+
     this.itemBought;
     addEventListener("mousedown", () => {this.placeTower();});
     this.initShop();
@@ -48,6 +49,10 @@ export default class Shop {
       const buyingFunc = () => {this.buyItem(tile)};
       addShopItem(identifier, price, category, buyingFunc);
     }
+  }
+
+  addMoney = (amount) => {
+    this.money += amount;
   }
 
   buyItem = (item) => { // item is a tower/tile type as in the dict above

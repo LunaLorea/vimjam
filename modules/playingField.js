@@ -437,7 +437,7 @@ export default class PlayingField {
     queuePop(); //in UI
     for (let i = 0; i < count; i++) {
       let stopOffset = 0;
-      if (this.leaves > 3) {
+      if (this.leaves > 5) {
         stopOffset = 1;
       }
       let keyTypes = this.#RoadTypes;
