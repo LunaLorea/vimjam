@@ -138,7 +138,7 @@ export default class PlayingField {
     setTileCount(this.placeableTileCount);
 
     this.rotateTileCount = 0;
-    document.getElementById("gl-canvas").addEventListener("keydown", () => {
+    addEventListener("keydown", () => {
       if (sceneInformation.getKeyValue("rotate") == 1) {
        this.rotateTileCount += 1;
       }
@@ -177,6 +177,8 @@ export default class PlayingField {
     this.startTile6 = this.createNewTile(this.TileTypes.straight, 0, {q: 0, r: -1});
     this.startTile6.parentTile = this.startTile0;
     this.startTile6.parentExit = 3;
+      
+    this.placeRandomTiles();
 
     this.initGhostTiles();
 
@@ -197,7 +199,18 @@ export default class PlayingField {
     objName: "deko-billboard",
   }
 
+  placeRandomTiles() {
+    console.log(tiles);
+    const random = Math.random() * 30 + 10;
+    for (let i = 0; i < random; i++) {
+      let coords = this.squareToHexCoordinates({x: Math.random*100,y: Math.random*100});
+      let rotation = Math.floor(Math.random * 6);
+      console.log(coords, rotation);
+      this.createNewTile(this.TileTypes.empty, rotation, coords);
+    }
 
+
+  }
 
   addBillBoard(slot) {
 
