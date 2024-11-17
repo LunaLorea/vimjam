@@ -10,6 +10,7 @@ export default class PlayingField {
       hasEntrance: true,
       slots: [],
       ghostTile: {},
+      isRoad: true,
     },
     startFlag: {
       exits: [],
@@ -18,6 +19,7 @@ export default class PlayingField {
       hasEntrance: true,
       slots: [],
       ghostTile: {},
+      isRoad: false,
     },
     empty: {
       exits: [],
@@ -32,6 +34,7 @@ export default class PlayingField {
         scale: 1.7,
       }],
       ghostTile: {},
+      isRoad: false,
     },
     audience: {
       exits: [],
@@ -46,6 +49,7 @@ export default class PlayingField {
         scale: 0.9,
       }],
       ghostTile: {},
+      isRoad: false,
     },
     stop: {
       exits: [],
@@ -60,6 +64,7 @@ export default class PlayingField {
         scale: 1,
       }],
       ghostTile: {},
+      isRoad: false,
     },
     straight: {
       exits: [3],
@@ -81,6 +86,7 @@ export default class PlayingField {
         scale: 0.7,
       } ],
       ghostTile: {},
+      isRoad: true,
     },
     curve_right: {
       exits: [4],
@@ -95,6 +101,7 @@ export default class PlayingField {
         scale: 0.75,
       }],
       ghostTile: {},
+      isRoad: true,
     },
     curve_left: {
       exits: [2],
@@ -109,6 +116,7 @@ export default class PlayingField {
         scale: 1,
       }],
       ghostTile: {},
+      isRoad: true,
     },
     split: {
       exits: [2, 4],
@@ -117,10 +125,11 @@ export default class PlayingField {
       hasEntrance: true,
       slots: [],
       ghostTile: {},
+      isRoad: true,
     }
   };
 
-  #RoadTypes = ["straight", "curve_right", "curve_left", "split", "stop", ];
+  RoadTypes = ["straight", "curve_right", "curve_left", "split", "stop", ];
 
   allAvailableMarkers = [];
 
@@ -468,7 +477,7 @@ export default class PlayingField {
       if (this.leaves > 5) {
         stopOffset = 1;
       }
-      let keyTypes = this.#RoadTypes;
+      let keyTypes = this.RoadTypes;
       let randomIndex = Math.floor(Math.random() * (keyTypes.length-1 + stopOffset))
       let tileName=[keyTypes[randomIndex]];
       this.nextTiles.push(this.TileTypes[tileName]);
@@ -492,9 +501,11 @@ export default class PlayingField {
       let squareCoordinates = this.hexToSquareCoordinates({q: q, r: r});
       const placeHolderTile = {
         worldCoordinates: squareCoordinates,
+        isPlaceHolder: true,
       };
       return placeHolderTile;
     }
+    this.tiles[q][r].isPlaceHolder = false;
     return this.tiles[q][r];
 
   }

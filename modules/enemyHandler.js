@@ -2,8 +2,8 @@ export default class EnemyHandler {
   
   enemyTypes  = {
     formula1: {
-      speed: 3.5,
-      health: 1,
+      speed: 5.5,
+      health: 2,
       scale: 0.38,
       worth: 17,
       
@@ -13,7 +13,7 @@ export default class EnemyHandler {
       defaultRotation: 3,
     },
     formula2: {
-      speed: 5.5,
+      speed: 3.5,
       health: 1,
       scale: 0.38,
       worth: 17,
@@ -96,9 +96,9 @@ export default class EnemyHandler {
   }
 
   slowEnemy(enemy, slowfactor) {
-    enemy.slowFactor = max(slowfactor, enemy.slowfactor);
+    enemy.slowFactor = Math.min(slowfactor, enemy.slowFactor);
   }
-
+ 
   spawnNewEnemy(type, damage = 1) {
     let startPosition = [0, type.trackHeight, 0];
     const newEnemie = {

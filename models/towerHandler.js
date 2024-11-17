@@ -37,8 +37,9 @@ export default class TowerHandler {
     spikes: {
       objName: "tower-spikes",
       unusedObj: new Set(),
-      initFunction: this.initSpikesTower,
-      doTickFunction: this.tickSpikesTower,
+      defaultFireRate: 5,
+      initFunction: (tower) => this.initSpikesTower(tower),
+      doTickFunction: (tower) => this.tickSpikesTower(tower),
     },
     toll: {
       objName: "tower-toll",
@@ -57,6 +58,12 @@ export default class TowerHandler {
       defaultRotation: [0, 0, 0],
       objName: "projectile-tire",
     },
+    spikes: {
+      speed: 10,
+      unusedObj: new Set(),
+      objName: "projectile-spike",
+      maxLifeTime: 10,
+    }
   };
 
   currentTowers = new Set();
@@ -66,7 +73,6 @@ export default class TowerHandler {
     this.sceneInformation = sceneInformation;
     this.playingField = playingField;
     this.enemyHandler = enemyHandler;
-    console.log(this.TowerTypes.toll.objName);
   }
 
   addNewTower(type, slot) {
@@ -77,7 +83,6 @@ export default class TowerHandler {
       towerObject.position = slot.position;
       towerObject.rotation = slot.rotation;
     } else {
-      console.log(type)
       towerObject = this.sceneInformation.addNewObject(
         type.objName,
         slot.position,
@@ -106,7 +111,10 @@ export default class TowerHandler {
     this.currentProjectiles.forEach( (projectile, index) => {
       this.tickProjectiles(projectile, index);
     });
-
+    
+    this.currentSpikes.forEach( (spike) => {
+      this.tickSpike(spike);
+    });
     
 
   }
@@ -114,6 +122,9 @@ export default class TowerHandler {
   doAnimations(deltaTime) {
     this.currentProjectiles.forEach( (projectile) => {
       this.animateProjectiles(projectile, deltaTime);
+    });
+    this.currentSpikes.forEach( (spike) => {
+      this.animateSpike(spike, deltaTime);
     });
   }
 
@@ -231,10 +242,140 @@ export default class TowerHandler {
 
   }
 
-  initSpikesTower(tower) {
+  currentSpikes = new Set();
+
+  addSpike(startPosition, possibleTiles) {
+    if (possibleTiles.length == 0) {
+      return;
+    }
+
+    const type = this.ProjectileTypes.spikes;
+    let projectileObject = null;
+
+    if (type.unusedObj.size > 0) {
+      projectileObject = type.unusedObj.values().next().value;
+      type.unusedObj.delete(projectileObject);
+      projectileObject.position = [...startPosition];
+      projectileObject.rotation = [0, 0, 0];
+      projectileObject.scale = 1;
+    } else {
+      projectileObject = this.sceneInformation.addNewObject(
+        type.objName,
+        [...startPosition],
+        [0, 0, 0],
+        1
+      );
+    }
+
+    projectileObject.position[1] = 0.5
+    
+    let random = Math.floor(Math.random() * possibleTiles.length);
+    const targetPos = [...possibleTiles[random].inWorldTile.position];
+    targetPos[0] += (Math.random() - 0.5) * 0.2;
+    targetPos[1] = 0.1;
+    targetPos[2] += (Math.random() - 0.5) * 0.2;
+
+    let rotationSpeed = Math.random() * 1.2 + 0.2;
+  
+    const newSpike = {
+      obj: projectileObject,
+      targetPos: targetPos,
+      lifeTime: 0,
+      maxLifeTime: type.maxLifeTime,
+      rotationSpeed: rotationSpeed,
+      landed: false,
+      type: type,
+    }
+
+    this.currentSpikes.add(newSpike);
   }
 
-  tickSpikesTower() {}
+  tickSpike(spike) {
+    spike.lifeTime += 1/60;
+    if (spike.lifeTime > spike.maxLifeTime) {
+      this.deleteSpike(spike);
+    }
+
+    const enemiesInRange = this.enemyHandler.getEnemiesInRadius(spike.obj.position, 0.2);
+    if (enemiesInRange.enemies.length == 0) {
+      return;
+    }
+    let random = Math.floor(Math.random() * enemiesInRange.enemies.length);
+    const chosenTarget = enemiesInRange.enemies[random];
+
+    if (chosenTarget.slowFactor <= 0.5) {
+      return;
+    }
+    this.enemyHandler.slowEnemy(chosenTarget, 0.5);
+    this.enemyHandler.damageEnemy(chosenTarget, 1);
+    this.deleteSpike(spike);
+  }
+
+  deleteSpike(spike) {
+      this.currentSpikes.delete(spike);
+      spike.obj.scale = 0;
+      this.ProjectileTypes.spikes.unusedObj.add(spike.obj);
+  }
+
+  animateSpike(spike, deltaTime) {
+    if (spike.landed) {
+      return;
+    }
+    
+    spike.obj.rotation[1] += spike.rotationSpeed * deltaTime;
+    const targetVec = vec3.create();
+    vec3.sub(targetVec, spike.targetPos, spike.obj.position);
+    let distance = Math.sqrt(vec3.dot(targetVec, targetVec));
+    if (distance <= 1e-5) {
+      spike.landed = true;
+    }
+    const type = spike.type;
+    let stepSize = Math.min(type.speed * deltaTime, distance);
+    vec3.normalize(targetVec, targetVec);
+    vec3.scale(targetVec, targetVec, stepSize);
+    vec3.add(spike.obj.position, spike.obj.position, targetVec);
+  }
+
+  initSpikesTower(tower) {
+    const type = tower.type;
+    tower.fireRate = type.defaultFireRate;
+    tower.position = [...tower.inWorldObj.position];
+    tower.timer = 0;
+    const hexPos = this.playingField.squareToHexCoordinates({x: tower.position[0], y: tower.position[2]})
+    let q = hexPos.q;
+    let r = hexPos.r;
+    tower.tile = this.playingField.tiles[q][r];
+  }
+
+  tickSpikesTower(tower) {
+    tower.timer += 1/60;
+    
+
+    if (tower.timer >= tower.fireRate && !this.playingField.canPlaceTiles) {
+
+      tower.timer = tower.timer % tower.fireRate;
+      
+      const possibleTargets = [];
+
+      if (tower.tile.type.isRoad) {
+        possibleTargets.push(tower.tile);
+        possibleTargets.push(tower.tile);
+      }
+
+      for (let i = 0; i < 6; i++) {
+        const tile = this.playingField.getTileFromExit(tower.tile, i)
+        
+        if (!tile.isPlaceHolder &&  tile.type.isRoad) {
+          possibleTargets.push(tile);
+        }
+      }
+
+
+      
+      this.addSpike(tower.position, possibleTargets);
+      
+    }
+  }
 
   initTollTower(tower) {
     const type = this.TowerTypes.toll;
