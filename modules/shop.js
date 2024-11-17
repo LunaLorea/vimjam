@@ -14,6 +14,9 @@ export default class Shop {
       spikes: {
         identifier: "spikes",
         price: 50,},
+      sniper: {
+        identifier: "sniper",
+        price: 150,},
     },
     tiles: {
       empty: {

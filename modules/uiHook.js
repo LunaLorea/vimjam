@@ -34,9 +34,10 @@ addShopItem("straight", 7000, 1);
 const tileNameDesc = {
     "tire":["Tire Tirade", "This Tower uses the weapon of cars against them. Launching tires at nearby cars to take them out!"],
     "toll":["Toll Booth", "Have capitalism on your side. Line your pockets with every car, that escapes!"],
-    "spikes":["Sike Strike", "An automated spike strip deployer. So that no car can escape your ra(n)ge!"],
+    "spikes":["Spike Strike", "An automated spike strip deployer. So that no car can escape your ra(n)ge!"],
     "empty":["Flat Tile", "This is prime real estate, for your hard earned money you can hold back the void another day."],
-    "audience":["Tribune","With the power of friendship, we will go green!"]
+    "audience":["Tribune","With the power of friendship, we will go green!"],
+    "sniper":["Sniper Shot","This tire pile has the high ground to snipe all cars into early reTIREment!"]
 };
 
 export function initWaveButton(triggerFunction) {
