@@ -39,8 +39,6 @@ export default class GameLogic {
     this.currentWave;
     this.wavePattern = [];
     this.turn;
-
-    console.log("game started");
   }
 
   stopGame() {

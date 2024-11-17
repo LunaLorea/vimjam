@@ -3,7 +3,7 @@ export default class EnemyHandler {
   enemyTypes  = {
     formula1: {
       speed: 5,
-      health: 3,
+      health: 1,
       
       objName: "enemy-formula1",
       unusedObjects: new Set(),
