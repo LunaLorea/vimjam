@@ -466,8 +466,12 @@ body {
       #wealth {
          --stat-color: var(--color-default);   
       }
+
       #wave {
          --stat-color: var(--color-accent);   
+      }
+      #wave-bar2{
+         transition: width 0.5s;
       }
    }
 

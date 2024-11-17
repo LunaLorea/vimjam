@@ -96,7 +96,7 @@ export default class PlayingField {
     this.availableTiles = [];
     this.leaves = 2;
     this.canPlaceTiles = true;
-    this.placeableTileCount = 3;
+    this.placeableTileCount = 6;
 
     this.rotateTileCount = 0;
     addEventListener("keydown", () => {
