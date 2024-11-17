@@ -3,7 +3,7 @@ export default class EnemyHandler {
   enemyTypes  = {
     formula1: {
       speed: 5,
-      health: 3,
+      health: 30,
       
       objName: "enemy-formula1",
       unusedObjects: new Set(),
@@ -49,6 +49,10 @@ export default class EnemyHandler {
   }
 
   killEnemy(enemy) {
+    this.deleteEnemy(enemy);
+  }
+
+  deleteEnemy(enemy) {
     const obj = enemy.inWorldEnemy;
     obj.alpha = 0;
     this.enemyTypes.formula1.unusedObjects.add(obj);
@@ -93,6 +97,12 @@ export default class EnemyHandler {
     this.currentEnemies.forEach( (enemy) => {
       if (enemy.distanceToTargetTile <= 1e-5) {
 
+        if (enemy.hasReachedEnd) {
+          this.deleteEnemy(enemy);
+          console.log("aua");
+          //do damage
+          return;
+        }
         const exits = enemy.currentTile.children;
         let random = Math.floor(Math.random() * exits.length);
         if (exits.length == 0) {
@@ -100,7 +110,7 @@ export default class EnemyHandler {
         }
         const nextTile = this.playingField.getTileFromExit(enemy.currentTile, exits[random]);
         if (nextTile == undefined || nextTile.rotation != (3 + exits[random]+enemy.currentTile.rotation) % 6 || !nextTile.type.hasEntrance) {
-          return;
+          enemy.hasReachedEnd = true;
         }
         enemy.inWorldEnemy.rotation[1] = -(nextTile.rotation + enemy.type.defaultRotation) % 6 * 2/3;
         enemy.currentTile = nextTile;

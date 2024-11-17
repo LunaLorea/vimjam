@@ -8,66 +8,77 @@ export default class PlayingField {
       objName: "hexagonal-plate-straight",
       defaultRotation: 0,
       hasEntrance: true,
+      ghostTile: {},
     },
     startFlag: {
       exits: [],
       objName: "hexagonal-plate-flag",
       defaultRotation: 0,
       hasEntrance: true,
+      ghostTile: {},
     },
     empty: {
       exits: [],
       objName: "hexagonal-plate-empty",
       defaultRotation: 0,
       hasEntrance: false,
+      ghostTile: {},
     },
     audience: {
       exits: [],
       objName: "hexagonal-plate-audience",
       defaultRotation: 3,
       hasEntrance: false,
+      ghostTile: {},
     },
     stop: {
       exits: [],
       objName: "hexagonal-plate-stop",
       defaultRotation: 3,
       hasEntrance: true,
+      ghostTile: {},
     },
     straight: {
       exits: [3],
       objName: "hexagonal-plate-straight",
       defaultRotation: 0,
       hasEntrance: true,
+      ghostTile: {},
     },
     tires: {
       exits: [3],
       objName: "hexagonal-plate-tires",
       defaultRotation: 0,
       hasEntrance: true,
+      ghostTile: {},
     },
     curve_right: {
       exits: [4],
       objName: "hexagonal-plate-curve",
       defaultRotation: 2,
       hasEntrance: true,
+      ghostTile: {},
     },
     curve_left: {
       exits: [2],
       objName: "hexagonal-plate-curve",
       defaultRotation: -2,
       hasEntrance: true,
+      ghostTile: {},
     },
     split: {
       exits: [2, 4],
       objName: "hexagonal-plate-split",
       defaultRotation: 1,
       hasEntrance: true,
+      ghostTile: {},
     },
     start: {
       exits: [3, 0],
       objName: "hexagonal-plate-start",
       defaultRotation: 0,
       hasEntrance: true,
+      ghostTile: {},
     },
   };
 
@@ -143,7 +154,6 @@ export default class PlayingField {
     const squareCoordinates = this.hexToSquareCoordinates(coordinates);
     const newTile = {
       inWorldTile: this.sceneInformation.addNewObject(
-
         type.objName,
         [squareCoordinates.x, tileHeight, squareCoordinates.y],
         [0, -(rotation + type.defaultRotation) * 2/3, 0], 1),
@@ -210,9 +220,18 @@ export default class PlayingField {
     return neighbors;
   }
 
-  #ghostTiles = {
-    current: 0,
+  initGhostTiles() {
+    for (const type in this.#TileTypes) {
+      const obj = this.sceneInformation.addNewObject(
+        type.objName,
+        [0, 0, 0],
+        [0, type.defaultRotation * 2/3, 0], 
+        0
+      );
+      type.ghostTile = obj;
+    }
   }
+
   placeGhostTile() {
     
   }
@@ -298,8 +317,12 @@ export default class PlayingField {
     const relPos = this.#exitCoordMap.get(rotation);
     let q = tilePos.q + relPos[0];
     let r = tilePos.r + relPos[1];
-    if (this.tiles[q] == undefined) {
-      return undefined;
+    if (this.tiles[q] == undefined || this.tiles[q][r] == undefined) {
+      let squareCoordinates = this.hexToSquareCoordinates({q: q, r: r});
+      const placeHolderTile = {
+        worldCoordinates: squareCoordinates,
+      };
+      return placeHolderTile;
     }
     return this.tiles[q][r];
 
@@ -332,6 +355,13 @@ export default class PlayingField {
     var x = size * (     3./2 * coords.q                    )
     var y = size * (Math.sqrt(3)/2 * coords.q  +  Math.sqrt(3) * coords.r)
     return {x: x, y: y};
+  }
+
+
+  placeRandomTiles(amount) {
+    for (let i = 0; i < amount; i++) {
+      this.placeNewTile()
+    }
   }
 
 }
