@@ -4,6 +4,7 @@ export default class EnemyHandler {
     formula1: {
       speed: 5,
       health: 1,
+      scale: 0.38,
       
       objName: "enemy-formula1",
       unusedObjects: new Set(),
@@ -78,14 +79,14 @@ export default class EnemyHandler {
       newEnemie.inWorldEnemy = type.unusedObjects.values().next().value;
       type.unusedObjects.delete(newEnemie.inWorldEnemy);
       newEnemie.inWorldEnemy.position = startPosition; 
-      newEnemie.inWorldEnemy.scale = 1;
+      newEnemie.inWorldEnemy.scale = type.scale;
     } 
     else {
       newEnemie.inWorldEnemy = this.sceneInformation.addNewObject(
         type.objName,
         [0, type.trackHeight, 0],
         [0, 0, 0],
-        0.34
+        type.scale,
       );
     }
 
