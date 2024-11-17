@@ -35,7 +35,8 @@ const tileNameDesc = {
     "tire":["Tire Tirade", "This Tower uses the weapon of cars against them. Launching tires at nearby cars to take them out!"],
     "toll":["Toll Booth", "Have capitalism on your side. Line your pockets with every car, that escapes!"],
     "spikes":["Sike Strike", "An automated spike strip deployer. So that no car can escape your ra(n)ge!"],
-    "empty":["Flat Tile", "This is prime real estate, for your hard earned money you can hold back the void another day."]
+    "empty":["Flat Tile", "This is prime real estate, for your hard earned money you can hold back the void another day."],
+    "audience":["Tribune","With the power of friendship, we will go green!"]
 };
 
 export function initWaveButton(triggerFunction) {

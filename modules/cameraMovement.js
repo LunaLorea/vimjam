@@ -1,5 +1,5 @@
 function initCameraMovement(camera, settings, sceneInformation) {
-    addEventListener("wheel", onwheel);
+  document.getElementById("gl-canvas").addEventListener("wheel", onwheel);
 
     function onwheel (event) {
       if (sceneInformation.keyMapArray[sceneInformation.settings.keyMap.get("Control")] == 1) {

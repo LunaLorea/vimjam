@@ -18,7 +18,7 @@ export default class GameLogic {
       },
     };
 
-    addEventListener("click", () => {this.onMouseClick()});
+    document.getElementById("gl-canvas").addEventListener("click", () => {this.onMouseClick()});
   }
 
   startGame() {
@@ -117,7 +117,9 @@ export default class GameLogic {
   }
 
   roundReward = () => {
-    return 250;
+    const rewards = [250, 500, 500, 1000, 1000, 1000, 2500, 2500, 2500, 5000];
+    const index = Math.min(Math.round(this.waveCounter/10), 9);
+    return rewards[index];
   }
 
   updateStats() { // tree: no wealth exists yet
