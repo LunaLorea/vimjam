@@ -102,7 +102,7 @@ function main() {
     ["available", "models/placement.obj", "textures/placement_BaseColor.png"],
     ["enemy-formula1", "models/car.obj", "textures/car_BaseColors.png"],
     ["flag", "models/flaggonly.obj", "textures/flaggonly_BaseColor.png"],
-    ["projectile-tire", "models/reifen-projektil.obj", "textures/car_BaseColors.png"],
+    ["projectile-tire", "models/reifen-projektil.obj", "textures/defenstextures_BaseColor.png"],
     ["tower-tire", "models/reifentower.obj", "textures/defenstextures_BaseColor.png"],
     ["tower-spikes", "models/spikes.obj", "textures/defenstextures_BaseColor.png"],
   ];

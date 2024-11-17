@@ -4,7 +4,7 @@ export default class TowerHandler {
     closeFirst: 1,
     farFirst: 2,
     furthest: 3,
-  }
+  };
   TowerTypes = {
     tire: {
       cost: 100,
@@ -53,8 +53,6 @@ export default class TowerHandler {
     this.sceneInformation = sceneInformation;
     this.playingField = playingField;
     this.enemyHandler = enemyHandler;
-
-    const tireTower = this.addNewTower(this.TowerTypes.tire, {position: [0, 0, 0], rotation: [0, 0, 0]});
   }
 
   addNewTower(type, slot) {
@@ -62,15 +60,14 @@ export default class TowerHandler {
     if (type.unusedObj.size > 0) {
       towerObject = type.unusedObj.values().next().value;
       type.unusedObj.delete(towerObject);
-      towerObject.alpha = 1;
       towerObject.position = slot.position;
       towerObject.rotation = slot.rotation;
     } else {
       towerObject = this.sceneInformation.addNewObject(
         type.objName,
         slot.position,
-        slot.rotation,
-        1
+        [0, 0, 0],
+        slot.scale,
       );
     }
 
@@ -78,10 +75,13 @@ export default class TowerHandler {
       type: type,
       level: 1,
       inWorldObj: towerObject,
+      dmgM: slot.damageMultiplier,
+      rangeM: slot.rangeMultiplier,
     }
 
     type.initFunction(newTower);
     this.currentTowers.add(newTower)
+    return newTower;
   }
 
   doTick() {
@@ -111,13 +111,13 @@ export default class TowerHandler {
       type.unusedObj.delete(projectileObject);
       projectileObject.position = [...startPosition];
       projectileObject.rotation = type.defaultRotation;
-      projectileObject.alpha = 1;
+      projectileObject.scale = 1.3;
     } else {
       projectileObject = this.sceneInformation.addNewObject(
         type.objName,
         [...startPosition],
         type.defaultRotation,
-        1
+        1.3
       );
     }
 
@@ -143,7 +143,7 @@ export default class TowerHandler {
   deleteProjectile(projectile) {
       this.currentProjectiles.delete(projectile);
       const obj = projectile.inWorldObj;
-      obj.alpha = 0;
+      obj.scale = 0;
       projectile.type.unusedObj.add(obj);
   }
 
@@ -173,11 +173,12 @@ export default class TowerHandler {
   initTireTower(tower) {
     const type = tower.type;
     tower.fireRate = type.defaultFireRate;
-    tower.radius = type.defaultRadius;
+    tower.radius = type.defaultRadius * tower.rangeM;
     tower.position = tower.inWorldObj.position;
     tower.mode = type.defaultMode;
+
     tower.timer = tower.fireRate - type.timeToFirstShot;
-    tower.damage = type.defaultDamage;
+    tower.damage = type.defaultDamage * tower.dmgM;
   }
 
   tickTireTower(tower) {

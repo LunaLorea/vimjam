@@ -4,10 +4,11 @@ export default class PlayingField {
 
   #TileTypes = {
     start: {
-      exits: [0, 3],
-      objName: "hexagonal-plate-straight",
+      exits: [3, 0],
+      objName: "hexagonal-plate-start",
       defaultRotation: 0,
       hasEntrance: true,
+      slots: [],
       ghostTile: {},
     },
     startFlag: {
@@ -15,6 +16,7 @@ export default class PlayingField {
       objName: "hexagonal-plate-flag",
       defaultRotation: 0,
       hasEntrance: true,
+      slots: [],
       ghostTile: {},
     },
     empty: {
@@ -22,6 +24,12 @@ export default class PlayingField {
       objName: "hexagonal-plate-empty",
       defaultRotation: 0,
       hasEntrance: false,
+      slots: [{
+        relPosition: {x: 0, y:0, z:0},
+        damageMultiplier: 2,
+        rangeMultiplier: 1,
+        scale: 2,
+      }],
       ghostTile: {},
     },
     audience: {
@@ -29,6 +37,12 @@ export default class PlayingField {
       objName: "hexagonal-plate-audience",
       defaultRotation: 3,
       hasEntrance: false,
+      slots: [{
+        relPosition: {x: 0, y:0.4, z:-0.3},
+        damageMultiplier: 1,
+        rangeMultiplier: 1.5,
+        scale: 1,
+      }],
       ghostTile: {},
     },
     stop: {
@@ -36,6 +50,12 @@ export default class PlayingField {
       objName: "hexagonal-plate-stop",
       defaultRotation: 3,
       hasEntrance: true,
+      slots: [{
+        relPosition: {x: 0, y:0, z:0},
+        damageMultiplier: 0.75,
+        rangeMultiplier: 0.75,
+        scale: 1,
+      }],
       ghostTile: {},
     },
     straight: {
@@ -43,13 +63,18 @@ export default class PlayingField {
       objName: "hexagonal-plate-straight",
       defaultRotation: 0,
       hasEntrance: true,
-      ghostTile: {},
-    },
-    tires: {
-      exits: [3],
-      objName: "hexagonal-plate-tires",
-      defaultRotation: 0,
-      hasEntrance: true,
+      slots: [{
+        relPosition: {x: 0.72, y:0.1, z:0},
+        damageMultiplier: 0.5,
+        rangeMultiplier: 0.5,
+        scale: 0.7,
+      },
+      {
+        relPosition: {x: -0.72, y:0.1, z:0},
+        damageMultiplier: 0.5,
+        rangeMultiplier: 0.5,
+        scale: 0.7,
+      } ],
       ghostTile: {},
     },
     curve_right: {
@@ -57,6 +82,12 @@ export default class PlayingField {
       objName: "hexagonal-plate-curve",
       defaultRotation: 2,
       hasEntrance: true,
+      slots: [{
+        relPosition: {x: -0.4, y:0.1, z:-0.4},
+        damageMultiplier: 1,
+        rangeMultiplier: 1,
+        scale: 0.75,
+      }],
       ghostTile: {},
     },
     curve_left: {
@@ -64,6 +95,12 @@ export default class PlayingField {
       objName: "hexagonal-plate-curve",
       defaultRotation: -2,
       hasEntrance: true,
+      slots: [{
+        relPosition: {x: 0.4, y:0.1, z:0.4},
+        damageMultiplier: 1,
+        rangeMultiplier: 1,
+        scale: 1,
+      }],
       ghostTile: {},
     },
     split: {
@@ -71,15 +108,9 @@ export default class PlayingField {
       objName: "hexagonal-plate-split",
       defaultRotation: 1,
       hasEntrance: true,
+      slots: [],
       ghostTile: {},
-    },
-    start: {
-      exits: [3, 0],
-      objName: "hexagonal-plate-start",
-      defaultRotation: 0,
-      hasEntrance: true,
-      ghostTile: {},
-    },
+    }
   };
 
   #RoadTypes = ["straight", "curve_right", "curve_left", "split", "stop", ];
@@ -133,6 +164,8 @@ export default class PlayingField {
     });
   }
 
+  availableSlots = new Set();
+
   activateTilePlacing(tileAmount = 3) {
     this.canPlaceTiles = true;
     this.placeableTileCount += tileAmount;
@@ -163,7 +196,21 @@ export default class PlayingField {
       worldCoordinates: this.hexToSquareCoordinates(coordinates),
       children: [...type.exits],
       parentTile: null,
+      slots: [...type.slots],
     }
+
+    let tilePos = newTile.inWorldTile.position;
+
+    newTile.slots.forEach( (slot) => {
+      const relPos = vec3.create();
+      vec3.rotateY(relPos, [slot.relPosition.x, slot.relPosition.y, slot.relPosition.z], [0, 0, 0], - newTile.rotation );
+      console.log(relPos);
+      slot.position = vec3.create();
+      vec3.add(slot.position, relPos, tilePos);
+      this.availableSlots.add(structuredClone(slot));
+    });
+
+
     newTile.neighbors = this.findNeighborsOfTile(newTile);
 
     this.tileCount += 2;

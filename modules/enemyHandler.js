@@ -18,8 +18,6 @@ export default class EnemyHandler {
   constructor(playingField, sceneInformation) {
     this.playingField = playingField;
     this.sceneInformation = sceneInformation;
-    this.spawnNewEnemy(this.enemyTypes.formula1);
-
   }
 
   getEnemiesInRadius(position, radius) {
@@ -54,7 +52,7 @@ export default class EnemyHandler {
 
   deleteEnemy(enemy) {
     const obj = enemy.inWorldEnemy;
-    obj.alpha = 0;
+    obj.scale = 0;
     this.enemyTypes.formula1.unusedObjects.add(obj);
     this.currentEnemies.delete(enemy);
   }
@@ -63,7 +61,7 @@ export default class EnemyHandler {
     enemy.slowFactor = max(slowfactor, enemy.slowfactor);
   }
 
-  spawnNewEnemy(type) {
+  spawnNewEnemy(type, damage = 1) {
     let startPosition = [0, type.trackHeight, 0];
     const newEnemie = {
       health: type.health,
@@ -71,6 +69,7 @@ export default class EnemyHandler {
       slowFactor: 1,
       type: type,
       currentTile: this.playingField.startTile0,
+      damage: damage,
     }
 
 
@@ -79,7 +78,7 @@ export default class EnemyHandler {
       newEnemie.inWorldEnemy = type.unusedObjects.values().next().value;
       type.unusedObjects.delete(newEnemie.inWorldEnemy);
       newEnemie.inWorldEnemy.position = startPosition; 
-      newEnemie.inWorldEnemy.alpha = 1;
+      newEnemie.inWorldEnemy.scale = 1;
     } 
     else {
       newEnemie.inWorldEnemy = this.sceneInformation.addNewObject(
@@ -101,7 +100,7 @@ export default class EnemyHandler {
         if (enemy.hasReachedEnd) {
           this.deleteEnemy(enemy);
           //do damage
-          this.tickDmg += 1;
+          this.tickDmg += enemy.damage;
           return;
         }
         const exits = enemy.currentTile.children;
