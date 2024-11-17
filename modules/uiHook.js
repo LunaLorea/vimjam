@@ -187,3 +187,9 @@ export function addShopItem(tile, price, category, buyingFunc) {
     shop.appendChild(shopItem);
     console.log("shop item added");
 }
+
+export function toggleGameOverlay(boolean){
+    const overlay = document.getElementById("game-over-lay");
+    overlay.style.display = boolean ? "block" : "none";
+    overlay.classList.toggle("active", boolean);
+}

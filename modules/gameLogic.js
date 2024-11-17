@@ -2,7 +2,7 @@ import PlayingField from "./playingField.js";
 import EnemyHandler from "./enemyHandler.js";
 import TowerHandler from "../models/towerHandler.js";
 import Shop from "./shop.js";
-import { setHealth, setWaveProgress, setWealth } from "./uiHook.js";
+import { setHealth, setWaveProgress, setWealth, toggleGameOverlay } from "./uiHook.js";
 import { generateEnemyPattern } from "./waveLogic.js";
 
 export default class GameLogic {
@@ -31,7 +31,7 @@ export default class GameLogic {
     this.shop = new Shop(this.playingField, this.sceneInformation, this.towerHandler);
     this.enemyHandler.addMoney = this.shop.addMoney;
     // Initial Game State
-    this.maxHealth = 10;
+    this.maxHealth = 1;
     this.health = this.maxHealth;
     this.money = 250.0;
     this.maxMoney = Math.max(this.money);
@@ -55,6 +55,10 @@ export default class GameLogic {
   updateGame() {
     let dmg = this.enemyHandler.doTick();
     this.health -= dmg;
+    if (this.health <= 0) {
+      this.health = 0;
+      toggleGameOverlay(true);
+    }
     this.towerHandler.doTick();
     this.money = this.shop.money;
     this.maxMoney = Math.max(this.money, this.maxMoney);
