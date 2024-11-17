@@ -9,11 +9,11 @@ export default class TowerHandler {
     tire: {
       objName: "tower-tire",
       // secends per projectile
-      defaultFireRate: 1.5,
+      defaultFireRate: 1.2,
       timeToFirstShot: 0.2,
       defaultRadius: 3,
       defaultDamage: 1,
-      projectileSpeed: 1,
+      projectileSpeed: 10,
       projetileSize: 1,
       defaultMode: this.AttackModes.closeFirst,
       unusedObj: new Set(),
@@ -23,13 +23,13 @@ export default class TowerHandler {
     sniper: {
       objName: "tower-sniper",
       // secends per projectile
-      defaultFireRate: 3.5,
+      defaultFireRate: 2.5,
       timeToFirstShot: 0.2,
       defaultRadius: 15,
-      defaultDamage: 1,
-      projectileSpeed: 2,
+      defaultDamage: 4,
+      projectileSpeed: 25,
       projetileSize: 1.5,
-      defaultMode: this.AttackModes.closeFirst,
+      defaultMode: this.AttackModes.furthest,
       unusedObj: new Set(),
       initFunction: (tower) => this.initTireTower(tower),
       doTickFunction: (tower) => this.tickTireTower(tower),
@@ -121,7 +121,7 @@ export default class TowerHandler {
     
   }
 
-  addProjectile(type, target, startPosition, damage) {
+  addProjectile(type, target, startPosition, damage, speed) {
     
     let projectileObject = null;
 
@@ -147,6 +147,7 @@ export default class TowerHandler {
       target: target,
       inWorldObj: projectileObject,
       damage: damage,
+      speed: speed,
     };
 
     this.currentProjectiles.add(newProjectile);
@@ -182,7 +183,7 @@ export default class TowerHandler {
     const distance = Math.sqrt(vec3.dot(targetVector, targetVector));
     projectile.distanceToTarget = distance;
 
-    let stepDistance = Math.min(distance, projectile.type.speed * deltaTime);
+    let stepDistance = Math.min(distance, projectile.speed * deltaTime);
     vec3.normalize(targetVector, targetVector);
     vec3.scale(targetVector, targetVector, stepDistance);
 
@@ -198,6 +199,7 @@ export default class TowerHandler {
 
     tower.timer = tower.fireRate - type.timeToFirstShot;
     tower.damage = type.defaultDamage * tower.dmgM;
+    tower.speed = type.projectileSpeed;
   }
 
   tickTireTower(tower) {
@@ -209,19 +211,24 @@ export default class TowerHandler {
       const enemiesInRange = this.enemyHandler.getEnemiesInRadius(position, tower.radius);
 
       if (enemiesInRange.length == 0) return;
+      tower.timer = tower.timer % tower.fireRate;
 
       if (tower.mode == 1) {
         let closestIndex = indexOfSmallest(enemiesInRange.distances);
         target = enemiesInRange.enemies[closestIndex];
       }
-      if (tower.mode == 2) {}
-      if (tower.mode == 3) {}
+      if (tower.mode == 2) {
+        
+      }
+      if (tower.mode == 3) {
+        let furthestIndex = indexOfLargest(enemiesInRange.liveTimes);
+        target = enemiesInRange.enemies[furthestIndex];
+      }
 
-      this.addProjectile(this.ProjectileTypes.tires, target, tower.position, tower.damage);
+      this.addProjectile(this.ProjectileTypes.tires, target, tower.position, tower.damage, tower.speed);
     }
 
 
-    tower.timer = tower.timer % tower.fireRate;
   }
 
   initSpikesTower(tower) {

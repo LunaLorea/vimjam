@@ -6,9 +6,11 @@ export function generateEnemyPattern(round) {
         // check if enemy spawns each tick
         // we generate a spawnbitmask in groups of 32 ( the right shift should convert number to ints)
             // number of masks depends on number of turns, calc from rounds
-    
+    if (round < 0) {
+      return [];
+    }
     const turns = Math.floor(round/10 + 1);
-    let maxEnemiesPerTurn = Math.pow(round, 1.1);
+    let maxEnemiesPerTurn = 10 + Math.pow(round, 1.4);
     const minEnemiesPerTurn = Math.round(maxEnemiesPerTurn/2);
     const maxTotalEnemies = round%10==0? turns * maxEnemiesPerTurn : Math.round(0.8 * turns * maxEnemiesPerTurn);
 

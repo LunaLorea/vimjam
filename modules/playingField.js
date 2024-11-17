@@ -134,7 +134,7 @@ export default class PlayingField {
     this.availableTiles = [];
     this.leaves = 2;
     this.canPlaceTiles = true;
-    this.placeableTileCount = 6;
+    this.placeableTileCount = 2;
 
     this.rotateTileCount = 0;
     document.getElementById("gl-canvas").addEventListener("keydown", () => {

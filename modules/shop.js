@@ -6,17 +6,17 @@ export default class Shop {
     towers: {
       tireTirade: {
         identifier: "tire",
-        price: 100,
+        price: 150,
       },
       toll: {
         identifier: "toll",
-        price: 200,},
+        price: 500,},
       spikes: {
         identifier: "spikes",
-        price: 50,},
+        price: 250,},
       sniper: {
         identifier: "sniper",
-        price: 150,},
+        price: 300,},
     },
     tiles: {
       empty: {

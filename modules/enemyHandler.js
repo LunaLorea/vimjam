@@ -2,12 +2,45 @@ export default class EnemyHandler {
   
   enemyTypes  = {
     formula1: {
-      speed: 5,
+      speed: 3.5,
       health: 1,
       scale: 0.38,
-      worth: 10,
+      worth: 17,
       
       objName: "enemy-formula1",
+      unusedObjects: new Set(),
+      trackHeight: 0.2,
+      defaultRotation: 3,
+    },
+    formula2: {
+      speed: 5.5,
+      health: 1,
+      scale: 0.38,
+      worth: 17,
+      
+      objName: "enemy-formula2",
+      unusedObjects: new Set(),
+      trackHeight: 0.2,
+      defaultRotation: 3,
+    },
+    monstertruck: {
+      speed: 1.4,
+      health: 6,
+      scale: 1,
+      worth: 15,
+      
+      objName: "enemy-monstertruck",
+      unusedObjects: new Set(),
+      trackHeight: 0.2,
+      defaultRotation: 3,
+    },
+    monstertruck2: {
+      speed: 1.8,
+      health: 15,
+      scale: 1,
+      worth: 15,
+      
+      objName: "enemy-monstertruck2",
       unusedObjects: new Set(),
       trackHeight: 0.2,
       defaultRotation: 3,
@@ -26,6 +59,7 @@ export default class EnemyHandler {
     const enemiesInRange = {
       enemies: [],
       distances: [],
+      liveTimes: []
     };
     const distanceVector = vec3.create();
     this.currentEnemies.forEach( (enemy) => {
@@ -34,6 +68,7 @@ export default class EnemyHandler {
       if (distance <= radius) {
         enemiesInRange.enemies.push(enemy);
         enemiesInRange.distances.push(distance);
+        enemiesInRange.liveTimes.push(enemy.liveTime);
       }
     });
 
@@ -93,12 +128,14 @@ export default class EnemyHandler {
     }
 
     this.currentEnemies.add(newEnemie);
+    newEnemie.liveTime = 0;
     newEnemie.gotNewTarget=true;
   }
 
   doTick() {
     this.tickDmg = 0;
     this.currentEnemies.forEach( enemy => {
+      enemy.liveTime += 1/60;
       if (enemy.distanceToTargetTile <= 1e-5 && !enemy.gotNewTarget) {
 
         if (enemy.hasReachedEnd) {
@@ -153,7 +190,7 @@ export default class EnemyHandler {
         enemy.type.speed *
         enemy.slowFactor * 
         deltaTime * 
-        (0.4 + (0.5 * Math.sin(enemy.distanceToTargetTile / 1.72092 * Math.PI)));
+        (0.8 + (0.2 * Math.sin(enemy.distanceToTargetTile / 1.72092 * Math.PI)));
       
 
       vec3.normalize(targetVector, targetVector);
