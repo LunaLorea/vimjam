@@ -8,9 +8,11 @@ export function generateEnemyPattern(round) {
             // number of masks depends on number of turns, calc from rounds
     
     const turns = Math.floor(round/10 + 1);
-    let maxEnemiesPerTurn = Math.atan(round)/Math.PI*32;
+    let maxEnemiesPerTurn = Math.atan(round/10)/Math.PI*32;
     const minEnemiesPerTurn = Math.round(maxEnemiesPerTurn/2);
     const maxTotalEnemies = round%10==0? turns * maxEnemiesPerTurn : Math.round(0.8 * turns * maxEnemiesPerTurn);
+
+    console.log(`${turns*minEnemiesPerTurn} - ${maxTotalEnemies}`);
 
     let enemyPattern= [];
     let enemyCount=0;

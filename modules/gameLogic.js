@@ -68,16 +68,17 @@ export default class GameLogic {
       this.waveCounter += 1;
       this.wavePattern = generateEnemyPattern(this.waveCounter);
       let spawnIntervall = 1*1000; // HERE WE CAN AFFECT WAVE SPAWN SPEED, IMPORTANT TO COMPARE WITH SHOOTING SPEED
+      //progress tracking
       this.turn=0;
       this.totalEnemies=0;
       this.enemiesSpawned=0;
+
       this.wavePattern.forEach(num => {
         this.totalEnemies += num;
       })
       console.log(this.totalEnemies);
       this.currentWave = setInterval(() => {this.waveSpawn()}, spawnIntervall);
       this.playingField.deactivateTilePlacing();
-      console.log("wave started");
     }
   }
 
@@ -88,7 +89,6 @@ export default class GameLogic {
       this.enemiesSpawned += 1;
     }
     if (turnPattern<0) {
-      console.log("next turn")
       this.turn += 1;
     }
     else {
@@ -96,7 +96,6 @@ export default class GameLogic {
     }
     if (this.turn >= this.wavePattern.length) {
       this.playingField.activateTilePlacing(5);
-      console.log("wave over");
       clearInterval(this.currentWave);
       this.currentWave=null;
     }

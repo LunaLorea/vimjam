@@ -100,7 +100,6 @@ export default class EnemyHandler {
 
         if (enemy.hasReachedEnd) {
           this.deleteEnemy(enemy);
-          console.log("aua");
           //do damage
           this.tickDmg += 1;
           return;
