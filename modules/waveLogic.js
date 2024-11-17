@@ -16,9 +16,9 @@ export function generateEnemyPattern(round) {
     let enemyCount=0;
     for (let i = 0; i < turns; i++) {
         maxEnemiesPerTurn = Math.min(maxTotalEnemies-enemyCount, maxEnemiesPerTurn);
-        let mask = generateIntWithOnes(minEnemiesPerTurn, maxEnemiesPerTurn);
-        enemyPattern[i] = mask;
-        enemyCount += countBits(mask);
+        let enemiesThisTurn = Math.round(Math.random()*(maxEnemiesPerTurn-minEnemiesPerTurn) + minEnemiesPerTurn);
+        enemyPattern[i] = enemiesThisTurn;
+        enemyCount += enemiesThisTurn;
     }
     return enemyPattern;
 

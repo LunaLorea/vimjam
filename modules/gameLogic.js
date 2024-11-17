@@ -63,16 +63,17 @@ export default class GameLogic {
   }
 
   startNewWave = () => {
-    if (this.currentWave !== undefined || this.currentWave !== null) { // check if wave is running
+    if (this.currentWave == undefined || this.currentWave == null) { // check if wave is running
       this.waveCounter += 1;
       this.wavePattern = generateEnemyPattern(this.waveCounter);
-      let spawnIntervall = 3*1000; // HERE WE CAN AFFECT WAVE SPAWN SPEED, IMPORTANT TO COMPARE WITH SHOOTING SPEED
+      let spawnIntervall = 1*1000; // HERE WE CAN AFFECT WAVE SPAWN SPEED, IMPORTANT TO COMPARE WITH SHOOTING SPEED
       this.turn=0;
       this.totalEnemies=0;
       this.enemiesSpawned=0;
       this.wavePattern.forEach(num => {
-        this.totalEnemies += num.toString(2).split('1').length - 1;
+        this.totalEnemies += num;
       })
+      console.log(this.totalEnemies);
       this.currentWave = setInterval(() => {this.waveSpawn()}, spawnIntervall);
       this.playingField.deactivateTilePlacing();
       console.log("wave started");
@@ -81,20 +82,22 @@ export default class GameLogic {
 
   waveSpawn() {
     let turnPattern = this.wavePattern[this.turn];
-    if (turnPattern&1 == 1) {
+    if (turnPattern>=1) {
       this.enemyHandler.spawnNewEnemy(this.enemyHandler.enemyTypes.formula1);
       this.enemiesSpawned += 1;
     }
-    if (turnPattern==0) {
+    if (turnPattern<0) {
+      console.log("next turn")
       this.turn += 1;
     }
     else {
-      this.wavePattern[this.turn] = turnPattern>>1;
+      this.wavePattern[this.turn] = turnPattern-1;
     }
     if (this.turn >= this.wavePattern.length) {
       this.playingField.activateTilePlacing(5);
       console.log("wave over");
       clearInterval(this.currentWave);
+      this.currentWave=null;
     }
   }
 

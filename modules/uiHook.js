@@ -75,7 +75,7 @@ export function setWaveProgress(currentWaveProgress, waveReached) {
     wave_bar1.style.width = `${newWidth}%`; 
     wave_bar2.style.width = `${newWidth}%`; 
 
-    wave_value.innerText= `${currentWaveProgress*100}%/${waveReached}`;
+    wave_value.innerText= `${Math.round(currentWaveProgress*100)}%/${waveReached}`;
 }
 
 export function setLoading(state) {
