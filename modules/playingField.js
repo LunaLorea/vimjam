@@ -73,6 +73,8 @@ export default class PlayingField {
 
   #RoadTypes = ["straight", "curve_right", "curve_left", "split", "stop", ];
 
+  allAvailableMarkers = [];
+
 
   #exitCoordMap = new Map();
 
@@ -82,6 +84,8 @@ export default class PlayingField {
     this.tiles = [];
     this.availableTiles = [];
     this.leaves = 2;
+    this.canPlaceTiles = true;
+    this.placeableTileCount = 3;
 
     this.rotateTileCount = 0;
     addEventListener("keydown", () => {
@@ -115,6 +119,21 @@ export default class PlayingField {
       if (!sceneInformation.mouseMoved) {
         this.placeNewTile();
       }
+    });
+  }
+
+  activateTilePlacing(tileAmount = 3) {
+    this.canPlaceTiles = true;
+    this.placeableTileCount += tileAmount;
+    this.allAvailableMarkers.forEach((marker) => {
+      marker.alpha = 0.8;
+    });
+  }
+
+  deactivateTilePlacing() {
+    this.canPlaceTiles = false;
+    this.allAvailableMarkers.forEach((marker) => {
+      marker.alpha = 0;
     });
   }
 
@@ -179,6 +198,7 @@ export default class PlayingField {
             [0, 0, 0], 0.8
           ),
         };
+        this.allAvailableMarkers.push(this.availableTiles[q][r].obj);
       } else {
         this.availableTiles[q][r].parents.push((relativeExit+3)%6);
         this.availableTiles[q][r].parentTiles.push(tile);
@@ -199,6 +219,11 @@ export default class PlayingField {
 
 
   placeNewTile() {
+
+    if (!this.canPlaceTiles) {
+      return;
+    }
+
     const coords = {
       x: this.sceneInformation.mouseInWorld[0],
       y: this.sceneInformation.mouseInWorld[2],
@@ -217,11 +242,11 @@ export default class PlayingField {
         ) {
       return;
     }
+
     
     const availableTile = this.availableTiles[q][r];
     const parentTileEntrances = this.availableTiles[q][r].parents;
     let chosenParent = this.rotateTileCount % parentTileEntrances.length;
-    console.log(chosenParent, parentTileEntrances.length);
     // ToDo remove
     const tile = this.getNextTile();
     let newTile;
@@ -238,6 +263,10 @@ export default class PlayingField {
     if (tile == this.#TileTypes["stop"]) {
       this.leaves -= 1;
       this.removeBranch(newTile);
+    }
+    this.placeableTileCount -= 1;
+    if (this.placeableTileCount <= 0) {
+      this.deactivateTilePlacing();
     }
 
   }
