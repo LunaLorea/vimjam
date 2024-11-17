@@ -39,10 +39,12 @@ export default class GameLogic {
     this.currentWave;
     this.wavePattern = [];
     this.turn;
+
+    console.log("game started");
   }
 
   stopGame() {
-  
+    this.playingField.deactivateTilePlacing(); //optional?
     clearInterval(this.currentGame);
   }
 
@@ -67,6 +69,7 @@ export default class GameLogic {
       let spawnIntervall = 3*1000;
       this.turn=0;
       this.currentWave = setInterval(() => {this.waveSpawn()}, spawnIntervall);
+      this.playingField.deactivateTilePlacing();
       console.log("wave started");
     }
   }
@@ -83,6 +86,7 @@ export default class GameLogic {
       this.wavePattern[this.turn] = turnPattern>>1;
     }
     if (this.turn >= this.wavePattern.length) {
+      this.playingField.activateTilePlacing(5);
       console.log("wave over");
       clearInterval(this.currentWave);
     }
