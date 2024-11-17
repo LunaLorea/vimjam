@@ -1,4 +1,4 @@
-import { queuePop, queueAppend, setTileCount } from "./uiHook.js";
+import { queuePop, queueAppend, queueActiveLength } from "./uiHook.js";
 
 export default class PlayingField {
 
@@ -135,7 +135,6 @@ export default class PlayingField {
     this.leaves = 2;
     this.canPlaceTiles = true;
     this.placeableTileCount = 2;
-    setTileCount(this.placeableTileCount);
 
     this.rotateTileCount = 0;
     addEventListener("keydown", () => {
@@ -158,6 +157,7 @@ export default class PlayingField {
 
     this.nextTiles = [];
     this.generateNextTile(4);
+    queueActiveLength(this.placeableTileCount);
 
     this.#exitCoordMap.set(0, [0, 1]);
     this.#exitCoordMap.set(1, [-1, 1]);
@@ -243,7 +243,7 @@ export default class PlayingField {
   activateTilePlacing(tileAmount = 3) {
     this.canPlaceTiles = true;
     this.placeableTileCount += tileAmount;
-    setTileCount(this.placeableTileCount);
+    queueActiveLength(this.placeableTileCount);
     this.allAvailableMarkers.forEach((marker) => {
       marker.alpha = 0.8;
     });
@@ -454,7 +454,7 @@ export default class PlayingField {
       this.removeBranch(newTile);
     }
     this.placeableTileCount -= 1;
-    setTileCount(this.placeableTileCount);
+    queueActiveLength(this.placeableTileCount);
     if (this.placeableTileCount <= 0) {
       this.deactivateTilePlacing();
     }

@@ -40,10 +40,6 @@ const tileNameDesc = {
     "sniper":["Sniper Shot","This tire pile has the high ground to snipe all cars into early reTIREment!"]
 };
 
-export function setTileCount(amount) {
-    document.getElementById("tile-count").innerHTML=amount;
-}
-
 export function initWaveButton(triggerFunction) {
     document.getElementById("wave-button").onclick=triggerFunction;
 }
@@ -94,6 +90,7 @@ export function setWaveProgress(currentWaveProgress, waveReached) {
     wave_value.innerText= `${Math.round(currentWaveProgress*100)}%/${waveReached}`;
 }
 
+
 export function setLoading(state) {
     const loadingElement = document.getElementById("loading");
     loadingElement.style.display = state ? "block" : "none";
@@ -107,9 +104,22 @@ export function queueAppend(tile) {
     image.src=`/UI/images/${tile}.png`;
     image.width="128";
     image.height="128";
-
+    
     queueList.appendChild(listItem.appendChild(image));
 }
+
+export function queueActiveLength(num) {
+    setTileCount(num);
+    const len = queueList.children.length;
+    for (let i = 0; i < len; i++) {
+        let unreachableBool = i >= num;
+        queueList.children[i].classList.toggle("unreachable", unreachableBool);
+    }
+}
+function setTileCount(amount) {
+    document.getElementById("tile-count").innerHTML=amount;
+}
+
 /*export function queuePush(tile) {
     let listItem = document.createElement('li');
     let image = document.createElement('img');

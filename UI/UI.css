@@ -443,7 +443,10 @@ body {
             scale: 1.2;
             
          }
-         > {
+         > img.unreachable {
+            filter: grayscale(80%);
+         }
+         > img {
             width: inherit;
             flex: 0 0;
             aspect-ratio: 1;
