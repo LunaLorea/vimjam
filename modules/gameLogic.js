@@ -82,14 +82,16 @@ export default class GameLogic {
       this.waveCounter += 1;
       //sendMsg("Wave started!", "⚠", 1000);
       this.wavePattern = generateEnemyPattern(this.waveCounter);
-      let spawnIntervall = Math.max(2*1000 - 200 * Math.log2(this.waveCounter), 100); // HERE WE CAN AFFECT WAVE SPAWN SPEED, IMPORTANT TO COMPARE WITH SHOOTING SPEED
+      let spawnIntervall = 100; // HERE WE CAN AFFECT WAVE SPAWN SPEED, IMPORTANT TO COMPARE WITH SHOOTING SPEED
       //progress tracking
       this.turn=0;
       this.totalEnemies=0;
       this.enemiesSpawned=0;
 
-      this.wavePattern.forEach(num => {
-        this.totalEnemies += num;
+      this.wavePattern.forEach(turn => { 
+        let sum = 0;
+        turn.forEach(val => sum += (val>0?1:0));
+        this.totalEnemies = sum;
       })
       console.log(this.totalEnemies);
       this.currentWave = setInterval(() => {this.waveSpawn()}, spawnIntervall);
@@ -99,7 +101,9 @@ export default class GameLogic {
 
   waveSpawn() {
     let turnPattern = this.wavePattern[this.turn];
-    if (turnPattern>=1) {
+    const enemyMap = ["formula1","formula2", "monstertruck", "monstertruck2"];
+    const currEnemy = turnPattern.shift();
+    if (currEnemy > 0) { /*
       let random = Math.random() * 100;
       if (random <= 105 - 4 * Math.log2(this.waveCounter)) {
         if (random <= 110 - 4 * Math.log2(this.waveCounter)) {
@@ -113,14 +117,12 @@ export default class GameLogic {
         } else {
           this.enemyHandler.spawnNewEnemy(this.enemyHandler.enemyTypes.monstertruck);
         }
-      }
+      }*/
+      this.enemyHandler.spawnNewEnemy(this.enemyHandler.enemyTypes[enemyMap[currEnemy]]);
       this.enemiesSpawned += 1;
     }
-    if (turnPattern<0) {
+    if (turnPattern.length <= 0) {
       this.turn += 1;
-    }
-    else {
-      this.wavePattern[this.turn] = turnPattern-1;
     }
     if (this.turn >= this.wavePattern.length) { // wave over
       this.shop.money += this.roundReward();
