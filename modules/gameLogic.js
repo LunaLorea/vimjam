@@ -2,7 +2,7 @@ import PlayingField from "./playingField.js";
 import EnemyHandler from "./enemyHandler.js";
 import TowerHandler from "../models/towerHandler.js";
 import Shop from "./shop.js";
-import { removeInfo, setHealth, setInfo, setWaveProgress, setWealth, toggleGameOverlay } from "./uiHook.js";
+import { setHealth, sendMsg, setWaveProgress, setWealth, toggleGameOverlay } from "./uiHook.js";
 import { generateEnemyPattern } from "./waveLogic.js";
 
 export default class GameLogic {
@@ -80,8 +80,7 @@ export default class GameLogic {
   startNewWave = () => {
     if (this.currentWave == undefined || this.currentWave == null) { // check if wave is running
       this.waveCounter += 1;
-      setInfo("Wave started!", "⚠");
-      setTimeout(() => removeInfo(), 3000); // 2s is animation time
+      sendMsg("Wave started!", "⚠", 1000);
       this.wavePattern = generateEnemyPattern(this.waveCounter);
       let spawnIntervall = 1*1000; // HERE WE CAN AFFECT WAVE SPAWN SPEED, IMPORTANT TO COMPARE WITH SHOOTING SPEED
       //progress tracking

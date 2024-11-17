@@ -200,14 +200,19 @@ export function toggleGameOverlay(boolean){
 
 const infobox = document.getElementById("info-screen");
 
-export function setInfo(info, hotCorner) {
+function setInfo(info, hotCorner) {
     console.log("setInfo");
     infobox.firstChild.innerText = hotCorner;
     document.getElementById("info").innerText = info;
     infobox.classList.toggle("active", true);
 }
 
-export function removeInfo() {
+function removeInfo() {
     console.log("delInfo");
     infobox.classList.toggle("active", false);
+}
+
+export function sendMsg(info, icon, delay) {
+    setInfo(info, icon);
+    setTimeout(() => removeInfo(), 2000+delay); // 2s is animation time
 }
