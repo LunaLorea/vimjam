@@ -63,6 +63,7 @@ export default class GameLogic {
   updateOnFrame(deltaTime) {
     this.enemyHandler.doAnimations(deltaTime);
     this.towerHandler.doAnimations(deltaTime);
+    this.playingField.doAnimations();
   }
 
   onMouseClick() {

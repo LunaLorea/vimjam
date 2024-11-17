@@ -165,6 +165,8 @@ export default class PlayingField {
     this.startTile6.parentTile = this.startTile0;
     this.startTile6.parentExit = 3;
 
+    this.initGhostTiles();
+
     addEventListener("mousedown", () => {
       sceneInformation.mouseMoved = false;
     });
@@ -318,7 +320,8 @@ export default class PlayingField {
   }
 
   initGhostTiles() {
-    for (const type in this.TileTypes) {
+    for (const typeName in this.TileTypes) {
+      const type = this.TileTypes[typeName];
       const obj = this.sceneInformation.addNewObject(
         type.objName,
         [0, 0, 0],
@@ -326,10 +329,54 @@ export default class PlayingField {
         0
       );
       type.ghostTile = obj;
+      obj.alpha = 0.3;
     }
   }
 
-  placeGhostTile() {
+  doAnimations() {
+    if (this.sceneInformation.mouseInWorld == undefined || !this.canPlaceTiles) {
+      return;
+    }
+
+    if (this.currentGhostTile != null) {
+      this.currentGhostTile.scale = 0;
+      this.currentGhostTile = null;
+    }
+
+    const mouseCoord = {
+      x: this.sceneInformation.mouseInWorld[0],
+      y: this.sceneInformation.mouseInWorld[2],
+    }
+
+    const tileCoord = this.squareToHexCoordinates({x: mouseCoord.x, y: mouseCoord.y});
+    let q = tileCoord.q;
+    let r = tileCoord.r;
+
+    if (!(this.tiles[q] == undefined || this.tiles[q][r] == undefined)) {
+      return;
+    }
+
+    if (this.availableTiles[q] == undefined || this.availableTiles[q][r] == undefined) {
+      return;
+    }
+
+    const squareCoords = this.hexToSquareCoordinates(tileCoord)
+    let x = squareCoords.x;
+    let y = squareCoords.y;
+
+    const tileType = this.nextTiles[0];
+    const parentTileEntrances = this.availableTiles[q][r].parents;
+    let chosenParent = this.rotateTileCount % parentTileEntrances.length;
+    const rotation = -(parentTileEntrances[chosenParent] + tileType.defaultRotation) * 2/3;
+
+    this.currentGhostTile = tileType.ghostTile;
+    this.currentGhostTile.scale = 1;
+    this.currentGhostTile.position = [x, 0, y];
+    this.currentGhostTile.rotation = [0, rotation, 0];
+  }
+  currentGhostTile = this.TileTypes.straight.ghostTile;
+
+  showGhostTile() {
     
   }
 
