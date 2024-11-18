@@ -329,8 +329,8 @@ body {
          background-color: var(--color-dark);
 
          .menu-button {
-            position: absolute;
-            right: var(--padding);
+            position: sticky;
+            left: calc(var(--block-width)*0.75);
             top: var(--padding);
             color: var(--color-dark);
          }
