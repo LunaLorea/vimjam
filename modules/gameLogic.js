@@ -133,7 +133,7 @@ export default class GameLogic {
   }
 
   roundReward = () => {
-    const rewards = [25, 50, 50, 100, 100, 100, 250, 250, 250, 500];
+    const rewards = [50, 50, 50, 100, 100, 100, 250, 250, 250, 500];
     const index = Math.min(Math.round(this.waveCounter/10), 9);
     return rewards[index];
   }

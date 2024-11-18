@@ -5,7 +5,7 @@ export default class EnemyHandler {
       speed: 5.5,
       health: 2,
       scale: 0.38,
-      worth: 17,
+      worth: 8,
       
       objName: "enemy-formula1",
       unusedObjects: new Set(),
@@ -16,7 +16,7 @@ export default class EnemyHandler {
       speed: 3.5,
       health: 1,
       scale: 0.38,
-      worth: 17,
+      worth: 4,
       
       objName: "enemy-formula2",
       unusedObjects: new Set(),
@@ -27,7 +27,7 @@ export default class EnemyHandler {
       speed: 1.4,
       health: 6,
       scale: 1,
-      worth: 15,
+      worth: 25,
       
       objName: "enemy-monstertruck",
       unusedObjects: new Set(),
