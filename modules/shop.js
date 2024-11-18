@@ -103,10 +103,10 @@ export default class Shop {
       availableSlots.forEach( (slot) => {
         const distVec = vec3.create();
         let tempPos = [...slot.position];
-        tempPos[1] = 0;
+        tempPos[1] = 0.2;
         vec3.sub(distVec, tempPos, this.sceneInformation.mouseInWorld);
         let distance = Math.sqrt(vec3.dot(distVec, distVec));
-        if (distance <= 0.38) {
+        if (distance <= 0.45) {
           chosenSlot = slot;
         }
       });
