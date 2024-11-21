@@ -1,10 +1,17 @@
 export function transformScreenToWorldPosition(
-  projectionMatrix, 
-  camViewMatrix, 
-  screenCoordinates,
-  canvas,
+  ray,
   elevation,
 ) {
+
+  const position = intersectLinePlane(ray, [0, 1, 0], [0, elevation, 0]);
+  if (position == null) {
+    return null;
+  }
+  vec3.sub(position, [0, 0, 0], position); 
+  return position;
+}
+
+export function getMouseRay(projectionMatrix, camViewMatrix, screenCoordinates = [0, 0], canvas) {
   const transformMatrix = mat4.create();
   mat4.copy(transformMatrix, projectionMatrix);
 
@@ -26,16 +33,14 @@ export function transformScreenToWorldPosition(
   
   const ray = vec3.create();
   vec3.sub(ray, end, start);
-  const position = intersectLinePlane(ray, start, [0, 1, 0], [0, elevation, 0]);
-  if (position == null) {
-    return null;
-  }
-  vec3.sub(position, [0, 0, 0], position); 
-  return position;
+
+  return {vec: ray, origin: start};
 }
 
 
-function intersectLinePlane(lineV, lineP, planeN, planeP) {
+function intersectLinePlane(ray, planeN, planeP) {
+  const lineV = ray.vec;
+  const lineP = ray.origin;
   vec3.normalize(lineV, lineV)
   vec3.normalize(planeN, planeN)
   const dotProduct = vec3.dot(lineV, planeN);
@@ -51,4 +56,17 @@ function intersectLinePlane(lineV, lineP, planeN, planeP) {
   vec3.scale(intersection, lineV, scalar);
   vec3.sub(intersection, intersection, lineP);
   return intersection;
+}
+
+export function checkSphereIntersection(spherePosition, sphereRadius, ray) {
+  const normLineVec = vec3.create();
+  vec3.normalize(normLineVec, ray.vec);
+  const lineOriginMinusSphereCenter = vec3.create();
+  vec3.sub(lineOriginMinusSphereCenter, ray.origin, spherePosition);
+  const radius = sphereRadius;
+
+  let det = Math.pow(vec3.dot(normLineVec, lineOriginMinusSphereCenter), 2) 
+    - (vec3.dot(lineOriginMinusSphereCenter, lineOriginMinusSphereCenter) - Math.pow(radius, 2))
+  console.log(normLineVec, lineOriginMinusSphereCenter, radius, det);
+  return (det >= 0);
 }

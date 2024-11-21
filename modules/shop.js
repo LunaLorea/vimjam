@@ -1,3 +1,4 @@
+import { checkSphereIntersection } from "./transformScreenToWorldPosition.js";
 import { addShopItem } from "./uiHook.js";
 
 export default class Shop {
@@ -80,6 +81,14 @@ export default class Shop {
     }
     if (this.money >= price) {
       this.itemBought = item;
+      
+      if (this.itemBought in this.Items.tiles) {
+        const tileIdentifier = this.Items.tiles[this.itemBought].identifier;
+        const type = this.playingField.TileTypes[tileIdentifier];
+        this.playingField.shopTile = type;
+        console.log(tileIdentifier, type, this.playingField.shopTile);
+      }
+      this.playingField.shopTile
       return true;
     }
     else {
@@ -98,18 +107,16 @@ export default class Shop {
       const towerIdentifier = this.Items.towers[this.itemBought].identifier;
       const price = this.Items.towers[this.itemBought].price;
 
-      const availableSlots = this.playingField.availableSlots;
+      const availableSlots = Array.from(this.playingField.availableSlots);
       let chosenSlot = null;
-      availableSlots.forEach( (slot) => {
-        const distVec = vec3.create();
-        let tempPos = [...slot.position];
-        tempPos[1] = 0.2;
-        vec3.sub(distVec, tempPos, this.sceneInformation.mouseInWorld);
-        let distance = Math.sqrt(vec3.dot(distVec, distVec));
-        if (distance <= 0.45) {
+
+      for (let i = 0; i < availableSlots.length; i++) {
+        const slot = availableSlots[i];
+        if (checkSphereIntersection(slot.position, slot.scale, this.sceneInformation.mouseRay)) {
           chosenSlot = slot;
+          break;
         }
-      });
+      }
       
       if (chosenSlot == null) {
         /*tmp*/
@@ -179,6 +186,7 @@ export default class Shop {
       return;
     }
     this.itemBought = undefined;
+    this.playingField.shopTile = null;
     
   }
 

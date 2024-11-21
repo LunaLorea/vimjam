@@ -1,5 +1,5 @@
 import { drawObject } from "./drawObject.js";
-import { transformScreenToWorldPosition } from "./transformScreenToWorldPosition.js";
+import { transformScreenToWorldPosition, getMouseRay } from "./transformScreenToWorldPosition.js";
 
 function drawScene(programInfo, canvas, settings, sceneInformation) {
 
@@ -35,12 +35,15 @@ function drawScene(programInfo, canvas, settings, sceneInformation) {
   rotateObject(camViewMatrix, camInformation.rotation);
   setObjectPosition(camViewMatrix, tempCam1);
   
-  let mousePosition = transformScreenToWorldPosition(
-    projectionMatrix,
-    camViewMatrix,
+
+  sceneInformation.mouseRay = getMouseRay(
+    projectionMatrix, 
+    camViewMatrix, 
     [sceneInformation.mouseX, sceneInformation.mouseY],
-    canvas,
-    0,);
+    canvas
+  );
+
+  let mousePosition = transformScreenToWorldPosition(sceneInformation.mouseRay, 0);
 
   if (mousePosition != null) {
     sceneInformation.mouseInWorld = mousePosition;

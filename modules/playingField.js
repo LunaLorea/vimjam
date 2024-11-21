@@ -4,7 +4,7 @@ export default class PlayingField {
 
   TileTypes = {
     start: {
-      exits: [3, 0],
+      exits: [0],
       objName: "hexagonal-plate-start",
       defaultRotation: 0,
       hasEntrance: true,
@@ -28,7 +28,7 @@ export default class PlayingField {
       hasEntrance: false,
       slots: [{
         rotation: [0, 0, 0],
-        relPosition: {x: 0, y:0.1, z:0},
+        relPosition: {x: 0, y:0.28, z:0},
         damageMultiplier: 1.5,
         rangeMultiplier: 1,
         scale: 1.7,
@@ -43,7 +43,7 @@ export default class PlayingField {
       hasEntrance: false,
       slots: [{
         rotation: [0, 0, 0],
-        relPosition: {x: 0, y:0.52, z:-0.28},
+        relPosition: {x: 0, y:0.75, z:-0.28},
         damageMultiplier: 1,
         rangeMultiplier: 1.5,
         scale: 0.9,
@@ -56,13 +56,7 @@ export default class PlayingField {
       objName: "hexagonal-plate-stop",
       defaultRotation: 3,
       hasEntrance: true,
-      slots: [{
-        rotation: [0, 0, 0],
-        relPosition: {x: 0, y:0, z:0},
-        damageMultiplier: 0.75,
-        rangeMultiplier: 0.75,
-        scale: 1,
-      }],
+      slots: [],
       ghostTile: {},
       isRoad: false,
     },
@@ -70,14 +64,8 @@ export default class PlayingField {
       exits: [3],
       objName: "hexagonal-plate-straight",
       defaultRotation: 0,
+      slots: [],
       hasEntrance: true,
-      slots: [{
-        rotation: [0, 1, 0],
-        relPosition: {x: 0.72, y:0.2, z:0},
-        damageMultiplier: 0.5,
-        rangeMultiplier: 0.5,
-        scale: 0.7,
-      },],
       ghostTile: {},
       isRoad: true,
     },
@@ -85,14 +73,8 @@ export default class PlayingField {
       exits: [4],
       objName: "hexagonal-plate-curve",
       defaultRotation: 2,
+      slots: [],
       hasEntrance: true,
-      slots: [{
-        relPosition: {x: -0.4, y:0.1, z:-0.4},
-        rotation: [0, 0, 0],
-        damageMultiplier: 1,
-        rangeMultiplier: 1,
-        scale: 0.75,
-      }],
       ghostTile: {},
       isRoad: true,
     },
@@ -100,14 +82,8 @@ export default class PlayingField {
       exits: [2],
       objName: "hexagonal-plate-curve",
       defaultRotation: -2,
+      slots: [],
       hasEntrance: true,
-      slots: [{
-        rotation: [0, 0, 0],
-        relPosition: {x: 0.4, y:0.1, z:-0.34},
-        damageMultiplier: 1,
-        rangeMultiplier: 1,
-        scale: 1,
-      }],
       ghostTile: {},
       isRoad: true,
     },
@@ -115,6 +91,7 @@ export default class PlayingField {
       exits: [2, 4],
       objName: "hexagonal-plate-split",
       defaultRotation: 1,
+      slots: [],
       hasEntrance: true,
       slots: [],
       ghostTile: {},
@@ -147,11 +124,6 @@ export default class PlayingField {
 
     sceneInformation.addNewObject(
         "flag",
-        [0, 0.2, -2.4],
-        [0, 0, 0],
-        0.65, );
-    sceneInformation.addNewObject(
-        "flag",
         [0, 0.2, 2.4],
         [0, 0, 0],
         0.65, );
@@ -174,11 +146,9 @@ export default class PlayingField {
     this.startTile3 = this.createNewTile(this.TileTypes.straight, 3, {q: 0, r: 1});
     this.startTile3.parentTile = this.startTile0;
     this.startTile3.parentExit = 0;
-    this.startTile4 = this.createNewTile(this.TileTypes.empty, 2, {q: 1, r: 0});
-    this.startTile5 = this.createNewTile(this.TileTypes.audience, 1, {q: 1, r: -1});
-    this.startTile6 = this.createNewTile(this.TileTypes.straight, 0, {q: 0, r: -1});
-    this.startTile6.parentTile = this.startTile0;
-    this.startTile6.parentExit = 3;
+    this.startTile4 = this.createNewTile(this.TileTypes.audience, 2, {q: 1, r: 0});
+    this.startTile5 = this.createNewTile(this.TileTypes.empty, 1, {q: 1, r: -1});
+    this.startTile6 = this.createNewTile(this.TileTypes.audience, 0, {q: 0, r: -1});
       
     this.placeRandomTiles();
 
@@ -361,6 +331,8 @@ export default class PlayingField {
     }
   }
 
+  shopTile = null;
+
   doAnimations() {
     if (this.sceneInformation.mouseInWorld == undefined || !this.canPlaceTiles) {
       return;
@@ -368,7 +340,12 @@ export default class PlayingField {
 
     if (this.currentGhostTile != null) {
       this.currentGhostTile.scale = 0;
-      this.currentGhostTile = null;
+    }
+    this.currentGhostTile = null;
+    if (this.shopTile != null) {
+      this.currentGhostTile = this.shopTile.ghostTile;
+      let rotation = -(3 + this.rotateTileCount % 6) * 2/3;
+      this.currentGhostTile.rotation = [0, rotation, 0];
     }
 
     const mouseCoord = {
@@ -384,23 +361,25 @@ export default class PlayingField {
       return;
     }
 
-    if (this.availableTiles[q] == undefined || this.availableTiles[q][r] == undefined) {
+    if (!(this.availableTiles[q] == undefined || this.availableTiles[q][r] == undefined)) {
+      const tileType = this.nextTiles[0];
+      const parentTileEntrances = this.availableTiles[q][r].parents;
+      let chosenParent = this.rotateTileCount % parentTileEntrances.length;
+      const rotation = -(parentTileEntrances[chosenParent] + tileType.defaultRotation) * 2/3;
+      this.currentGhostTile = tileType.ghostTile;
+      this.currentGhostTile.rotation = [0, rotation, 0];
+    }
+
+    if (this.currentGhostTile == null) {
       return;
     }
 
     const squareCoords = this.hexToSquareCoordinates(tileCoord)
     let x = squareCoords.x;
     let y = squareCoords.y;
-
-    const tileType = this.nextTiles[0];
-    const parentTileEntrances = this.availableTiles[q][r].parents;
-    let chosenParent = this.rotateTileCount % parentTileEntrances.length;
-    const rotation = -(parentTileEntrances[chosenParent] + tileType.defaultRotation) * 2/3;
-
-    this.currentGhostTile = tileType.ghostTile;
-    this.currentGhostTile.scale = 1;
+    
     this.currentGhostTile.position = [x, 0, y];
-    this.currentGhostTile.rotation = [0, rotation, 0];
+    this.currentGhostTile.scale = 1;
   }
   currentGhostTile = this.TileTypes.straight.ghostTile;
 
