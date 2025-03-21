@@ -101,7 +101,7 @@ const queueList = document.getElementById('tile-queue');
 export function queueAppend(tile) {
     let listItem = document.createElement('li');
     let image = document.createElement('img');
-    image.src=`../UI/images/${tile}.png`;
+    image.src=`/vimjam/UI/images/${tile}.png`;
     image.width="128";
     image.height="128";
     
